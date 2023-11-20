@@ -9,6 +9,7 @@ import java.util.HashSet;
 @Setter
 @AllArgsConstructor
 public class Accommodation {
+    private Long id;
     private String name;
     private String description;
     private Address address;

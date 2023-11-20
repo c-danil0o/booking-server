@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Review {
+    private Long id;
     private int grade;
     private String comment;
     private Account author;

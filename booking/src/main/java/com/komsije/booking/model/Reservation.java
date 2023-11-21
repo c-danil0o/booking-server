@@ -1,9 +1,6 @@
 package com.komsije.booking.model;
 
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,11 +13,14 @@ import java.util.Date;
 public class Reservation {
     @Id
     private Long id;
+    @Column(nullable = false)
     private Date startDate;
+    @Column(nullable = false)
     private int days;
+    @Column(nullable = false)
     private double price;
 
-    @ManyToOne
+    @ManyToOne()
     private Host host;
 
     @ManyToOne
@@ -28,5 +28,7 @@ public class Reservation {
 
     @ManyToOne
     private Accommodation accommodation;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private ReservationStatus reservationStatus;
 }

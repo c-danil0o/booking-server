@@ -1,8 +1,6 @@
 package com.komsije.booking.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,10 +12,13 @@ import lombok.Setter;
 public class Review {
     @Id
     private Long id;
+    @Column(nullable = false)
     private int grade;
+    @Column(nullable = true)
     private String comment;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Account author;
+    @Column(nullable = false)
     private boolean isApproved;
 }

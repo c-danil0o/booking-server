@@ -14,12 +14,15 @@ import java.util.HashSet;
 @Entity
 public class Accommodation {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @Column(nullable = false)
     private String name;
     private String description;
     @ManyToOne
     private Address address;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private AccommodationType accommodationType;
 
     @ElementCollection
@@ -27,15 +30,18 @@ public class Accommodation {
 
     @OneToMany
     private HashSet<TimeSlot> availability;
-
+    @Column(nullable = false)
     private int maxGuests;
+    @Column(nullable = false)
     private int minGuests;
     @ElementCollection
     private HashSet<String> photos;
-
     private boolean isPricePerGuest;
+    @Column(nullable = false)
     private int cancellationDeadline;
+    @Column(nullable = false)
     private boolean isAutoApproval;
+    @Column(nullable = false)
     private double averageGrade;
 
 }

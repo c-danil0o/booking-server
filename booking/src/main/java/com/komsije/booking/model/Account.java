@@ -1,18 +1,17 @@
 package com.komsije.booking.model;
 
-import jakarta.persistence.ConstructorResult;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Account {
     @Id
     private Long id;
@@ -21,6 +20,7 @@ public class Account {
     private String password;
     private boolean isBlocked;
     private AccountType accountType;
-    private Address address;
 
+    @ManyToOne
+    private Address address;
 }

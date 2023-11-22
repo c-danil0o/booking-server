@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -22,10 +23,10 @@ public class AccommodationDTO {
     private String description;
     private Address address;
     private AccommodationType accommodationType;
-    private HashSet<String> amenities;
+    private Set<String> amenities = new HashSet<>();
     private int maxGuests;
     private int minGuests;
-    private HashSet<String> photos;
+    private Set<String> photos;
     private boolean isPricePerGuest;
     private int cancellationDeadline;
     private double averageGrade;

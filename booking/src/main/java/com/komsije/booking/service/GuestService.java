@@ -13,8 +13,8 @@ public class GuestService {
     @Autowired
     private GuestRepository guestRepository;
 
-    public Guest FindOne(Long id) {return guestRepository.findById(id).orElseGet(null);}
-    public List<Guest> FindAll() {return guestRepository.findAll();}
-    public Guest Save(Guest accommodation) {return guestRepository.save(accommodation);}
-    public void Remove(Long id) {guestRepository.deleteById(id);}
+    public Guest findOne(Long id) {return guestRepository.findById(id).orElseGet(null);}
+    public List<Guest> findAll() {return guestRepository.findAll();}
+    public Guest save(Guest accommodation) {return guestRepository.save(accommodation);}
+    public void remove(Long id) {guestRepository.deleteById(id);}
 }

@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.HashSet;
+import java.util.Set;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -26,16 +28,16 @@ public class Accommodation {
     private AccommodationType accommodationType;
 
     @ElementCollection
-    private HashSet<String> amenities;
+    private Set<String> amenities = new HashSet<>();
 
     @OneToMany
-    private HashSet<TimeSlot> availability;
+    private Set<TimeSlot> availability = new HashSet<>();
     @Column(nullable = false)
     private int maxGuests;
     @Column(nullable = false)
     private int minGuests;
     @ElementCollection
-    private HashSet<String> photos;
+    private Set<String> photos = new HashSet<>();
     private boolean isPricePerGuest;
     @Column(nullable = false)
     private int cancellationDeadline;

@@ -19,14 +19,12 @@ public class AccountDTO {
     private String email;
     private boolean isBlocked;
     private AccountType accountType;
-    private Address address;
 
     public AccountDTO(Account account) {
         this.id=account.getId();
         this.email=account.getEmail();
         this.isBlocked=account.isBlocked();
         this.accountType=account.getAccountType();
-        this.address=account.getAddress();
     }
 
 }

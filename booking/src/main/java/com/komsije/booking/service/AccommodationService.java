@@ -12,10 +12,10 @@ public class AccommodationService {
     @Autowired
     private AccommodationRepository accommodationRepository;
 
-    public Accommodation FindOne(Long id) {return accommodationRepository.findById(id).orElseGet(null);}
-    public List<Accommodation> FindAll() {return accommodationRepository.findAll();}
-    public Accommodation Save(Accommodation accommodation) {return accommodationRepository.save(accommodation);}
-    public void Remove(Long id) {accommodationRepository.deleteById(id);}
+    public Accommodation findOne(Long id) {return accommodationRepository.findById(id).orElseGet(null);}
+    public List<Accommodation> findAll() {return accommodationRepository.findAll();}
+    public Accommodation save(Accommodation accommodation) {return accommodationRepository.save(accommodation);}
+    public void remove(Long id) {accommodationRepository.deleteById(id);}
 
 
 

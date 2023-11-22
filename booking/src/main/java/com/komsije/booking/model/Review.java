@@ -11,13 +11,14 @@ import lombok.Setter;
 @Entity
 public class Review {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false)
     private int grade;
     @Column(nullable = true)
     private String comment;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Account author;
     @Column(nullable = false)
     private boolean isApproved;

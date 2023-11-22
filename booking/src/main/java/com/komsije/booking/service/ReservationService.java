@@ -14,8 +14,8 @@ public class ReservationService {
     @Autowired
     private ReservationRepository reservationRepository;
 
-    public Reservation FindOne(Long id) {return reservationRepository.findById(id).orElseGet(null);}
-    public List<Reservation> FindAll() {return reservationRepository.findAll();}
-    public Reservation Save(Reservation accommodation) {return reservationRepository.save(accommodation);}
-    public void Remove(Long id) {reservationRepository.deleteById(id);}
+    public Reservation findOne(Long id) {return reservationRepository.findById(id).orElseGet(null);}
+    public List<Reservation> findAll() {return reservationRepository.findAll();}
+    public Reservation save(Reservation accommodation) {return reservationRepository.save(accommodation);}
+    public void remove(Long id) {reservationRepository.deleteById(id);}
 }

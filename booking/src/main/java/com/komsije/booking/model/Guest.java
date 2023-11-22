@@ -21,6 +21,8 @@ public class Guest extends Account {
     private String phone;
     @Column(nullable = false)
     private int timesCancelled;
+    @ManyToOne
+    private Address address;
     @ManyToMany(fetch = FetchType.LAZY, cascade = {})
     private HashSet<Accommodation> favorites = new HashSet<>();
 }

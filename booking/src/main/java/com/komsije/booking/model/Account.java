@@ -11,10 +11,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Account {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false, unique = true)
     private String email;
@@ -22,9 +22,8 @@ public class Account {
     private String password;
     @Column(nullable = false)
     private boolean isBlocked;
-    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private AccountType accountType;
 
-    @ManyToOne
-    private Address address;
+
 }

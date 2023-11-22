@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -24,5 +25,5 @@ public class Guest extends Account {
     @ManyToOne
     private Address address;
     @ManyToMany(fetch = FetchType.LAZY, cascade = {})
-    private HashSet<Accommodation> favorites = new HashSet<>();
+    private Set<Accommodation> favorites = new HashSet<>();
 }

@@ -13,8 +13,8 @@ public class ReviewService {
     @Autowired
     private ReviewRepository reviewRepository;
 
-    public Review FindOne(Long id) {return reviewRepository.findById(id).orElseGet(null);}
-    public List<Review> FindAll() {return reviewRepository.findAll();}
-    public Review Save(Review accommodation) {return reviewRepository.save(accommodation);}
-    public void Remove(Long id) {reviewRepository.deleteById(id);}
+    public Review findOne(Long id) {return reviewRepository.findById(id).orElseGet(null);}
+    public List<Review> findAll() {return reviewRepository.findAll();}
+    public Review save(Review accommodation) {return reviewRepository.save(accommodation);}
+    public void remove(Long id) {reviewRepository.deleteById(id);}
 }

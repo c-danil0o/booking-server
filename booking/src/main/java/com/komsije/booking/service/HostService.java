@@ -11,9 +11,9 @@ import java.util.List;
 public class HostService {
     @Autowired
     private HostRepository hostRepository;
-    public Host FindOne(Long id) {return hostRepository.findById(id).orElseGet(null);}
-    public List<Host> FindAll() {return hostRepository.findAll();}
-    public Host Save(Host accommodation) {return hostRepository.save(accommodation);}
-    public void Remove(Long id) {hostRepository.deleteById(id);}
+    public Host findOne(Long id) {return hostRepository.findById(id).orElseGet(null);}
+    public List<Host> findAll() {return hostRepository.findAll();}
+    public Host save(Host accommodation) {return hostRepository.save(accommodation);}
+    public void remove(Long id) {hostRepository.deleteById(id);}
 
 }

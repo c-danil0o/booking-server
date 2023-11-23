@@ -3,6 +3,7 @@ package com.komsije.booking.controller;
 import com.komsije.booking.dto.AccommodationDTO;
 import com.komsije.booking.dto.AccountDTO;
 import com.komsije.booking.model.Accommodation;
+import com.komsije.booking.model.AccommodationType;
 import com.komsije.booking.model.Account;
 import com.komsije.booking.service.AccommodationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,22 @@ public class AccommodationController {
             accommodationDTOs.add(new AccommodationDTO(accommodation));
         }
         return new ResponseEntity<>(accommodationDTOs, HttpStatus.OK);
+
+    }
+    @GetMapping
+    public ResponseEntity<List<AccommodationDTO>> getByAccommodationType(@RequestParam String type){
+        try{
+            List<Accommodation> accommodations = accommodationService.getByAccommodationType(AccommodationType.valueOf(type));
+
+            List<AccommodationDTO> accommodationDTOs = new ArrayList<>();
+            for (Accommodation accommodation : accommodations) {
+                accommodationDTOs.add(new AccommodationDTO(accommodation));
+            }
+            return new ResponseEntity<>(accommodationDTOs, HttpStatus.OK);
+        }catch (IllegalArgumentException e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
 
     }
 

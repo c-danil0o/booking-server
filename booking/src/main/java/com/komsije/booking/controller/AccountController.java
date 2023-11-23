@@ -4,6 +4,7 @@ import com.komsije.booking.dto.AccommodationDTO;
 import com.komsije.booking.dto.AccountDTO;
 import com.komsije.booking.model.Accommodation;
 import com.komsije.booking.model.Account;
+import com.komsije.booking.model.AccountType;
 import com.komsije.booking.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -44,6 +45,21 @@ public class AccountController {
         }
 
         return new ResponseEntity<>(new AccountDTO(account), HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<AccountDTO>> getAccountsByType(@RequestParam String type) {
+        try{
+            List<Account> accounts = accountService.getByAccountType(AccountType.valueOf(type));
+            List<AccountDTO> accountDTOs = new ArrayList<>();
+            for (Account account: accounts){
+                accountDTOs.add(new AccountDTO(account));
+            }
+            return new ResponseEntity<>(accountDTOs, HttpStatus.OK);
+        }catch (IllegalArgumentException e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
     }
 
     @PostMapping(consumes = "application/json")

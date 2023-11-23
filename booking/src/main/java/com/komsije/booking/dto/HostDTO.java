@@ -16,19 +16,18 @@ import lombok.Setter;
 public class HostDTO {
     private Long id;
     private String email;
+    private String password;
     private boolean isBlocked;
-    private AccountType accountType;
     private Address address;
     private String firstName;
     private String lastName;
     private String phone;
-    private int timesCancelled;
 
     public HostDTO(Host host){
         this.id=host.getId();
         this.email=host.getEmail();
+        this.password=host.getPassword();
         this.isBlocked=host.isBlocked();
-        this.accountType=host.getAccountType();
         this.address=host.getAddress();
         this.firstName=host.getFirstName();
         this.lastName=host.getLastName();

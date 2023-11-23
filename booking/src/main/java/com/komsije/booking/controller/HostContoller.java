@@ -2,6 +2,7 @@ package com.komsije.booking.controller;
 
 import com.komsije.booking.dto.GuestDTO;
 import com.komsije.booking.dto.HostDTO;
+import com.komsije.booking.model.AccountType;
 import com.komsije.booking.model.Guest;
 import com.komsije.booking.model.Host;
 import com.komsije.booking.service.GuestService;
@@ -9,10 +10,7 @@ import com.komsije.booking.service.HostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,5 +40,23 @@ public class HostContoller {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(new HostDTO(host), HttpStatus.OK);
+    }
+
+    @PostMapping(consumes = "application/json")
+    public ResponseEntity<HostDTO> saveAccommodation(@RequestBody HostDTO hostDTO) {
+
+        Host host = new Host();
+        host.setId(hostDTO.getId());
+        host.setEmail(hostDTO.getEmail());
+        host.setPassword(hostDTO.getPassword());
+        host.setBlocked(hostDTO.isBlocked());
+        host.setAccountType(AccountType.Host);
+        host.setAddress(hostDTO.getAddress());
+        host.setFirstName(hostDTO.getFirstName());
+        host.setLastName(hostDTO.getLastName());
+        host.setPhone(hostDTO.getPhone());
+
+        host = hostService.save(host);
+        return new ResponseEntity<>(new HostDTO(host), HttpStatus.CREATED);
     }
 }

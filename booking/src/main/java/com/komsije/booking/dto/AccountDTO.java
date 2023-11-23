@@ -17,12 +17,14 @@ import lombok.Setter;
 public class AccountDTO {
     private Long id;
     private String email;
+    private String password;
     private boolean isBlocked;
     private AccountType accountType;
 
     public AccountDTO(Account account) {
         this.id=account.getId();
         this.email=account.getEmail();
+        this.password=account.getPassword();
         this.isBlocked=account.isBlocked();
         this.accountType=account.getAccountType();
     }

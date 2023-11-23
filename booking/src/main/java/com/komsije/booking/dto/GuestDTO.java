@@ -21,8 +21,8 @@ import java.util.HashSet;
 public class GuestDTO {
     private Long id;
     private String email;
+    private String password;
     private boolean isBlocked;
-    private AccountType accountType;
     private Address address;
     private String firstName;
     private String lastName;
@@ -32,8 +32,8 @@ public class GuestDTO {
     public GuestDTO(Guest guest){
         this.id=guest.getId();
         this.email=guest.getEmail();
+        this.password=guest.getPassword();
         this.isBlocked=guest.isBlocked();
-        this.accountType=guest.getAccountType();
         this.address=guest.getAddress();
         this.firstName=guest.getFirstName();
         this.lastName=guest.getLastName();

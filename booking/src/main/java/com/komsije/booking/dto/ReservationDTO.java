@@ -19,6 +19,7 @@ public class ReservationDTO {
     private int days;
     private double price;
     private ReservationStatus reservationStatus;
+    private Long accommodationId;
 
     public ReservationDTO(Reservation reservation){
         this.id=reservation.getId();
@@ -26,6 +27,7 @@ public class ReservationDTO {
         this.days=reservation.getDays();
         this.price=reservation.getPrice();
         this.reservationStatus=reservation.getReservationStatus();
+        this.accommodationId=reservation.getAccommodation().getId();
     }
 
 }

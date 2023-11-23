@@ -3,16 +3,15 @@ package com.komsije.booking.controller;
 import com.komsije.booking.dto.AccommodationDTO;
 import com.komsije.booking.dto.GuestDTO;
 import com.komsije.booking.model.Accommodation;
+import com.komsije.booking.model.Account;
+import com.komsije.booking.model.AccountType;
 import com.komsije.booking.model.Guest;
 import com.komsije.booking.service.AccommodationService;
 import com.komsije.booking.service.GuestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,4 +42,37 @@ public class GuestController {
         }
         return new ResponseEntity<>(new GuestDTO(guest), HttpStatus.OK);
     }
+
+    @PostMapping(consumes = "application/json")
+    public ResponseEntity<GuestDTO> saveGuest(@RequestBody GuestDTO guestDTO) {
+
+        Guest guest = new Guest();
+        guest.setId(guestDTO.getId());
+        guest.setEmail(guestDTO.getEmail());
+        guest.setPassword(guestDTO.getPassword());
+        guest.setBlocked(guestDTO.isBlocked());
+        guest.setAccountType(AccountType.Guest);
+        guest.setAddress(guestDTO.getAddress());
+        guest.setFirstName(guestDTO.getFirstName());
+        guest.setLastName(guestDTO.getLastName());
+        guest.setPhone(guestDTO.getPhone());
+        guest.setTimesCancelled(guestDTO.getTimesCancelled());
+
+
+        guest = guestService.save(guest);
+        return new ResponseEntity<>(new GuestDTO(guest), HttpStatus.CREATED);
+    }
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> deleteGuest(@PathVariable Long id) {
+
+        Guest guest = guestService.findOne(id);
+
+        if (guest!= null) {
+            guestService.remove(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
 }

@@ -19,12 +19,12 @@ public class ReviewDTO {
     private Long id;
     private int grade;
     private String comment;
-    private String author;
+    private Long authorId;
 
     public ReviewDTO(Review review) {
         this.id= review.getId();
         this.grade=review.getGrade();
         this.comment=review.getComment();
-        this.author=review.getAuthor().getEmail();
+        this.authorId=review.getAuthor().getId();
     }
 }

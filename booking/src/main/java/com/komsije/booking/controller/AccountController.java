@@ -8,10 +8,7 @@ import com.komsije.booking.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,5 +41,34 @@ public class AccountController {
 
         return new ResponseEntity<>(new AccountDTO(account), HttpStatus.OK);
     }
+
+    @PostMapping(consumes = "application/json")
+    public ResponseEntity<AccountDTO> saveAccount(@RequestBody AccountDTO accountDTO) {
+
+        Account account = new Account();
+        account.setId(accountDTO.getId());
+        account.setEmail(accountDTO.getEmail());
+        account.setPassword(accountDTO.getPassword());
+        account.setBlocked(accountDTO.isBlocked());
+        account.setAccountType(accountDTO.getAccountType());
+
+        account = accountService.save(account);
+        return new ResponseEntity<>(new AccountDTO(account), HttpStatus.CREATED);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> deleteAccount(@PathVariable Long id) {
+
+        Account account = accountService.findOne(id);
+
+        if (account != null) {
+            accountService.remove(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+
 
 }

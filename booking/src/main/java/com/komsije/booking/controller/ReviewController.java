@@ -1,17 +1,17 @@
 package com.komsije.booking.controller;
 
+import com.komsije.booking.dto.AccountDTO;
 import com.komsije.booking.dto.ReservationDTO;
 import com.komsije.booking.dto.ReviewDTO;
+import com.komsije.booking.model.Account;
 import com.komsije.booking.model.Reservation;
 import com.komsije.booking.model.Review;
+import com.komsije.booking.service.AccountService;
 import com.komsije.booking.service.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +21,9 @@ import java.util.List;
 public class ReviewController {
     @Autowired
     private ReviewService reviewService;
+
+    @Autowired
+    private AccountService accountService;
 
     @GetMapping(value = "/all")
     public ResponseEntity<List<ReviewDTO>> getAllReviews(){
@@ -43,5 +46,30 @@ public class ReviewController {
         }
 
         return new ResponseEntity<>(new ReviewDTO(review), HttpStatus.OK);
+    }
+
+    @PostMapping(consumes = "application/json")
+    public ResponseEntity<ReviewDTO> saveReview(@RequestBody ReviewDTO reviewDTO) {
+
+        Review review = new Review();
+        review.setGrade(reviewDTO.getGrade());
+        review.setComment(reviewDTO.getComment());
+        review.setAuthor(accountService.findOne(reviewDTO.getAuthorId()));
+
+        review = reviewService.save(review);
+        return new ResponseEntity<>(new ReviewDTO(review), HttpStatus.CREATED);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
+
+        Review review = reviewService.findOne(id);
+
+        if (review!= null) {
+            reviewService.remove(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

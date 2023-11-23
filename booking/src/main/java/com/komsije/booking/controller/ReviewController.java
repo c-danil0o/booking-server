@@ -49,7 +49,7 @@ public class ReviewController {
     }
 
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<ReviewDTO> saveAccount(@RequestBody ReviewDTO reviewDTO) {
+    public ResponseEntity<ReviewDTO> saveReview(@RequestBody ReviewDTO reviewDTO) {
 
         Review review = new Review();
         review.setGrade(reviewDTO.getGrade());
@@ -58,5 +58,18 @@ public class ReviewController {
 
         review = reviewService.save(review);
         return new ResponseEntity<>(new ReviewDTO(review), HttpStatus.CREATED);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
+
+        Review review = reviewService.findOne(id);
+
+        if (review!= null) {
+            reviewService.remove(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

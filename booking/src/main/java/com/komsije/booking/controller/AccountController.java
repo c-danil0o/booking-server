@@ -56,6 +56,19 @@ public class AccountController {
         return new ResponseEntity<>(new AccountDTO(account), HttpStatus.CREATED);
     }
 
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> deleteAccount(@PathVariable Long id) {
+
+        Account account = accountService.findOne(id);
+
+        if (account != null) {
+            accountService.remove(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
 
 
 }

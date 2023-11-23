@@ -3,6 +3,7 @@ package com.komsije.booking.controller;
 import com.komsije.booking.dto.AccommodationDTO;
 import com.komsije.booking.dto.GuestDTO;
 import com.komsije.booking.model.Accommodation;
+import com.komsije.booking.model.Account;
 import com.komsije.booking.model.AccountType;
 import com.komsije.booking.model.Guest;
 import com.komsije.booking.service.AccommodationService;
@@ -43,7 +44,7 @@ public class GuestController {
     }
 
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<GuestDTO> saveAccommodation(@RequestBody GuestDTO guestDTO) {
+    public ResponseEntity<GuestDTO> saveGuest(@RequestBody GuestDTO guestDTO) {
 
         Guest guest = new Guest();
         guest.setId(guestDTO.getId());
@@ -61,4 +62,17 @@ public class GuestController {
         guest = guestService.save(guest);
         return new ResponseEntity<>(new GuestDTO(guest), HttpStatus.CREATED);
     }
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> deleteGuest(@PathVariable Long id) {
+
+        Guest guest = guestService.findOne(id);
+
+        if (guest!= null) {
+            guestService.remove(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
 }

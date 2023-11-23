@@ -43,7 +43,7 @@ public class HostContoller {
     }
 
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<HostDTO> saveAccommodation(@RequestBody HostDTO hostDTO) {
+    public ResponseEntity<HostDTO> saveHost(@RequestBody HostDTO hostDTO) {
 
         Host host = new Host();
         host.setId(hostDTO.getId());
@@ -59,4 +59,19 @@ public class HostContoller {
         host = hostService.save(host);
         return new ResponseEntity<>(new HostDTO(host), HttpStatus.CREATED);
     }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> deleteHost(@PathVariable Long id) {
+
+        Host host = hostService.findOne(id);
+
+        if (host!= null) {
+            hostService.remove(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+
 }

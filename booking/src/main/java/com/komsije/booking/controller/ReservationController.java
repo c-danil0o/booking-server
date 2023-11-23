@@ -47,7 +47,7 @@ public class ReservationController {
     }
 
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<ReservationDTO> saveAccommodation(@RequestBody ReservationDTO reservationDTO) {
+    public ResponseEntity<ReservationDTO> saveReservation(@RequestBody ReservationDTO reservationDTO) {
 
         Reservation reservation = new Reservation();
         reservation.setStartDate(reservationDTO.getStartDate());
@@ -57,6 +57,19 @@ public class ReservationController {
         reservation.setAccommodation(accommodationService.findOne(reservationDTO.getAccommodationId()));
         reservation = reservationService.save(reservation);
         return new ResponseEntity<>(new ReservationDTO(reservation), HttpStatus.CREATED);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
+
+        Reservation reservation = reservationService.findOne(id);
+
+        if (reservation!= null) {
+            reservationService.remove(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
 }

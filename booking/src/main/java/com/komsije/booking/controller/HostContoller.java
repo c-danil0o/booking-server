@@ -18,11 +18,15 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "api/hosts")
 public class HostContoller {
+    private final HostService hostService;
+
     @Autowired
-    private HostService hostService;
+    public HostContoller(HostService hostService) {
+        this.hostService = hostService;
+    }
 
     @GetMapping(value = "/all")
-    public ResponseEntity<List<HostDTO>> getAllHosts(){
+    public ResponseEntity<List<HostDTO>> getAllHosts() {
         List<Host> hosts = hostService.findAll();
 
         List<HostDTO> hostDTOs = new ArrayList<>();
@@ -46,7 +50,6 @@ public class HostContoller {
     public ResponseEntity<HostDTO> saveHost(@RequestBody HostDTO hostDTO) {
 
         Host host = new Host();
-        host.setId(hostDTO.getId());
         host.setEmail(hostDTO.getEmail());
         host.setPassword(hostDTO.getPassword());
         host.setBlocked(hostDTO.isBlocked());
@@ -65,7 +68,7 @@ public class HostContoller {
 
         Host host = hostService.findOne(id);
 
-        if (host!= null) {
+        if (host != null) {
             hostService.remove(id);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {

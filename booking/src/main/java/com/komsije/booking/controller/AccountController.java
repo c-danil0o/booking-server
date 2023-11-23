@@ -16,8 +16,12 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "api/accounts")
 public class AccountController {
+    private final AccountService accountService;
+
     @Autowired
-    AccountService accountService;
+    public AccountController(AccountService accountService) {
+        this.accountService = accountService;
+    }
 
     @GetMapping(value = "/all")
     public ResponseEntity<List<AccountDTO>> getAllAccounts(){
@@ -46,7 +50,6 @@ public class AccountController {
     public ResponseEntity<AccountDTO> saveAccount(@RequestBody AccountDTO accountDTO) {
 
         Account account = new Account();
-        account.setId(accountDTO.getId());
         account.setEmail(accountDTO.getEmail());
         account.setPassword(accountDTO.getPassword());
         account.setBlocked(accountDTO.isBlocked());

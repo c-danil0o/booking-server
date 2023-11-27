@@ -34,7 +34,7 @@ public class AccommodationController {
         return new ResponseEntity<>(accommodationDTOs, HttpStatus.OK);
 
     }
-    @GetMapping
+    @GetMapping(value = "/type")
     public ResponseEntity<List<AccommodationDTO>> getByAccommodationType(@RequestParam String type){
         try{
             List<Accommodation> accommodations = accommodationService.getByAccommodationType(AccommodationType.valueOf(type));
@@ -47,8 +47,6 @@ public class AccommodationController {
         }catch (IllegalArgumentException e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
-
     }
 
     @GetMapping(value = "/{id}")

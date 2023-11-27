@@ -3,6 +3,7 @@ package com.komsije.booking.controller;
 import com.komsije.booking.dto.AccommodationDTO;
 import com.komsije.booking.dto.AccountDTO;
 import com.komsije.booking.model.Accommodation;
+import com.komsije.booking.model.AccommodationType;
 import com.komsije.booking.model.Account;
 import com.komsije.booking.model.AccountType;
 import com.komsije.booking.service.AccountService;
@@ -59,7 +60,21 @@ public class AccountController {
         }catch (IllegalArgumentException e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
 
+    @GetMapping(value = "/blocked")
+    public ResponseEntity<List<AccountDTO>> getBlockedAccounts(){
+        try{
+            List<Account> accounts = accountService.getBlockedAccounts();
+
+            List<AccountDTO> accountDTOs = new ArrayList<>();
+            for (Account account : accounts) {
+                accountDTOs.add(new AccountDTO(account));
+            }
+            return new ResponseEntity<>(accountDTOs, HttpStatus.OK);
+        }catch (IllegalArgumentException e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping(consumes = "application/json")

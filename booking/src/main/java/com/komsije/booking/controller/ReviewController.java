@@ -52,6 +52,20 @@ public class ReviewController {
 
         return new ResponseEntity<>(new ReviewDTO(review), HttpStatus.OK);
     }
+    @GetMapping(value = "/approved")
+    public ResponseEntity<List<ReviewDTO>> getApprovedReviews(){
+        try{
+            List<Review> reviews = reviewService.getApprovedReviews();
+
+            List<ReviewDTO> reviewDTOs = new ArrayList<>();
+            for (Review review : reviews) {
+                reviewDTOs.add(new ReviewDTO(review));
+            }
+            return new ResponseEntity<>(reviewDTOs, HttpStatus.OK);
+        }catch (IllegalArgumentException e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 
     @PostMapping(consumes = "application/json")
     public ResponseEntity<ReviewDTO> saveReview(@RequestBody ReviewDTO reviewDTO) {

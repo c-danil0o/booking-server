@@ -25,4 +25,6 @@ public class AccountService {
     public List<Account> getByAccountType(AccountType type){
         return accountRepository.findAccountByAccountType(type);
     }
+
+    public List<Account> getBlockedAccounts() {return accountRepository.findAccountByIsBlocked(true);}
 }

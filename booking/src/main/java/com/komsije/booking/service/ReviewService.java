@@ -32,4 +32,6 @@ public class ReviewService {
     public void remove(Long id) {
         reviewRepository.deleteById(id);
     }
+
+    public List<Review> getApprovedReviews() {return reviewRepository.getReviewsByIsApprovedIsTrue();}
 }

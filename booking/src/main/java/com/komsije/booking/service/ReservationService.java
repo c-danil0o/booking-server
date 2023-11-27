@@ -2,6 +2,7 @@ package com.komsije.booking.service;
 
 import com.komsije.booking.model.Host;
 import com.komsije.booking.model.Reservation;
+import com.komsije.booking.model.ReservationStatus;
 import com.komsije.booking.repository.HostRepository;
 import com.komsije.booking.repository.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,8 @@ public class ReservationService {
     public List<Reservation> findAll() {
         return reservationRepository.findAll();
     }
+
+    public List<Reservation> getByReservationStatus(ReservationStatus reservationStatus){return  reservationRepository.findReservationsByReservationStatus(reservationStatus);}
 
     public Reservation save(Reservation accommodation) {
         return reservationRepository.save(accommodation);

@@ -10,11 +10,26 @@ import java.util.List;
 
 @Service
 public class GuestService {
-    @Autowired
-    private GuestRepository guestRepository;
+    private final GuestRepository guestRepository;
 
-    public Guest findOne(Long id) {return guestRepository.findById(id).orElseGet(null);}
-    public List<Guest> findAll() {return guestRepository.findAll();}
-    public Guest save(Guest accommodation) {return guestRepository.save(accommodation);}
-    public void remove(Long id) {guestRepository.deleteById(id);}
+    @Autowired
+    public GuestService(GuestRepository guestRepository) {
+        this.guestRepository = guestRepository;
+    }
+
+    public Guest findOne(Long id) {
+        return guestRepository.findById(id).orElseGet(null);
+    }
+
+    public List<Guest> findAll() {
+        return guestRepository.findAll();
+    }
+
+    public Guest save(Guest accommodation) {
+        return guestRepository.save(accommodation);
+    }
+
+    public void remove(Long id) {
+        guestRepository.deleteById(id);
+    }
 }

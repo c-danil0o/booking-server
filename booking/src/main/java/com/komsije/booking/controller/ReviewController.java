@@ -19,14 +19,18 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "api/reviews")
 public class ReviewController {
-    @Autowired
-    private ReviewService reviewService;
+    private final ReviewService reviewService;
+
+    private final AccountService accountService;
 
     @Autowired
-    private AccountService accountService;
+    public ReviewController(ReviewService reviewService, AccountService accountService) {
+        this.reviewService = reviewService;
+        this.accountService = accountService;
+    }
 
     @GetMapping(value = "/all")
-    public ResponseEntity<List<ReviewDTO>> getAllReviews(){
+    public ResponseEntity<List<ReviewDTO>> getAllReviews() {
         List<Review> reviews = reviewService.findAll();
 
         List<ReviewDTO> reviewDTOs = new ArrayList<>();
@@ -35,6 +39,7 @@ public class ReviewController {
         }
         return new ResponseEntity<>(reviewDTOs, HttpStatus.OK);
     }
+
     @GetMapping(value = "/{id}")
     public ResponseEntity<ReviewDTO> getReview(@PathVariable Long id) {
 
@@ -46,6 +51,20 @@ public class ReviewController {
         }
 
         return new ResponseEntity<>(new ReviewDTO(review), HttpStatus.OK);
+    }
+    @GetMapping(value = "/approved")
+    public ResponseEntity<List<ReviewDTO>> getApprovedReviews(){
+        try{
+            List<Review> reviews = reviewService.getApprovedReviews();
+
+            List<ReviewDTO> reviewDTOs = new ArrayList<>();
+            for (Review review : reviews) {
+                reviewDTOs.add(new ReviewDTO(review));
+            }
+            return new ResponseEntity<>(reviewDTOs, HttpStatus.OK);
+        }catch (IllegalArgumentException e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping(consumes = "application/json")
@@ -65,7 +84,7 @@ public class ReviewController {
 
         Review review = reviewService.findOne(id);
 
-        if (review!= null) {
+        if (review != null) {
             reviewService.remove(id);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {

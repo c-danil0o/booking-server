@@ -5,22 +5,21 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Address {
+public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
-    private String street;
-    @Column(nullable = false)
-    private String city;
-    @Column(nullable = true)
-    private String number;
-
-
+    private String message;
+    private Date date;
+    @ManyToOne
+    private Account receiver;
 }

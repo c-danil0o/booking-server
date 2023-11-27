@@ -6,21 +6,20 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
+@AllArgsConstructor
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Address {
+public class Report {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
-    private String street;
-    @Column(nullable = false)
-    private String city;
-    @Column(nullable = true)
-    private String number;
-
-
+    private String reason;
+    @ManyToOne
+    private Account author;
+    @ManyToOne
+    private Account reportedUser;
+    private Date date;
 }

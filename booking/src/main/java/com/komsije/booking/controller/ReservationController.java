@@ -1,10 +1,9 @@
 package com.komsije.booking.controller;
 
+import com.komsije.booking.dto.AccountDTO;
 import com.komsije.booking.dto.HostDTO;
 import com.komsije.booking.dto.ReservationDTO;
-import com.komsije.booking.model.AccountType;
-import com.komsije.booking.model.Host;
-import com.komsije.booking.model.Reservation;
+import com.komsije.booking.model.*;
 import com.komsije.booking.service.AccommodationService;
 import com.komsije.booking.service.HostService;
 import com.komsije.booking.service.ReservationService;
@@ -19,14 +18,18 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "api/reservations")
 public class ReservationController {
-    @Autowired
-    private ReservationService reservationService;
+    private final ReservationService reservationService;
+
+    private final AccommodationService accommodationService;
 
     @Autowired
-    private AccommodationService accommodationService;
+    public ReservationController(ReservationService reservationService, AccommodationService accommodationService) {
+        this.reservationService = reservationService;
+        this.accommodationService = accommodationService;
+    }
 
     @GetMapping(value = "/all")
-    public ResponseEntity<List<ReservationDTO>> getAllReservations(){
+    public ResponseEntity<List<ReservationDTO>> getAllReservations() {
         List<Reservation> reservations = reservationService.findAll();
 
         List<ReservationDTO> reservationDTOs = new ArrayList<>();
@@ -44,6 +47,21 @@ public class ReservationController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(new ReservationDTO(reservation), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/status")
+    public ResponseEntity<List<ReservationDTO>> getReservationsByStatus(@RequestParam ReservationStatus reservationStatus){
+        try{
+            List<Reservation> reservations = reservationService.getByReservationStatus(reservationStatus);
+
+            List<ReservationDTO> reservationDTOs = new ArrayList<>();
+            for (Reservation reservation : reservations) {
+                reservationDTOs.add(new ReservationDTO(reservation));
+            }
+            return new ResponseEntity<>(reservationDTOs, HttpStatus.OK);
+        }catch (IllegalArgumentException e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping(consumes = "application/json")
@@ -64,7 +82,7 @@ public class ReservationController {
 
         Reservation reservation = reservationService.findOne(id);
 
-        if (reservation!= null) {
+        if (reservation != null) {
             reservationService.remove(id);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {

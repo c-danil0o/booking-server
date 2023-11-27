@@ -30,7 +30,7 @@ public class Accommodation {
     @ElementCollection
     private Set<String> amenities = new HashSet<>();
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<TimeSlot> availability = new HashSet<>();
     @Column(nullable = false)
     private int maxGuests;

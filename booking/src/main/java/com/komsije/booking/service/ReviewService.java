@@ -10,11 +10,26 @@ import java.util.List;
 
 @Service
 public class ReviewService {
-    @Autowired
-    private ReviewRepository reviewRepository;
+    private final ReviewRepository reviewRepository;
 
-    public Review findOne(Long id) {return reviewRepository.findById(id).orElseGet(null);}
-    public List<Review> findAll() {return reviewRepository.findAll();}
-    public Review save(Review accommodation) {return reviewRepository.save(accommodation);}
-    public void remove(Long id) {reviewRepository.deleteById(id);}
+    @Autowired
+    public ReviewService(ReviewRepository reviewRepository) {
+        this.reviewRepository = reviewRepository;
+    }
+
+    public Review findOne(Long id) {
+        return reviewRepository.findById(id).orElseGet(null);
+    }
+
+    public List<Review> findAll() {
+        return reviewRepository.findAll();
+    }
+
+    public Review save(Review accommodation) {
+        return reviewRepository.save(accommodation);
+    }
+
+    public void remove(Long id) {
+        reviewRepository.deleteById(id);
+    }
 }

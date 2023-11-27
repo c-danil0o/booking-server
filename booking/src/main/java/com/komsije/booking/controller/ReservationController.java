@@ -19,14 +19,18 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "api/reservations")
 public class ReservationController {
-    @Autowired
-    private ReservationService reservationService;
+    private final ReservationService reservationService;
+
+    private final AccommodationService accommodationService;
 
     @Autowired
-    private AccommodationService accommodationService;
+    public ReservationController(ReservationService reservationService, AccommodationService accommodationService) {
+        this.reservationService = reservationService;
+        this.accommodationService = accommodationService;
+    }
 
     @GetMapping(value = "/all")
-    public ResponseEntity<List<ReservationDTO>> getAllReservations(){
+    public ResponseEntity<List<ReservationDTO>> getAllReservations() {
         List<Reservation> reservations = reservationService.findAll();
 
         List<ReservationDTO> reservationDTOs = new ArrayList<>();
@@ -64,7 +68,7 @@ public class ReservationController {
 
         Reservation reservation = reservationService.findOne(id);
 
-        if (reservation!= null) {
+        if (reservation != null) {
             reservationService.remove(id);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {

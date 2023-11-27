@@ -135,3 +135,25 @@ VALUES
     (10, 1500.0, 3, 8, 3, '2023-03-01 12:00:00', 'Active'),
     (14, 1680.0, 4, 9, 4, '2023-04-01 12:00:00', 'Done'),
     (5, 450.0, 5, 10, 5, '2023-05-01 12:00:00', 'Approved');
+
+-- Insert data into the report table
+INSERT INTO report (author_id, date, reported_user_id, reason)
+VALUES
+    (6, '2023-01-01 12:00:00', 2, 'Inappropriate behavior'),
+    (7, '2023-01-02 12:00:00', 4, 'Violating community guidelines'),
+    (2, '2023-01-03 12:00:00', 6, 'Suspicious activity'),
+    (1, '2023-01-04 12:00:00', 8, 'Harassment'),
+    (2, '2023-01-05 12:00:00', 9, 'Fraudulent behavior');
+
+-- Insert data into the notification table
+INSERT INTO notification (date, receiver_id, message)
+VALUES
+    ('2023-01-01 12:00:00', 2, 'New report received'),
+    ('2023-01-02 12:00:00', 4, 'Community guidelines update'),
+    ('2023-01-03 12:00:00', 6, 'Account verification required'),
+    ('2023-01-04 12:00:00', 8, 'Reminder: Review your recent stay'),
+    ('2023-01-06 12:00:00', 1, 'System maintenance scheduled'),
+    ('2023-01-07 12:00:00', 3, 'Important security update'),
+    ('2023-01-08 12:00:00', 5, 'Feedback requested for your recent experience'),
+    ('2023-01-09 12:00:00', 7, 'Upcoming event: Host meetup'),
+    ('2023-01-10 12:00:00', 9, 'Your account status has been updated');

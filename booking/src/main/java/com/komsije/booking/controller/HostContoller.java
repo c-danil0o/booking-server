@@ -1,12 +1,9 @@
 package com.komsije.booking.controller;
 
-import com.komsije.booking.dto.GuestDTO;
-import com.komsije.booking.dto.HostDTO;
+import com.komsije.booking.dto.HostDto;
 import com.komsije.booking.model.AccountType;
-import com.komsije.booking.model.Guest;
 import com.komsije.booking.model.Host;
-import com.komsije.booking.service.GuestService;
-import com.komsije.booking.service.HostService;
+import com.komsije.booking.service.HostServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,36 +15,36 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "api/hosts")
 public class HostContoller {
-    private final HostService hostService;
+    private final HostServiceImpl hostService;
 
     @Autowired
-    public HostContoller(HostService hostService) {
+    public HostContoller(HostServiceImpl hostService) {
         this.hostService = hostService;
     }
 
     @GetMapping(value = "/all")
-    public ResponseEntity<List<HostDTO>> getAllHosts() {
+    public ResponseEntity<List<HostDto>> getAllHosts() {
         List<Host> hosts = hostService.findAll();
 
-        List<HostDTO> hostDTOs = new ArrayList<>();
+        List<HostDto> hostDtos = new ArrayList<>();
         for (Host host : hosts) {
-            hostDTOs.add(new HostDTO(host));
+            hostDtos.add(new HostDto(host));
         }
-        return new ResponseEntity<>(hostDTOs, HttpStatus.OK);
+        return new ResponseEntity<>(hostDtos, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<HostDTO> getHost(@PathVariable Long id) {
+    public ResponseEntity<HostDto> getHost(@PathVariable Long id) {
         Host host = hostService.findOne(id);
 
         if (host == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(new HostDTO(host), HttpStatus.OK);
+        return new ResponseEntity<>(new HostDto(host), HttpStatus.OK);
     }
 
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<HostDTO> saveHost(@RequestBody HostDTO hostDTO) {
+    public ResponseEntity<HostDto> saveHost(@RequestBody HostDto hostDTO) {
 
         Host host = new Host();
         host.setEmail(hostDTO.getEmail());
@@ -60,7 +57,7 @@ public class HostContoller {
         host.setPhone(hostDTO.getPhone());
 
         host = hostService.save(host);
-        return new ResponseEntity<>(new HostDTO(host), HttpStatus.CREATED);
+        return new ResponseEntity<>(new HostDto(host), HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/{id}")

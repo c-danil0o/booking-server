@@ -1,7 +1,6 @@
 package com.komsije.booking.dto;
 
 import com.komsije.booking.model.*;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +12,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReservationDTO {
+public class ReservationDto {
     private Long id;
     private Date startDate;
     private int days;
@@ -21,7 +20,7 @@ public class ReservationDTO {
     private ReservationStatus reservationStatus;
     private Long accommodationId;
 
-    public ReservationDTO(Reservation reservation){
+    public ReservationDto(Reservation reservation){
         this.id=reservation.getId();
         this.startDate=reservation.getStartDate();
         this.days=reservation.getDays();

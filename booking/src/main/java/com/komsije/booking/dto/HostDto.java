@@ -1,8 +1,6 @@
 package com.komsije.booking.dto;
 
-import com.komsije.booking.model.AccountType;
 import com.komsije.booking.model.Address;
-import com.komsije.booking.model.Guest;
 import com.komsije.booking.model.Host;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,7 +11,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class HostDTO {
+public class HostDto {
     private Long id;
     private String email;
     private String password;
@@ -23,7 +21,7 @@ public class HostDTO {
     private String lastName;
     private String phone;
 
-    public HostDTO(Host host){
+    public HostDto(Host host){
         this.id=host.getId();
         this.email=host.getEmail();
         this.password=host.getPassword();

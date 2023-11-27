@@ -1,13 +1,9 @@
 package com.komsije.booking.controller;
 
-import com.komsije.booking.dto.AccountDTO;
-import com.komsije.booking.dto.ReservationDTO;
-import com.komsije.booking.dto.ReviewDTO;
-import com.komsije.booking.model.Account;
-import com.komsije.booking.model.Reservation;
+import com.komsije.booking.dto.ReviewDto;
 import com.komsije.booking.model.Review;
-import com.komsije.booking.service.AccountService;
-import com.komsije.booking.service.ReviewService;
+import com.komsije.booking.service.AccountServiceImpl;
+import com.komsije.booking.service.ReviewServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,29 +15,29 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "api/reviews")
 public class ReviewController {
-    private final ReviewService reviewService;
+    private final ReviewServiceImpl reviewService;
 
-    private final AccountService accountService;
+    private final AccountServiceImpl accountService;
 
     @Autowired
-    public ReviewController(ReviewService reviewService, AccountService accountService) {
+    public ReviewController(ReviewServiceImpl reviewService, AccountServiceImpl accountService) {
         this.reviewService = reviewService;
         this.accountService = accountService;
     }
 
     @GetMapping(value = "/all")
-    public ResponseEntity<List<ReviewDTO>> getAllReviews() {
+    public ResponseEntity<List<ReviewDto>> getAllReviews() {
         List<Review> reviews = reviewService.findAll();
 
-        List<ReviewDTO> reviewDTOs = new ArrayList<>();
+        List<ReviewDto> reviewDtos = new ArrayList<>();
         for (Review review : reviews) {
-            reviewDTOs.add(new ReviewDTO(review));
+            reviewDtos.add(new ReviewDto(review));
         }
-        return new ResponseEntity<>(reviewDTOs, HttpStatus.OK);
+        return new ResponseEntity<>(reviewDtos, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<ReviewDTO> getReview(@PathVariable Long id) {
+    public ResponseEntity<ReviewDto> getReview(@PathVariable Long id) {
 
         Review review = reviewService.findOne(id);
 
@@ -50,25 +46,25 @@ public class ReviewController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<>(new ReviewDTO(review), HttpStatus.OK);
+        return new ResponseEntity<>(new ReviewDto(review), HttpStatus.OK);
     }
     @GetMapping(value = "/approved")
-    public ResponseEntity<List<ReviewDTO>> getApprovedReviews(){
+    public ResponseEntity<List<ReviewDto>> getApprovedReviews(){
         try{
             List<Review> reviews = reviewService.getApprovedReviews();
 
-            List<ReviewDTO> reviewDTOs = new ArrayList<>();
+            List<ReviewDto> reviewDtos = new ArrayList<>();
             for (Review review : reviews) {
-                reviewDTOs.add(new ReviewDTO(review));
+                reviewDtos.add(new ReviewDto(review));
             }
-            return new ResponseEntity<>(reviewDTOs, HttpStatus.OK);
+            return new ResponseEntity<>(reviewDtos, HttpStatus.OK);
         }catch (IllegalArgumentException e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<ReviewDTO> saveReview(@RequestBody ReviewDTO reviewDTO) {
+    public ResponseEntity<ReviewDto> saveReview(@RequestBody ReviewDto reviewDTO) {
 
         Review review = new Review();
         review.setGrade(reviewDTO.getGrade());
@@ -76,7 +72,7 @@ public class ReviewController {
         review.setAuthor(accountService.findOne(reviewDTO.getAuthorId()));
 
         review = reviewService.save(review);
-        return new ResponseEntity<>(new ReviewDTO(review), HttpStatus.CREATED);
+        return new ResponseEntity<>(new ReviewDto(review), HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/{id}")

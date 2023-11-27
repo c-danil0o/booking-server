@@ -1,23 +1,23 @@
 package com.komsije.booking.service;
 
-import com.komsije.booking.model.Reservation;
 import com.komsije.booking.model.Review;
 import com.komsije.booking.repository.ReviewRepository;
+import com.komsije.booking.service.interfaces.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class ReviewService {
+public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
 
     @Autowired
-    public ReviewService(ReviewRepository reviewRepository) {
+    public ReviewServiceImpl(ReviewRepository reviewRepository) {
         this.reviewRepository = reviewRepository;
     }
 
-    public Review findOne(Long id) {
+    public Review findById(Long id) {
         return reviewRepository.findById(id).orElseGet(null);
     }
 
@@ -29,7 +29,7 @@ public class ReviewService {
         return reviewRepository.save(accommodation);
     }
 
-    public void remove(Long id) {
+    public void delete(Long id) {
         reviewRepository.deleteById(id);
     }
 

@@ -1,11 +1,9 @@
 package com.komsije.booking.controller;
 
-import com.komsije.booking.dto.AccommodationDTO;
-import com.komsije.booking.dto.AccountDTO;
+import com.komsije.booking.dto.AccommodationDto;
 import com.komsije.booking.model.Accommodation;
 import com.komsije.booking.model.AccommodationType;
-import com.komsije.booking.model.Account;
-import com.komsije.booking.service.AccommodationService;
+import com.komsije.booking.service.AccommodationServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,40 +15,40 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "api/accommodations")
 public class AccommodationController {
-    private final AccommodationService accommodationService;
+    private final AccommodationServiceImpl accommodationService;
     @Autowired
-    public AccommodationController(AccommodationService accommodationService) {
+    public AccommodationController(AccommodationServiceImpl accommodationService) {
         this.accommodationService = accommodationService;
     }
 
     @GetMapping(value = "/all")
-    public ResponseEntity<List<AccommodationDTO>> getAllAccommodations(){
+    public ResponseEntity<List<AccommodationDto>> getAllAccommodations(){
         List<Accommodation> accommodations = accommodationService.findAll();
 
-        List<AccommodationDTO> accommodationDTOs = new ArrayList<>();
+        List<AccommodationDto> accommodationDtos = new ArrayList<>();
         for (Accommodation accommodation : accommodations) {
-            accommodationDTOs.add(new AccommodationDTO(accommodation));
+            accommodationDtos.add(new AccommodationDto(accommodation));
         }
-        return new ResponseEntity<>(accommodationDTOs, HttpStatus.OK);
+        return new ResponseEntity<>(accommodationDtos, HttpStatus.OK);
 
     }
     @GetMapping(value = "/type")
-    public ResponseEntity<List<AccommodationDTO>> getByAccommodationType(@RequestParam String type){
+    public ResponseEntity<List<AccommodationDto>> getByAccommodationType(@RequestParam String type){
         try{
             List<Accommodation> accommodations = accommodationService.getByAccommodationType(AccommodationType.valueOf(type));
 
-            List<AccommodationDTO> accommodationDTOs = new ArrayList<>();
+            List<AccommodationDto> accommodationDtos = new ArrayList<>();
             for (Accommodation accommodation : accommodations) {
-                accommodationDTOs.add(new AccommodationDTO(accommodation));
+                accommodationDtos.add(new AccommodationDto(accommodation));
             }
-            return new ResponseEntity<>(accommodationDTOs, HttpStatus.OK);
+            return new ResponseEntity<>(accommodationDtos, HttpStatus.OK);
         }catch (IllegalArgumentException e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<AccommodationDTO> getAccommodation(@PathVariable Long id) {
+    public ResponseEntity<AccommodationDto> getAccommodation(@PathVariable Long id) {
 
         Accommodation accommodation = accommodationService.findOne(id);
 
@@ -58,11 +56,11 @@ public class AccommodationController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<>(new AccommodationDTO(accommodation), HttpStatus.OK);
+        return new ResponseEntity<>(new AccommodationDto(accommodation), HttpStatus.OK);
     }
 
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<AccommodationDTO> saveAccommodation(@RequestBody AccommodationDTO accommodationDTO) {
+    public ResponseEntity<AccommodationDto> saveAccommodation(@RequestBody AccommodationDto accommodationDTO) {
 
         Accommodation accommodation = new Accommodation();
         accommodation.setName(accommodationDTO.getName());
@@ -80,7 +78,7 @@ public class AccommodationController {
         accommodation.setAvailability(accommodationDTO.getAvailability());
 
         accommodation = accommodationService.save(accommodation);
-        return new ResponseEntity<>(new AccommodationDTO(accommodation), HttpStatus.CREATED);
+        return new ResponseEntity<>(new AccommodationDto(accommodation), HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/{id}")

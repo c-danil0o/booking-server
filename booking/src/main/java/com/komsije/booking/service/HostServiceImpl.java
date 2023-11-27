@@ -2,21 +2,22 @@ package com.komsije.booking.service;
 
 import com.komsije.booking.model.Host;
 import com.komsije.booking.repository.HostRepository;
+import com.komsije.booking.service.interfaces.HostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class HostService {
+public class HostServiceImpl implements HostService {
     private final HostRepository hostRepository;
 
     @Autowired
-    public HostService(HostRepository hostRepository) {
+    public HostServiceImpl(HostRepository hostRepository) {
         this.hostRepository = hostRepository;
     }
 
-    public Host findOne(Long id) {
+    public Host findById(Long id) {
         return hostRepository.findById(id).orElseGet(null);
     }
 
@@ -28,7 +29,7 @@ public class HostService {
         return hostRepository.save(accommodation);
     }
 
-    public void remove(Long id) {
+    public void delete(Long id) {
         hostRepository.deleteById(id);
     }
 

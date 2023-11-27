@@ -1,25 +1,25 @@
 package com.komsije.booking.service;
 
-import com.komsije.booking.model.Host;
 import com.komsije.booking.model.Reservation;
 import com.komsije.booking.model.ReservationStatus;
-import com.komsije.booking.repository.HostRepository;
 import com.komsije.booking.repository.ReservationRepository;
+import com.komsije.booking.service.interfaces.ReportService;
+import com.komsije.booking.service.interfaces.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class ReservationService {
+public class ReservationServiceImpl implements ReservationService {
     private final ReservationRepository reservationRepository;
 
     @Autowired
-    public ReservationService(ReservationRepository reservationRepository) {
+    public ReservationServiceImpl(ReservationRepository reservationRepository) {
         this.reservationRepository = reservationRepository;
     }
 
-    public Reservation findOne(Long id) {
+    public Reservation findById(Long id) {
         return reservationRepository.findById(id).orElseGet(null);
     }
 
@@ -33,7 +33,7 @@ public class ReservationService {
         return reservationRepository.save(accommodation);
     }
 
-    public void remove(Long id) {
+    public void delete(Long id) {
         reservationRepository.deleteById(id);
     }
 }

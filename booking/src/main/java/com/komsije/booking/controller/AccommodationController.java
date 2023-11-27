@@ -3,6 +3,7 @@ package com.komsije.booking.controller;
 import com.komsije.booking.dto.AccommodationDTO;
 import com.komsije.booking.dto.AccountDTO;
 import com.komsije.booking.model.Accommodation;
+import com.komsije.booking.model.AccommodationType;
 import com.komsije.booking.model.Account;
 import com.komsije.booking.service.AccommodationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,11 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "api/accommodations")
 public class AccommodationController {
+    private final AccommodationService accommodationService;
     @Autowired
-    private AccommodationService accommodationService;
+    public AccommodationController(AccommodationService accommodationService) {
+        this.accommodationService = accommodationService;
+    }
 
     @GetMapping(value = "/all")
     public ResponseEntity<List<AccommodationDTO>> getAllAccommodations(){
@@ -28,6 +32,22 @@ public class AccommodationController {
             accommodationDTOs.add(new AccommodationDTO(accommodation));
         }
         return new ResponseEntity<>(accommodationDTOs, HttpStatus.OK);
+
+    }
+    @GetMapping
+    public ResponseEntity<List<AccommodationDTO>> getByAccommodationType(@RequestParam String type){
+        try{
+            List<Accommodation> accommodations = accommodationService.getByAccommodationType(AccommodationType.valueOf(type));
+
+            List<AccommodationDTO> accommodationDTOs = new ArrayList<>();
+            for (Accommodation accommodation : accommodations) {
+                accommodationDTOs.add(new AccommodationDTO(accommodation));
+            }
+            return new ResponseEntity<>(accommodationDTOs, HttpStatus.OK);
+        }catch (IllegalArgumentException e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
 
     }
 
@@ -47,7 +67,6 @@ public class AccommodationController {
     public ResponseEntity<AccommodationDTO> saveAccommodation(@RequestBody AccommodationDTO accommodationDTO) {
 
         Accommodation accommodation = new Accommodation();
-//        accommodation.setId(accommodationDTO.getId());
         accommodation.setName(accommodationDTO.getName());
         accommodation.setDescription(accommodationDTO.getDescription());
         accommodation.setAddress(accommodationDTO.getAddress());
@@ -60,6 +79,7 @@ public class AccommodationController {
         accommodation.setCancellationDeadline(accommodationDTO.getCancellationDeadline());
         accommodation.setAutoApproval(true);
         accommodation.setAverageGrade(accommodationDTO.getAverageGrade());
+        accommodation.setAvailability(accommodationDTO.getAvailability());
 
         accommodation = accommodationService.save(accommodation);
         return new ResponseEntity<>(new AccommodationDTO(accommodation), HttpStatus.CREATED);

@@ -19,11 +19,15 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "api/guests")
 public class GuestController {
+    private final GuestService guestService;
+
     @Autowired
-    private GuestService guestService;
+    public GuestController(GuestService guestService) {
+        this.guestService = guestService;
+    }
 
     @GetMapping(value = "/all")
-    public ResponseEntity<List<GuestDTO>> getAllGuests(){
+    public ResponseEntity<List<GuestDTO>> getAllGuests() {
         List<Guest> guests = guestService.findAll();
 
         List<GuestDTO> guestDTOs = new ArrayList<>();
@@ -47,7 +51,6 @@ public class GuestController {
     public ResponseEntity<GuestDTO> saveGuest(@RequestBody GuestDTO guestDTO) {
 
         Guest guest = new Guest();
-        guest.setId(guestDTO.getId());
         guest.setEmail(guestDTO.getEmail());
         guest.setPassword(guestDTO.getPassword());
         guest.setBlocked(guestDTO.isBlocked());
@@ -62,12 +65,13 @@ public class GuestController {
         guest = guestService.save(guest);
         return new ResponseEntity<>(new GuestDTO(guest), HttpStatus.CREATED);
     }
+
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteGuest(@PathVariable Long id) {
 
         Guest guest = guestService.findOne(id);
 
-        if (guest!= null) {
+        if (guest != null) {
             guestService.remove(id);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {

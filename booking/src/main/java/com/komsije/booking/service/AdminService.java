@@ -6,6 +6,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AdminService {
+    private final AccountRepository accountRepository;
+
     @Autowired
-    private AccountRepository accountRepository;
+    public AdminService(AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
+    }
 }

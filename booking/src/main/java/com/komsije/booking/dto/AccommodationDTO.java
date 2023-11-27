@@ -16,7 +16,6 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class AccommodationDTO {
     private Long id;
     private String name;
@@ -30,20 +29,38 @@ public class AccommodationDTO {
     private boolean isPricePerGuest;
     private int cancellationDeadline;
     private double averageGrade;
+    private Set<TimeSlot> availability = new HashSet<>();
 
-    public AccommodationDTO(Accommodation accommodation){
-        this.id=accommodation.getId();
-        this.name=accommodation.getName();
-        this.description=accommodation.getDescription();
-        this.address=accommodation.getAddress();
-        this.accommodationType=accommodation.getAccommodationType();
-        this.amenities=accommodation.getAmenities();
-        this.maxGuests=accommodation.getMaxGuests();
-        this.minGuests=accommodation.getMinGuests();
-        this.photos=accommodation.getPhotos();
-        this.isPricePerGuest=accommodation.isPricePerGuest();
-        this.cancellationDeadline=accommodation.getCancellationDeadline();
-        this.averageGrade=accommodation.getAverageGrade();
+    public AccommodationDTO(Long id, String name, String description, Address address, AccommodationType accommodationType, Set<String> amenities, int maxGuests, int minGuests, Set<String> photos, boolean isPricePerGuest, int cancellationDeadline, double averageGrade, Set<TimeSlot> availability) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.address = address;
+        this.accommodationType = accommodationType;
+        this.amenities = amenities;
+        this.maxGuests = maxGuests;
+        this.minGuests = minGuests;
+        this.photos = photos;
+        this.isPricePerGuest = isPricePerGuest;
+        this.cancellationDeadline = cancellationDeadline;
+        this.averageGrade = averageGrade;
+        this.availability = availability;
+    }
+
+    public AccommodationDTO(Accommodation accommodation) {
+        this.id = accommodation.getId();
+        this.name = accommodation.getName();
+        this.description = accommodation.getDescription();
+        this.address = accommodation.getAddress();
+        this.accommodationType = accommodation.getAccommodationType();
+        this.amenities = accommodation.getAmenities();
+        this.maxGuests = accommodation.getMaxGuests();
+        this.minGuests = accommodation.getMinGuests();
+        this.photos = accommodation.getPhotos();
+        this.isPricePerGuest = accommodation.isPricePerGuest();
+        this.cancellationDeadline = accommodation.getCancellationDeadline();
+        this.averageGrade = accommodation.getAverageGrade();
+        this.availability = accommodation.getAvailability();
     }
 
 }

@@ -2,15 +2,9 @@ package com.komsije.booking.dto;
 
 import com.komsije.booking.model.Account;
 import com.komsije.booking.model.AccountType;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class AccountDto {
     private Long id;
     private String email;
@@ -18,12 +12,5 @@ public class AccountDto {
     private boolean isBlocked;
     private AccountType accountType;
 
-    public AccountDto(Account account) {
-        this.id=account.getId();
-        this.email=account.getEmail();
-        this.password=account.getPassword();
-        this.isBlocked=account.isBlocked();
-        this.accountType=account.getAccountType();
-    }
 
 }

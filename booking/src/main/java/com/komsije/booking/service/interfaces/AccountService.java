@@ -9,4 +9,5 @@ import java.util.List;
 public interface AccountService extends CrudService<Account, Long> {
     public List<Account> getByAccountType(AccountType type);
     public List<Account> getBlockedAccounts();
+    public Account getByEmail(String email);
 }

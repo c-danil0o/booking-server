@@ -1,17 +1,11 @@
 package com.komsije.booking.dto;
 
 import com.komsije.booking.model.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Date;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class ReservationDto {
     private Long id;
     private Date startDate;
@@ -20,13 +14,5 @@ public class ReservationDto {
     private ReservationStatus reservationStatus;
     private Long accommodationId;
 
-    public ReservationDto(Reservation reservation){
-        this.id=reservation.getId();
-        this.startDate=reservation.getStartDate();
-        this.days=reservation.getDays();
-        this.price=reservation.getPrice();
-        this.reservationStatus=reservation.getReservationStatus();
-        this.accommodationId=reservation.getAccommodation().getId();
-    }
 
 }

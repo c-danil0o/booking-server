@@ -7,10 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Da
 public class GuestDto {
     private Long id;
     private String email;
@@ -21,16 +18,4 @@ public class GuestDto {
     private String lastName;
     private String phone;
     private int timesCancelled;
-
-    public GuestDto(Guest guest){
-        this.id=guest.getId();
-        this.email=guest.getEmail();
-        this.password=guest.getPassword();
-        this.isBlocked=guest.isBlocked();
-        this.address=guest.getAddress();
-        this.firstName=guest.getFirstName();
-        this.lastName=guest.getLastName();
-        this.phone=guest.getPhone();
-        this.timesCancelled=guest.getTimesCancelled();
-    }
 }

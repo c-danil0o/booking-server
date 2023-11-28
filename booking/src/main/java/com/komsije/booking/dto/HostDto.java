@@ -2,15 +2,9 @@ package com.komsije.booking.dto;
 
 import com.komsije.booking.model.Address;
 import com.komsije.booking.model.Host;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class HostDto {
     private Long id;
     private String email;
@@ -21,14 +15,4 @@ public class HostDto {
     private String lastName;
     private String phone;
 
-    public HostDto(Host host){
-        this.id=host.getId();
-        this.email=host.getEmail();
-        this.password=host.getPassword();
-        this.isBlocked=host.isBlocked();
-        this.address=host.getAddress();
-        this.firstName=host.getFirstName();
-        this.lastName=host.getLastName();
-        this.phone=host.getPhone();
-    }
 }

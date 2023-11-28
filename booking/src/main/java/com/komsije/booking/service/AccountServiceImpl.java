@@ -6,6 +6,7 @@ import com.komsije.booking.mapper.AccountMapper;
 import com.komsije.booking.model.Account;
 import com.komsije.booking.model.AccountType;
 import com.komsije.booking.repository.AccountRepository;
+import com.komsije.booking.service.interfaces.AccommodationService;
 import com.komsije.booking.service.interfaces.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,8 +43,8 @@ public class AccountServiceImpl implements AccountService {
         if (account == null){
             return null;
         }
-        account = mapper.fromDto(accountDto);
-        accountRepository.save(account);
+        Account updatedAccount = mapper.fromDto(accountDto);
+        accountRepository.save(updatedAccount);
         return accountDto;
     }
 

@@ -42,8 +42,8 @@ public class NotificationServiceImpl implements NotificationService {
         if (notification == null){
             return null;
         }
-        notification = mapper.fromDto(notificationDto);
-        notificationRepository.save(notification);
+        Notification updatedNotification = mapper.fromDto(notificationDto);
+        notificationRepository.save(updatedNotification);
         return notificationDto;
     }
 

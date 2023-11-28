@@ -45,5 +45,7 @@ public class Accommodation {
     private boolean isAutoApproval;
     @Column(nullable = false)
     private double averageGrade;
+    @Column(nullable = false)
+    private boolean isApproved;
 
 }

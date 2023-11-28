@@ -40,8 +40,8 @@ public class HostServiceImpl implements HostService {
         if (host == null){
             return null;
         }
-        host = mapper.fromDto(hostDto);
-        hostRepository.save(host);
+        Host updatedHost = mapper.fromDto(hostDto);
+        hostRepository.save(updatedHost);
         return hostDto;
     }
 

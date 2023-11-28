@@ -39,8 +39,8 @@ public class ReviewServiceImpl implements ReviewService {
         if (review == null){
             return null;
         }
-        review = mapper.fromDto(reviewDto);
-        reviewRepository.save(review);
+        Review updatedReview = mapper.fromDto(reviewDto);
+        reviewRepository.save(updatedReview);
         return reviewDto;
     }
 

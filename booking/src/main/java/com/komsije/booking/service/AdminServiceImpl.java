@@ -45,8 +45,8 @@ public class AdminServiceImpl implements AdminService {
         if (account == null){
             return null;
         }
-        account = mapper.fromDto(accountDto);
-        accountRepository.save(account);
+        Account updatedAccount = mapper.fromDto(accountDto);
+        accountRepository.save(updatedAccount);
         return accountDto;
     }
 

@@ -13,5 +13,4 @@ public interface AccommodationMapper {
     Accommodation fromDto(AccommodationDto accommodationDto);
     List<AccommodationDto> toDto(List<Accommodation> accommodationList);
     void update(@MappingTarget Accommodation accommodation, AccommodationDto accommodationDto);
-
 }

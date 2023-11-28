@@ -4,6 +4,7 @@ import com.komsije.booking.dto.GuestDto;
 import com.komsije.booking.model.AccountType;
 import com.komsije.booking.model.Guest;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
@@ -24,4 +25,5 @@ public abstract class GuestMapper {
         return guest;
     }
     public abstract List<GuestDto> toDto(List<Guest> guestsList);
+    public abstract void update(@MappingTarget Guest guest, GuestDto guestDto);
 }

@@ -5,7 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.cglib.core.Local;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 @Getter
 @Setter
@@ -17,9 +19,9 @@ public class TimeSlot {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false)
-    private Date startDate;
+    private LocalDateTime startDate;
     @Column(nullable = false)
-    private Date endDate;
+    private LocalDateTime endDate;
     @Column(nullable = false)
     private double price;
     @Column(nullable = false)

@@ -6,8 +6,8 @@ import com.komsije.booking.mapper.AccountMapper;
 import com.komsije.booking.model.Account;
 import com.komsije.booking.model.AccountType;
 import com.komsije.booking.repository.AccountRepository;
-import com.komsije.booking.service.interfaces.AccommodationService;
 import com.komsije.booking.service.interfaces.AccountService;
+import com.komsije.booking.service.interfaces.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,12 +16,14 @@ import java.util.List;
 @Service
 public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
+    private final ReservationService reservationService;
     @Autowired
     private AccountMapper mapper;
 
     @Autowired
-    public AccountServiceImpl(AccountRepository accountRepository) {
+    public AccountServiceImpl(AccountRepository accountRepository, ReservationService reservationService) {
         this.accountRepository = accountRepository;
+        this.reservationService = reservationService;
     }
 
     public AccountDto findById(Long id) {
@@ -43,13 +45,19 @@ public class AccountServiceImpl implements AccountService {
         if (account == null){
             return null;
         }
-        Account updatedAccount = mapper.fromDto(accountDto);
-        accountRepository.save(updatedAccount);
+        mapper.update(account, accountDto);
+        accountRepository.save(account);
         return accountDto;
     }
 
     public void delete(Long id) {
-        accountRepository.deleteById(id);
+        Account account = accountRepository.findById(id).orElseGet(null);
+        if (account == null){
+            return;
+        }
+        if (!reservationService.hasActiveReservations(id)){
+            accountRepository.deleteById(id);
+        }
     }
 
     public List<AccountDto> getByAccountType(AccountType type) {

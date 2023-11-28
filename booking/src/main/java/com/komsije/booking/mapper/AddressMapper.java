@@ -1,8 +1,6 @@
 package com.komsije.booking.mapper;
 
-import com.komsije.booking.dto.AccommodationDto;
 import com.komsije.booking.dto.AddressDto;
-import com.komsije.booking.model.Accommodation;
 import com.komsije.booking.model.Address;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;

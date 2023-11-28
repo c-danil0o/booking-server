@@ -38,8 +38,8 @@ public class ReportServiceImpl implements ReportService {
         if (report == null){
             return null;
         }
-        Report updatedReport = mapper.fromDto(reportDto);
-        reportRepository.save(updatedReport);
+        mapper.update(report, reportDto);
+        reportRepository.save(report);
         return reportDto;
     }
 

@@ -11,6 +11,7 @@ import com.komsije.booking.service.interfaces.AccountService;
 import com.komsije.booking.service.interfaces.GuestService;
 import com.komsije.booking.service.interfaces.HostService;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Mapper(componentModel = "spring")
@@ -22,7 +23,7 @@ public abstract class UserDtoMapper {
     @Autowired
     private AccountService accountService;
 
-    UserDto toDto(Account account) {
+    public UserDto toDto(Account account) {
         UserDto userDto = new UserDto();
         userDto.setEmail(account.getEmail());
         userDto.setAccountId(account.getId());
@@ -38,7 +39,7 @@ public abstract class UserDtoMapper {
         return userDto;
     }
 
-    Account fromDto(UserDto userDto){
+    public Account fromDto(UserDto userDto){
         return accountService.getByEmail(userDto.getEmail());
     }
 

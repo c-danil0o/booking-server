@@ -49,12 +49,28 @@ public class ReservationServiceImpl implements ReservationService {
         return start1.before(end2) && start2.before(end1);
     }*/
     @Override
-    public boolean hasOverlappingReservations(Date startDate, Date endDate) {
-      /* List<Reservation> reservations = reservationRepository.findReservationsByReservationStatus(ReservationStatus.Active);
+    public boolean hasOverlappingReservations(LocalDateTime startDate, LocalDateTime endDate) {
+       List<Reservation> reservations = reservationRepository.findReservationsByReservationStatus(ReservationStatus.Active);
        for(Reservation reservation: reservations){
-           if (startDate.before(reservation.getStartDate().))
-       }*/
+           if (startDate.isBefore(reservation.getStartDate().plusDays(reservation.getDays()))&& reservation.getStartDate().isBefore(endDate)){
+               return true;
+           }
+       }
         return false;
+    }
+
+    @Override
+    public boolean deleteRequest(Long id) {
+        Reservation reservation = reservationRepository.findById(id).orElseGet(null);
+        if (reservation == null){
+            return false;
+        }
+        if (reservation.getReservationStatus().equals(ReservationStatus.Pending)){
+            reservationRepository.delete(reservation);
+            return true;
+        }
+        return false;
+
     }
 
 

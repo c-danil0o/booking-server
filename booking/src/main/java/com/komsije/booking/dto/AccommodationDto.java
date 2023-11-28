@@ -4,8 +4,7 @@ import com.komsije.booking.model.Accommodation;
 import com.komsije.booking.model.AccommodationType;
 import com.komsije.booking.model.Address;
 import com.komsije.booking.model.TimeSlot;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,14 +12,12 @@ import lombok.Setter;
 import java.util.HashSet;
 import java.util.Set;
 
-@Getter
-@Setter
-@NoArgsConstructor
-public class AccommodationDTO {
+@Data
+public class AccommodationDto {
     private Long id;
     private String name;
     private String description;
-    private Address address;
+    private AddressDto address;
     private AccommodationType accommodationType;
     private Set<String> amenities = new HashSet<>();
     private int maxGuests;
@@ -29,13 +26,13 @@ public class AccommodationDTO {
     private boolean isPricePerGuest;
     private int cancellationDeadline;
     private double averageGrade;
-    private Set<TimeSlot> availability = new HashSet<>();
+    private Set<TimeSlotDto> availability = new HashSet<>();
 
-    public AccommodationDTO(Long id, String name, String description, Address address, AccommodationType accommodationType, Set<String> amenities, int maxGuests, int minGuests, Set<String> photos, boolean isPricePerGuest, int cancellationDeadline, double averageGrade, Set<TimeSlot> availability) {
+   /* public AccommodationDto(Long id, String name, String description, Address address, AccommodationType accommodationType, Set<String> amenities, int maxGuests, int minGuests, Set<String> photos, boolean isPricePerGuest, int cancellationDeadline, double averageGrade, Set<TimeSlot> availability) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.address = address;
+        this.address = new AddressDto(address);
         this.accommodationType = accommodationType;
         this.amenities = amenities;
         this.maxGuests = maxGuests;
@@ -47,7 +44,7 @@ public class AccommodationDTO {
         this.availability = availability;
     }
 
-    public AccommodationDTO(Accommodation accommodation) {
+    public AccommodationDto(Accommodation accommodation) {
         this.id = accommodation.getId();
         this.name = accommodation.getName();
         this.description = accommodation.getDescription();
@@ -61,6 +58,6 @@ public class AccommodationDTO {
         this.cancellationDeadline = accommodation.getCancellationDeadline();
         this.averageGrade = accommodation.getAverageGrade();
         this.availability = accommodation.getAvailability();
-    }
+    }*/
 
 }

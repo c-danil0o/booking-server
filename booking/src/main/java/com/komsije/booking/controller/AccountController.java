@@ -88,6 +88,14 @@ public class AccountController {
 
         return new ResponseEntity<>(account, HttpStatus.OK);
     }
+    @PutMapping(value = "/accounts/update", consumes = "application/json")
+    public ResponseEntity<AccountDto> updateAccount(@RequestBody AccountDto accountDto){
+        AccountDto account = accountService.update(accountDto);
+        if (account == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(account, HttpStatus.OK);
+    }
 
 
 

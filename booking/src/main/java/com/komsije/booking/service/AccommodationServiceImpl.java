@@ -41,7 +41,7 @@ public class AccommodationServiceImpl implements AccommodationService {
         if (accommodation == null){
             return null;
         }
-        accommodation = mapper.fromDto(accommodationDto);
+        mapper.update(accommodation, accommodationDto);
         accommodationRepository.save(accommodation);
         return accommodationDto;
     }

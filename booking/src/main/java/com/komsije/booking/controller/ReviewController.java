@@ -27,36 +27,26 @@ public class ReviewController {
 
     @GetMapping(value = "/all")
     public ResponseEntity<List<ReviewDto>> getAllReviews() {
-        List<Review> reviews = reviewService.findAll();
-
-        List<ReviewDto> reviewDtos = new ArrayList<>();
-        for (Review review : reviews) {
-            reviewDtos.add(new ReviewDto(review));
-        }
+        List<ReviewDto> reviewDtos = reviewService.findAll();
         return new ResponseEntity<>(reviewDtos, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<ReviewDto> getReview(@PathVariable Long id) {
 
-        Review review = reviewService.findById(id);
+        ReviewDto reviewDto = reviewService.findById(id);
 
-        // studen must exist
-        if (review == null) {
+        if (reviewDto == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<>(new ReviewDto(review), HttpStatus.OK);
+        return new ResponseEntity<>(reviewDto, HttpStatus.OK);
     }
     @GetMapping(value = "/approved")
     public ResponseEntity<List<ReviewDto>> getApprovedReviews(){
         try{
-            List<Review> reviews = reviewService.getApprovedReviews();
+            List<ReviewDto> reviewDtos = reviewService.getApprovedReviews();
 
-            List<ReviewDto> reviewDtos = new ArrayList<>();
-            for (Review review : reviews) {
-                reviewDtos.add(new ReviewDto(review));
-            }
             return new ResponseEntity<>(reviewDtos, HttpStatus.OK);
         }catch (IllegalArgumentException e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -65,22 +55,14 @@ public class ReviewController {
 
     @PostMapping(consumes = "application/json")
     public ResponseEntity<ReviewDto> saveReview(@RequestBody ReviewDto reviewDTO) {
-
-        Review review = new Review();
-        review.setGrade(reviewDTO.getGrade());
-        review.setComment(reviewDTO.getComment());
-        review.setAuthor(accountService.findById(reviewDTO.getAuthorId()));
-
-        review = reviewService.save(review);
-        return new ResponseEntity<>(new ReviewDto(review), HttpStatus.CREATED);
+        ReviewDto reviewDto = reviewService.save(reviewDTO);
+        return new ResponseEntity<>(reviewDto, HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
-
-        Review review = reviewService.findById(id);
-
-        if (review != null) {
+        ReviewDto reviewDto = reviewService.findById(id);
+        if (reviewDto != null) {
             reviewService.delete(id);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {

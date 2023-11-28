@@ -2,7 +2,6 @@ package com.komsije.booking.service;
 
 import com.komsije.booking.dto.GuestDto;
 import com.komsije.booking.mapper.GuestMapper;
-import com.komsije.booking.model.Guest;
 import com.komsije.booking.repository.GuestRepository;
 import com.komsije.booking.service.interfaces.GuestService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,5 +1,7 @@
 package com.komsije.booking.service;
 
+import com.komsije.booking.dto.AccountDto;
+import com.komsije.booking.mapper.AccountMapper;
 import com.komsije.booking.model.Account;
 import com.komsije.booking.model.AccountType;
 import com.komsije.booking.repository.AccountRepository;
@@ -12,22 +14,38 @@ import java.util.List;
 @Service
 public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
+    @Autowired
+    private AccountMapper mapper;
 
     @Autowired
     public AccountServiceImpl(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
     }
 
-    public Account findById(Long id) {return accountRepository.findById(id).orElseGet(null);}
-    public List<Account> findAll() {return accountRepository.findAll();}
-    public Account save(Account accommodation) {return accountRepository.save(accommodation);}
-    public void delete(Long id) {
-        accountRepository.deleteById(id);}
-    public List<Account> getByAccountType(AccountType type){
-        return accountRepository.findAccountByAccountType(type);
+    public AccountDto findById(Long id) {
+        return mapper.toDto(accountRepository.findById(id).orElseGet(null));
     }
 
-    public List<Account> getBlockedAccounts() {return accountRepository.findAccountByIsBlocked(true);}
+    public List<AccountDto> findAll() {
+        return mapper.toDto(accountRepository.findAll());
+    }
+
+    public AccountDto save(AccountDto accountDto) {
+        accountRepository.save(mapper.fromDto(accountDto));
+        return accountDto;
+    }
+
+    public void delete(Long id) {
+        accountRepository.deleteById(id);
+    }
+
+    public List<AccountDto> getByAccountType(AccountType type) {
+        return mapper.toDto(accountRepository.findAccountByAccountType(type));
+    }
+
+    public List<AccountDto> getBlockedAccounts() {
+        return mapper.toDto(accountRepository.findAccountByIsBlocked(true));
+    }
 
     @Override
     public Account getByEmail(String email) {

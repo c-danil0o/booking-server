@@ -1,6 +1,7 @@
 package com.komsije.booking.controller;
 
 import com.komsije.booking.dto.AccountDto;
+import com.komsije.booking.dto.LoginDto;
 import com.komsije.booking.model.Account;
 import com.komsije.booking.model.AccountType;
 import com.komsije.booking.service.AccountServiceImpl;
@@ -60,7 +61,7 @@ public class AccountController {
         }
     }
 
-    @PostMapping(consumes = "application/json")
+    @PostMapping(value="/register", consumes = "application/json")
     public ResponseEntity<AccountDto> saveAccount(@RequestBody AccountDto accountDTO) {
         AccountDto account = accountService.save(accountDTO);
         return new ResponseEntity<>(account, HttpStatus.CREATED);
@@ -76,6 +77,18 @@ public class AccountController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    @PostMapping(value = "/login", consumes = "application/json")
+    public ResponseEntity<AccountDto> login(@RequestBody LoginDto loginDto){
+        AccountDto account = accountService.checkLoginCredentials(loginDto);
+
+        if (account == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        return new ResponseEntity<>(account, HttpStatus.OK);
+    }
+
 
 
 

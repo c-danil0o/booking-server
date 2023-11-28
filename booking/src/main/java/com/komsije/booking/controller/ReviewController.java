@@ -39,7 +39,7 @@ public class ReviewController {
     @GetMapping(value = "/{id}")
     public ResponseEntity<ReviewDto> getReview(@PathVariable Long id) {
 
-        Review review = reviewService.findOne(id);
+        Review review = reviewService.findById(id);
 
         // studen must exist
         if (review == null) {
@@ -69,7 +69,7 @@ public class ReviewController {
         Review review = new Review();
         review.setGrade(reviewDTO.getGrade());
         review.setComment(reviewDTO.getComment());
-        review.setAuthor(accountService.findOne(reviewDTO.getAuthorId()));
+        review.setAuthor(accountService.findById(reviewDTO.getAuthorId()));
 
         review = reviewService.save(review);
         return new ResponseEntity<>(new ReviewDto(review), HttpStatus.CREATED);
@@ -78,10 +78,10 @@ public class ReviewController {
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
 
-        Review review = reviewService.findOne(id);
+        Review review = reviewService.findById(id);
 
         if (review != null) {
-            reviewService.remove(id);
+            reviewService.delete(id);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

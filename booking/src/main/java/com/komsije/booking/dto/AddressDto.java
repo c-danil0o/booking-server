@@ -1,14 +1,22 @@
 package com.komsije.booking.dto;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
 import java.io.Serializable;
 
-/**
- * DTO for {@link com.komsije.booking.model.Address}
- */
-@EqualsAndHashCode(callSuper = true)
-@Value
-public record AddressDto(Long id, String street, String city, String number) implements Serializable {
+@Data
+public class AddressDto {
+
+    private Long id;
+
+    private String street;
+
+    private String city;
+
+    private String number;
 }

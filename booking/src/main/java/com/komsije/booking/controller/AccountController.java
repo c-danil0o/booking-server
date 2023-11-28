@@ -36,7 +36,7 @@ public class AccountController {
     @GetMapping(value = "/{id}")
     public ResponseEntity<AccountDto> getAccount(@PathVariable Long id) {
 
-        Account account = accountService.findOne(id);
+        Account account = accountService.findById(id);
 
         if (account == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -90,10 +90,10 @@ public class AccountController {
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteAccount(@PathVariable Long id) {
 
-        Account account = accountService.findOne(id);
+        Account account = accountService.findById(id);
 
         if (account != null) {
-            accountService.remove(id);
+            accountService.delete(id);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

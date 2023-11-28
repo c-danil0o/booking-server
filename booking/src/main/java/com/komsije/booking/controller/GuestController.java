@@ -35,7 +35,7 @@ public class GuestController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<GuestDto> getGuest(@PathVariable Long id) {
-        Guest guest = guestService.findOne(id);
+        Guest guest = guestService.findById(id);
 
         if (guest == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -65,10 +65,10 @@ public class GuestController {
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteGuest(@PathVariable Long id) {
 
-        Guest guest = guestService.findOne(id);
+        Guest guest = guestService.findById(id);
 
         if (guest != null) {
-            guestService.remove(id);
+            guestService.delete(id);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

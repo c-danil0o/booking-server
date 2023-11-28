@@ -35,7 +35,7 @@ public class HostContoller {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<HostDto> getHost(@PathVariable Long id) {
-        Host host = hostService.findOne(id);
+        Host host = hostService.findById(id);
 
         if (host == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -63,10 +63,10 @@ public class HostContoller {
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteHost(@PathVariable Long id) {
 
-        Host host = hostService.findOne(id);
+        Host host = hostService.findById(id);
 
         if (host != null) {
-            hostService.remove(id);
+            hostService.delete(id);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

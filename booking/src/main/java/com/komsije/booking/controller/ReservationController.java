@@ -38,7 +38,7 @@ public class ReservationController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<ReservationDto> getReservation(@PathVariable Long id) {
-        Reservation reservation = reservationService.findOne(id);
+        Reservation reservation = reservationService.findById(id);
 
         if (reservation == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -69,7 +69,7 @@ public class ReservationController {
         reservation.setDays(reservationDTO.getDays());
         reservation.setPrice(reservationDTO.getPrice());
         reservation.setReservationStatus(reservationDTO.getReservationStatus());
-        reservation.setAccommodation(accommodationService.findOne(reservationDTO.getAccommodationId()));
+        //reservation.setAccommodation(accommodationService.findById(reservationDTO.getAccommodationId()));
         reservation = reservationService.save(reservation);
         return new ResponseEntity<>(new ReservationDto(reservation), HttpStatus.CREATED);
     }
@@ -77,10 +77,10 @@ public class ReservationController {
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
 
-        Reservation reservation = reservationService.findOne(id);
+        Reservation reservation = reservationService.findById(id);
 
         if (reservation != null) {
-            reservationService.remove(id);
+            reservationService.delete(id);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

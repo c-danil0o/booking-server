@@ -21,7 +21,7 @@ public class Accommodation {
     @Column(nullable = false)
     private String name;
     private String description;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Address address;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

@@ -49,12 +49,63 @@ public class ReservationServiceImpl implements ReservationService {
         return start1.before(end2) && start2.before(end1);
     }*/
     @Override
-    public boolean hasOverlappingReservations(Date startDate, Date endDate) {
-      /* List<Reservation> reservations = reservationRepository.findReservationsByReservationStatus(ReservationStatus.Active);
+    public boolean hasOverlappingReservations(LocalDateTime startDate, LocalDateTime endDate) {
+       List<Reservation> reservations = reservationRepository.findReservationsByReservationStatus(ReservationStatus.Active);
        for(Reservation reservation: reservations){
-           if (startDate.before(reservation.getStartDate().))
-       }*/
+           if (startDate.isBefore(reservation.getStartDate().plusDays(reservation.getDays()))&& reservation.getStartDate().isBefore(endDate)){
+               return true;
+           }
+       }
         return false;
+    }
+
+    @Override
+    public boolean deleteRequest(Long id) {
+        Reservation reservation = reservationRepository.findById(id).orElseGet(null);
+        if (reservation == null){
+            return false;
+        }
+        if (reservation.getReservationStatus().equals(ReservationStatus.Pending)){
+            reservationRepository.delete(reservation);
+            return true;
+        }
+        return false;
+
+    }
+
+    @Override
+    public ReservationDto updateStatus(Long id, ReservationStatus status) {
+        Reservation reservation = reservationRepository.findById(id).orElseGet(null);
+        if (reservation == null){
+            return null;
+        }
+        reservation.setReservationStatus(status);
+        return mapper.toDto(reservationRepository.save(reservation));
+    }
+
+    @Override
+    public boolean acceptReservationRequest(Long id) {
+        Reservation reservation = reservationRepository.findById(id).orElseGet(null);
+        if (reservation == null){
+            return false;
+        }
+        if(reservation.getReservationStatus().equals(ReservationStatus.Pending)){
+            reservation.setReservationStatus(ReservationStatus.Approved);
+            reservationRepository.save(reservation);
+        }else{
+            return false;
+        }
+        LocalDateTime startDate = reservation.getStartDate();
+        LocalDateTime endDate = reservation.getStartDate().plusDays(reservation.getDays());
+        List<Reservation> reservations = reservationRepository.findReservationsByReservationStatus(ReservationStatus.Pending);
+        for(Reservation res: reservations){
+            if (startDate.isBefore(reservation.getStartDate().plusDays(reservation.getDays()))&& reservation.getStartDate().isBefore(endDate)){
+                res.setReservationStatus(ReservationStatus.Denied);
+                reservationRepository.save(res);
+            }
+        }
+        return true;
+
     }
 
 

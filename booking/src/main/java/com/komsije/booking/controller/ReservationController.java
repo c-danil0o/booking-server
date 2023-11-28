@@ -1,7 +1,9 @@
 package com.komsije.booking.controller;
 
+import com.komsije.booking.dto.AccommodationDto;
 import com.komsije.booking.dto.ReservationDto;
-import com.komsije.booking.model.*;
+import com.komsije.booking.model.Reservation;
+import com.komsije.booking.model.ReservationStatus;
 import com.komsije.booking.service.AccommodationServiceImpl;
 import com.komsije.booking.service.ReservationServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -42,11 +43,11 @@ public class ReservationController {
     }
 
     @GetMapping(value = "/status")
-    public ResponseEntity<List<ReservationDto>> getReservationsByStatus(@RequestParam ReservationStatus reservationStatus){
-        try{
+    public ResponseEntity<List<ReservationDto>> getReservationsByStatus(@RequestParam ReservationStatus reservationStatus) {
+        try {
             List<ReservationDto> reservationDtos = reservationService.getByReservationStatus(reservationStatus);
             return new ResponseEntity<>(reservationDtos, HttpStatus.OK);
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -69,5 +70,39 @@ public class ReservationController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    @DeleteMapping(value = "/request/{id}")
+    public ResponseEntity<Void> deleteReservationRequest(@PathVariable Long id) {
+
+        if (reservationService.deleteRequest(id)) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PatchMapping(value = "/{id}/changeStatus")
+    public ResponseEntity<ReservationDto> changeStatus(@PathVariable("id") Long id, @RequestParam String status) {
+        try{
+            ReservationStatus newStatus = ReservationStatus.valueOf(status);
+            ReservationDto reservationDto = reservationService.updateStatus(id, newStatus);
+            if (reservationDto == null) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            return new ResponseEntity<>(reservationDto, HttpStatus.OK);
+        }catch (IllegalArgumentException e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+    }
+    @PutMapping(value = "/{id}/approve")
+    public ResponseEntity<Void> approveReservationRequest(@PathVariable("id")Long id){
+        if (reservationService.acceptReservationRequest(id)){
+            return new ResponseEntity<>(HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
 
 }

@@ -42,12 +42,11 @@ public class AccommodationServiceImpl implements AccommodationService {
         if (accommodation == null){
             return null;
         }
-        mapper.update(accommodation, accommodationDto);
+//        Accommodation updatedAccommodation = mapper.fromDto(accommodationDto);
+        mapper.update(accommodation,accommodationDto);
         accommodationRepository.save(accommodation);
         return accommodationDto;
     }
-
-
 
     public void delete(Long id) {
         accommodationRepository.deleteById(id);
@@ -67,6 +66,15 @@ public class AccommodationServiceImpl implements AccommodationService {
         accommodationRepository.save(accommodation);
         return mapper.toDto(accommodation);
     }
+
+    public List<AccommodationDto> getByLocationNumOfGuestsAndDate(String location, int numOfGuests){
+        return mapper.toDto(accommodationRepository.getAccommodationsByLocationNumOfGuestsAndDate(location,numOfGuests));
+    }
+
+    public List<AccommodationDto> getByAmenities(List<String> amenities){
+        return mapper.toDto(accommodationRepository.getAccommodationsByAmenities(amenities));
+    }
+
 
 
 

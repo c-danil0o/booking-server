@@ -10,4 +10,5 @@ public interface AddressMapper {
     AddressDto toDto(Address address);
     Address fromDto(AddressDto addressDto);
     void update(@MappingTarget Address address, AddressDto addressDto);
+
 }

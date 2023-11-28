@@ -14,4 +14,6 @@ public interface ReservationService extends CrudService<ReservationDto, Long> {
     public boolean hasActiveReservations(Long accountId);
     public boolean hasOverlappingReservations(LocalDateTime startDate, LocalDateTime endDate);
     public boolean deleteRequest(Long id);
+    public ReservationDto updateStatus(Long id, ReservationStatus status);
+    public boolean acceptReservationRequest(Long id);
 }

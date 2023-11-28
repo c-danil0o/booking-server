@@ -1,6 +1,8 @@
 package com.komsije.booking.controller;
 
+import com.komsije.booking.dto.AccommodationDto;
 import com.komsije.booking.dto.ReservationDto;
+import com.komsije.booking.model.Reservation;
 import com.komsije.booking.model.ReservationStatus;
 import com.komsije.booking.service.AccommodationServiceImpl;
 import com.komsije.booking.service.ReservationServiceImpl;
@@ -78,5 +80,29 @@ public class ReservationController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PatchMapping(value = "/{id}/changeStatus")
+    public ResponseEntity<ReservationDto> changeStatus(@PathVariable("id") Long id, @RequestParam String status) {
+        try{
+            ReservationStatus newStatus = ReservationStatus.valueOf(status);
+            ReservationDto reservationDto = reservationService.updateStatus(id, newStatus);
+            if (reservationDto == null) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            return new ResponseEntity<>(reservationDto, HttpStatus.OK);
+        }catch (IllegalArgumentException e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+    }
+    @PutMapping(value = "/{id}/approve")
+    public ResponseEntity<Void> approveReservationRequest(@PathVariable("id")Long id){
+        if (reservationService.acceptReservationRequest(id)){
+            return new ResponseEntity<>(HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
 
 }

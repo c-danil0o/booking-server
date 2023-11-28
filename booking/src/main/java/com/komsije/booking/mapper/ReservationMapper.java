@@ -8,7 +8,7 @@ import org.mapstruct.Mapper;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {AccommodationMapper.class})
+@Mapper(componentModel = "spring")
 public interface ReservationMapper {
     ReservationDto toDto(Reservation reservation);
     Reservation fromDto(ReservationDto reservationDto);

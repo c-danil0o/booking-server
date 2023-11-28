@@ -12,7 +12,7 @@ public class ReservationDto {
     private int days;
     private double price;
     private ReservationStatus reservationStatus;
-    private AccommodationDto accommodationDto;
+    private Long accommodationId;
 
 
 //    public ReservationDto(Reservation reservation){

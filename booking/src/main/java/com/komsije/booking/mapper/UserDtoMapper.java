@@ -25,6 +25,7 @@ public abstract class UserDtoMapper {
     UserDto toDto(Account account) {
         UserDto userDto = new UserDto();
         userDto.setEmail(account.getEmail());
+        userDto.setAccountId(account.getId());
         if (account.getAccountType().equals(AccountType.Host)){
             HostDto host = hostService.findById(account.getId());
             userDto.setFirstName(host.getFirstName());

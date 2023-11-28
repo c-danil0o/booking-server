@@ -1,6 +1,7 @@
 package com.komsije.booking.service;
 
 import com.komsije.booking.dto.AccommodationDto;
+import com.komsije.booking.dto.AvailabilityDto;
 import com.komsije.booking.mapper.AccommodationMapper;
 import com.komsije.booking.model.Accommodation;
 import com.komsije.booking.model.AccommodationType;
@@ -46,6 +47,8 @@ public class AccommodationServiceImpl implements AccommodationService {
         return accommodationDto;
     }
 
+
+
     public void delete(Long id) {
         accommodationRepository.deleteById(id);
     }
@@ -54,6 +57,16 @@ public class AccommodationServiceImpl implements AccommodationService {
         return mapper.toDto(accommodationRepository.getAccommodationByAccommodationType(type));
     }
 
+    @Override
+    public AccommodationDto updateAvailability(Long accommodationId, AvailabilityDto availabilityDto) {
+        Accommodation accommodation = accommodationRepository.findById(accommodationId).orElseGet(null);
+        if (accommodation == null){
+            return null;
+        }
+        mapper.update(accommodation, availabilityDto);
+        accommodationRepository.save(accommodation);
+        return mapper.toDto(accommodation);
+    }
 
 
 }

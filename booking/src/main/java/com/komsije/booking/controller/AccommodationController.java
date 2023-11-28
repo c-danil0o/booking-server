@@ -1,6 +1,7 @@
 package com.komsije.booking.controller;
 
 import com.komsije.booking.dto.AccommodationDto;
+import com.komsije.booking.dto.AvailabilityDto;
 import com.komsije.booking.model.Accommodation;
 import com.komsije.booking.model.AccommodationType;
 import com.komsije.booking.service.AccommodationServiceImpl;
@@ -52,7 +53,7 @@ public class AccommodationController {
         return new ResponseEntity<>(accommodation, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/search")
+  /*  @GetMapping(value = "/search")
     public ResponseEntity<List<AccommodationDto>> getByLocationGuestNumberAndDate(@RequestParam String location, @RequestParam int guests) {
         try {
             List<AccommodationDto> accommodations = accommodationService.getByLocationNumOfGuestsAndDate(location,guests);
@@ -60,7 +61,7 @@ public class AccommodationController {
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-    }
+    }*/
 
 //    @GetMapping(value = "/search")
 //    public ResponseEntity<List<AccommodationDto>> getByAmenities(@RequestParam List<String> amenities) {
@@ -108,6 +109,15 @@ public class AccommodationController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(resultAccommodation, HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/add-availability/{id}")
+    public ResponseEntity<AccommodationDto> updateAvailability(@PathVariable ("id") Long id, @RequestBody AvailabilityDto availabilityDto){
+        AccommodationDto accommodationDto = accommodationService.updateAvailability(id, availabilityDto);
+        if (accommodationDto == null){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(accommodationDto, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/{id}")

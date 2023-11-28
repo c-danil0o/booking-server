@@ -10,6 +10,8 @@ import com.komsije.booking.service.interfaces.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -32,6 +34,30 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     public List<ReservationDto> getByReservationStatus(ReservationStatus reservationStatus){return mapper.toDto(reservationRepository.findReservationsByReservationStatus(reservationStatus));}
+
+    @Override
+    public boolean hasActiveReservations(Long accountId) {
+        List<Reservation> reservations = reservationRepository.findAll();
+        for (Reservation reservation: reservations){
+            if (reservation.getGuest().getId().equals(accountId) && reservation.getReservationStatus().equals(ReservationStatus.Active)){
+                return true;
+            }
+        }
+        return false;
+    }
+    /*public static boolean isOverlapping(Date start1, Date end1, Date start2, Date end2) {
+        return start1.before(end2) && start2.before(end1);
+    }*/
+    @Override
+    public boolean hasOverlappingReservations(Date startDate, Date endDate) {
+      /* List<Reservation> reservations = reservationRepository.findReservationsByReservationStatus(ReservationStatus.Active);
+       for(Reservation reservation: reservations){
+           if (startDate.before(reservation.getStartDate().))
+       }*/
+        return false;
+    }
+
+
     public ReservationDto save(ReservationDto reservationDto) {
         reservationRepository.save(mapper.fromDto(reservationDto));
         return reservationDto;

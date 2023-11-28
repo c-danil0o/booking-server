@@ -1,5 +1,7 @@
 package com.komsije.booking.service;
 
+import com.komsije.booking.dto.ReportDto;
+import com.komsije.booking.mapper.ReportMapper;
 import com.komsije.booking.model.Report;
 import com.komsije.booking.repository.ReportRepository;
 import com.komsije.booking.service.interfaces.ReportService;
@@ -10,22 +12,24 @@ import java.util.List;
 @Service
 public class ReportServiceImpl implements ReportService {
     private final ReportRepository reportRepository;
+    private ReportMapper mapper;
 
     @Autowired
     public ReportServiceImpl(ReportRepository reportRepository) {
         this.reportRepository = reportRepository;
     }
 
-    public Report findById(Long id) {
-        return reportRepository.findById(id).orElseGet(null);
+    public ReportDto findById(Long id) {
+        return mapper.toDto(reportRepository.findById(id).orElseGet(null));
     }
 
-    public List<Report> findAll() {
-        return reportRepository.findAll();
+    public List<ReportDto> findAll() {
+        return mapper.toDto(reportRepository.findAll());
     }
 
-    public Report save(Report report) {
-        return reportRepository.save(report);
+    public ReportDto save(ReportDto reportDto) {
+        reportRepository.save(mapper.fromDto(reportDto));
+        return reportDto;
     }
 
     public void delete(Long id) {

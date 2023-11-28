@@ -9,5 +9,6 @@ public class ReviewDto {
     private int grade;
     private String comment;
     private UserDto author;
+    private boolean isApproved;
 
 }

@@ -52,4 +52,13 @@ public class ReviewServiceImpl implements ReviewService {
     public List<ReviewDto> getApprovedReviews() {
         return mapper.toDto(reviewRepository.getReviewsByIsApprovedIsTrue());
     }
+
+    public void setApproved(Long id){
+        Review review = reviewRepository.findById(id).orElseGet(null);
+        if(review==null){
+            return;
+        }
+        review.setApproved(true);
+        reviewRepository.save(review);
+    }
 }

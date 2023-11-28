@@ -53,7 +53,7 @@ public class AccommodationController {
         return new ResponseEntity<>(accommodation, HttpStatus.OK);
     }
 
-  /*  @GetMapping(value = "/search")
+    @GetMapping(value = "/search")
     public ResponseEntity<List<AccommodationDto>> getByLocationGuestNumberAndDate(@RequestParam String location, @RequestParam int guests) {
         try {
             List<AccommodationDto> accommodations = accommodationService.getByLocationNumOfGuestsAndDate(location,guests);
@@ -61,7 +61,7 @@ public class AccommodationController {
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-    }*/
+    }
 
     @GetMapping(value = "/amenities")
     public ResponseEntity<List<AccommodationDto>> getByAmenities(@RequestParam List<String> amenities) {

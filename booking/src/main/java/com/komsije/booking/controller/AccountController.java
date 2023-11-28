@@ -1,5 +1,6 @@
 package com.komsije.booking.controller;
 
+import com.komsije.booking.dto.AccommodationDto;
 import com.komsije.booking.dto.AccountDto;
 import com.komsije.booking.dto.LoginDto;
 import com.komsije.booking.model.Account;
@@ -65,6 +66,17 @@ public class AccountController {
     public ResponseEntity<AccountDto> saveAccount(@RequestBody AccountDto accountDTO) {
         AccountDto account = accountService.save(accountDTO);
         return new ResponseEntity<>(account, HttpStatus.CREATED);
+    }
+
+    @PatchMapping(value = "/accounts/{id}/block")
+    public ResponseEntity<AccountDto> blockAccount(@PathVariable("id") Long id) {
+        AccountDto accountDto = accountService.findById(id);
+        if (accountDto == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        accountDto.setBlocked(true);
+        accountDto = accountService.update(accountDto);
+        return new ResponseEntity<>(accountDto, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/accounts/{id}")

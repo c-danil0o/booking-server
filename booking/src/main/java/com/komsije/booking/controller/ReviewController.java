@@ -1,5 +1,6 @@
 package com.komsije.booking.controller;
 
+import com.komsije.booking.dto.AccommodationDto;
 import com.komsije.booking.dto.ReviewDto;
 import com.komsije.booking.model.Review;
 import com.komsije.booking.service.AccountServiceImpl;
@@ -57,6 +58,17 @@ public class ReviewController {
     public ResponseEntity<ReviewDto> saveReview(@RequestBody ReviewDto reviewDTO) {
         ReviewDto reviewDto = reviewService.save(reviewDTO);
         return new ResponseEntity<>(reviewDto, HttpStatus.CREATED);
+    }
+
+    @PatchMapping(value = "/{id}/approve")
+    public ResponseEntity<ReviewDto> approveReview(@PathVariable("id") Long id) {
+        ReviewDto reviewDto = reviewService.findById(id);
+        if (reviewDto == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        reviewDto.setApproved(true);
+        reviewService.setApproved(reviewDto.getId());
+        return new ResponseEntity<>(reviewDto, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/{id}")

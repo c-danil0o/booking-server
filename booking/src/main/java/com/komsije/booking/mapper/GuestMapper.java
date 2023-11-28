@@ -24,4 +24,5 @@ public abstract class GuestMapper {
         return guest;
     }
     public abstract List<GuestDto> toDto(List<Guest> guestsList);
+    public abstract void update(Guest guest, GuestDto guestDto);
 }

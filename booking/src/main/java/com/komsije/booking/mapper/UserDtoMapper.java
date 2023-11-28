@@ -11,6 +11,7 @@ import com.komsije.booking.service.interfaces.AccountService;
 import com.komsije.booking.service.interfaces.GuestService;
 import com.komsije.booking.service.interfaces.HostService;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Mapper(componentModel = "spring")

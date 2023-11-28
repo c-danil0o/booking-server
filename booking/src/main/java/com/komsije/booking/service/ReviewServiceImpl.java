@@ -28,6 +28,7 @@ public class ReviewServiceImpl implements ReviewService {
     public List<ReviewDto> findAll() {
         return mapper.toDto(reviewRepository.findAll());
     }
+
     public ReviewDto save(ReviewDto reviewDto) {
         reviewRepository.save(mapper.fromDto(reviewDto));
         return reviewDto;
@@ -36,11 +37,11 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public ReviewDto update(ReviewDto reviewDto) {
         Review review = reviewRepository.findById(reviewDto.getId()).orElseGet(null);
-        if (review == null){
+        if (review == null) {
             return null;
         }
-        Review updatedReview = mapper.fromDto(reviewDto);
-        reviewRepository.save(updatedReview);
+        mapper.update(review, reviewDto);
+        reviewRepository.save(review);
         return reviewDto;
     }
 
@@ -48,5 +49,7 @@ public class ReviewServiceImpl implements ReviewService {
         reviewRepository.deleteById(id);
     }
 
-    public List<ReviewDto> getApprovedReviews() {return mapper.toDto(reviewRepository.getReviewsByIsApprovedIsTrue());}
+    public List<ReviewDto> getApprovedReviews() {
+        return mapper.toDto(reviewRepository.getReviewsByIsApprovedIsTrue());
+    }
 }

@@ -43,8 +43,8 @@ public class ReservationServiceImpl implements ReservationService {
         if (reservation == null){
             return null;
         }
-        Reservation updatedReservation = mapper.fromDto(reservationDto);
-        reservationRepository.save(updatedReservation);
+        mapper.update(reservation, reservationDto);
+        reservationRepository.save(reservation);
         return reservationDto;
     }
 

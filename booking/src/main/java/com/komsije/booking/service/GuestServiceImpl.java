@@ -40,8 +40,8 @@ public class GuestServiceImpl implements GuestService {
         if (guest == null){
             return null;
         }
-        Guest updatedGuest = mapper.fromDto(guestDto);
-        guestRepository.save(updatedGuest);
+        mapper.update(guest, guestDto);
+        guestRepository.save(guest);
         return guestDto;
     }
 

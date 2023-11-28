@@ -28,4 +28,9 @@ public class AccountServiceImpl implements AccountService {
     }
 
     public List<Account> getBlockedAccounts() {return accountRepository.findAccountByIsBlocked(true);}
+
+    @Override
+    public Account getByEmail(String email) {
+        return accountRepository.getAccountByEmail(email);
+    }
 }

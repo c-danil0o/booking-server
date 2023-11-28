@@ -10,11 +10,9 @@ import org.mapstruct.Mapper;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {AddressMapper.class})
 public interface HostMapper {
     HostDto toDto(Host host);
     Host fromDto(HostDto hostDto);
     List<HostDto> toDto(List<Host> hostList);
-    AddressDto toDto(Address address);
-    Address fromDto(AddressDto addressDto);
 }

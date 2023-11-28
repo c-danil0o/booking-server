@@ -4,6 +4,7 @@ import com.komsije.booking.model.Accommodation;
 import com.komsije.booking.model.AccommodationType;
 import com.komsije.booking.model.Address;
 import com.komsije.booking.model.TimeSlot;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,9 +12,7 @@ import lombok.Setter;
 import java.util.HashSet;
 import java.util.Set;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 public class AccommodationDto {
     private Long id;
     private String name;

@@ -18,7 +18,7 @@ public class Review {
     @Column(nullable = true)
     private String comment;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Account author;
     @Column(nullable = false)
     private boolean isApproved;

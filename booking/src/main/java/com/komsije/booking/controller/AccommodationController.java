@@ -62,15 +62,15 @@ public class AccommodationController {
         }
     }
 
-//    @GetMapping(value = "/search")
-//    public ResponseEntity<List<AccommodationDto>> getByAmenities(@RequestParam List<String> amenities) {
-//        try {
-//            List<AccommodationDto> accommodations = accommodationService.getByLocationNumOfGuestsAndDate(location,guests);
-//            return new ResponseEntity<>(accommodations, HttpStatus.OK);
-//        } catch (IllegalArgumentException e) {
-//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//        }
-//    }
+    @GetMapping(value = "/amenities")
+    public ResponseEntity<List<AccommodationDto>> getByAmenities(@RequestParam List<String> amenities) {
+        try {
+            List<AccommodationDto> accommodations = accommodationService.getByAmenities(amenities);
+            return new ResponseEntity<>(accommodations, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 
     @PostMapping(consumes = "application/json")
     public ResponseEntity<AccommodationDto> saveAccommodation(@RequestBody AccommodationDto accommodationDTO) {
@@ -91,12 +91,12 @@ public class AccommodationController {
     }
 
     @PatchMapping(value = "/{id}/changeApproval")
-    public ResponseEntity<AccommodationDto> changeApproval(@PathVariable("id") Long id) {
+    public ResponseEntity<AccommodationDto> changeApproval(@PathVariable("id") Long id, @RequestParam boolean auto) {
         AccommodationDto accommodationDto = accommodationService.findById(id);
         if (accommodationDto == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        accommodationDto.setApproved(true);
+        accommodationDto.setAutoApproval(auto);
         accommodationDto = accommodationService.update(accommodationDto);
         return new ResponseEntity<>(accommodationDto, HttpStatus.OK);
     }

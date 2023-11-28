@@ -59,7 +59,9 @@ public class AccommodationServiceImpl implements AccommodationService {
         return mapper.toDto(accommodationRepository.getAccommodationsByLocationNumOfGuestsAndDate(location,numOfGuests));
     }
 
-//    public List<AccommodationDto> getByAmenities
+    public List<AccommodationDto> getByAmenities(List<String> amenities){
+        return mapper.toDto(accommodationRepository.getAccommodationsByAmenities(amenities));
+    }
 
 
 

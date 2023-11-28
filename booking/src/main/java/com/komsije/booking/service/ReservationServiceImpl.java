@@ -36,6 +36,18 @@ public class ReservationServiceImpl implements ReservationService {
         reservationRepository.save(mapper.fromDto(reservationDto));
         return reservationDto;
     }
+
+    @Override
+    public ReservationDto update(ReservationDto reservationDto) {
+        Reservation reservation = reservationRepository.findById(reservationDto.getId()).orElseGet(null);
+        if (reservation == null){
+            return null;
+        }
+        reservation = mapper.fromDto(reservationDto);
+        reservationRepository.save(reservation);
+        return reservationDto;
+    }
+
     public void delete(Long id) {
         reservationRepository.deleteById(id);
     }

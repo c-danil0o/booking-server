@@ -32,6 +32,17 @@ public class ReportServiceImpl implements ReportService {
         return reportDto;
     }
 
+    @Override
+    public ReportDto update(ReportDto reportDto) {
+        Report report = reportRepository.findById(reportDto.getId()).orElseGet(null);
+        if (report == null){
+            return null;
+        }
+        report = mapper.fromDto(reportDto);
+        reportRepository.save(report);
+        return reportDto;
+    }
+
     public void delete(Long id) {
         reportRepository.deleteById(id);
     }

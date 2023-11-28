@@ -35,6 +35,17 @@ public class AccommodationServiceImpl implements AccommodationService {
         return accommodationDto;
     }
 
+    @Override
+    public AccommodationDto update(AccommodationDto accommodationDto) {
+        Accommodation accommodation = accommodationRepository.findById(accommodationDto.getId()).orElseGet(null);
+        if (accommodation == null){
+            return null;
+        }
+        accommodation = mapper.fromDto(accommodationDto);
+        accommodationRepository.save(accommodation);
+        return accommodationDto;
+    }
+
     public void delete(Long id) {
         accommodationRepository.deleteById(id);
     }

@@ -36,6 +36,17 @@ public class NotificationServiceImpl implements NotificationService {
         return notificationDto;
     }
 
+    @Override
+    public NotificationDto update(NotificationDto notificationDto) {
+        Notification notification = notificationRepository.findById(notificationDto.getId()).orElseGet(null);
+        if (notification == null){
+            return null;
+        }
+        notification = mapper.fromDto(notificationDto);
+        notificationRepository.save(notification);
+        return notificationDto;
+    }
+
     public void delete(Long id) {
         notificationRepository.deleteById(id);
     }

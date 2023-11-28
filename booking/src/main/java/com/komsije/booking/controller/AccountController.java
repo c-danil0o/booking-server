@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "api/accounts")
+@RequestMapping(value = "api")
 public class AccountController {
     private final AccountServiceImpl accountService;
 
@@ -23,13 +23,13 @@ public class AccountController {
         this.accountService = accountService;
     }
 
-    @GetMapping(value = "/all")
+    @GetMapping(value = "/accounts/all")
     public ResponseEntity<List<AccountDto>> getAllAccounts(){
         List<AccountDto> accounts = accountService.findAll();
         return new ResponseEntity<>(accounts, HttpStatus.OK);
 
     }
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/accounts/{id}")
     public ResponseEntity<AccountDto> getAccount(@PathVariable Long id) {
 
         AccountDto account = accountService.findById(id);
@@ -41,7 +41,7 @@ public class AccountController {
         return new ResponseEntity<>(account, HttpStatus.OK);
     }
 
-    @GetMapping
+    @GetMapping(value = "/accounts")
     public ResponseEntity<List<AccountDto>> getAccountsByType(@RequestParam String type) {
         try{
             List<AccountDto> accounts = accountService.getByAccountType(AccountType.valueOf(type));
@@ -51,7 +51,7 @@ public class AccountController {
         }
     }
 
-    @GetMapping(value = "/blocked")
+    @GetMapping(value = "/accounts/blocked")
     public ResponseEntity<List<AccountDto>> getBlockedAccounts(){
         try{
             List<AccountDto> accounts = accountService.getBlockedAccounts();
@@ -67,7 +67,7 @@ public class AccountController {
         return new ResponseEntity<>(account, HttpStatus.CREATED);
     }
 
-    @DeleteMapping(value = "/{id}")
+    @DeleteMapping(value = "/accounts/{id}")
     public ResponseEntity<Void> deleteAccount(@PathVariable Long id) {
         AccountDto account = accountService.findById(id);
         if (account != null) {

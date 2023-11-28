@@ -33,6 +33,18 @@ public class HostServiceImpl implements HostService {
         hostRepository.save(mapper.fromDto(hostDto));
         return hostDto;
     }
+
+    @Override
+    public HostDto update(HostDto hostDto) {
+        Host host = hostRepository.findById(hostDto.getId()).orElseGet(null);
+        if (host == null){
+            return null;
+        }
+        host = mapper.fromDto(hostDto);
+        hostRepository.save(host);
+        return hostDto;
+    }
+
     public void delete(Long id) {
         hostRepository.deleteById(id);
     }

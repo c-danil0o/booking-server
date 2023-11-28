@@ -33,6 +33,17 @@ public class ReviewServiceImpl implements ReviewService {
         return reviewDto;
     }
 
+    @Override
+    public ReviewDto update(ReviewDto reviewDto) {
+        Review review = reviewRepository.findById(reviewDto.getId()).orElseGet(null);
+        if (review == null){
+            return null;
+        }
+        review = mapper.fromDto(reviewDto);
+        reviewRepository.save(review);
+        return reviewDto;
+    }
+
     public void delete(Long id) {
         reviewRepository.deleteById(id);
     }

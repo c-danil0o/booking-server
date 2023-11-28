@@ -36,6 +36,17 @@ public class AccountServiceImpl implements AccountService {
         return accountDto;
     }
 
+    @Override
+    public AccountDto update(AccountDto accountDto) {
+        Account account = accountRepository.findById(accountDto.getId()).orElseGet(null);
+        if (account == null){
+            return null;
+        }
+        account = mapper.fromDto(accountDto);
+        accountRepository.save(account);
+        return accountDto;
+    }
+
     public void delete(Long id) {
         accountRepository.deleteById(id);
     }

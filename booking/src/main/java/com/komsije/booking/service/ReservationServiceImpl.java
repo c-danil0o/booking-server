@@ -1,5 +1,7 @@
 package com.komsije.booking.service;
 
+import com.komsije.booking.dto.ReservationDto;
+import com.komsije.booking.mapper.ReservationMapper;
 import com.komsije.booking.model.Reservation;
 import com.komsije.booking.model.ReservationStatus;
 import com.komsije.booking.repository.ReservationRepository;
@@ -12,6 +14,8 @@ import java.util.List;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
+    @Autowired
+    private ReservationMapper mapper;
     private final ReservationRepository reservationRepository;
 
     @Autowired
@@ -19,20 +23,19 @@ public class ReservationServiceImpl implements ReservationService {
         this.reservationRepository = reservationRepository;
     }
 
-    public Reservation findById(Long id) {
-        return reservationRepository.findById(id).orElseGet(null);
+    public ReservationDto findById(Long id) {
+        return mapper.toDto(reservationRepository.findById(id).orElseGet(null));
     }
 
-    public List<Reservation> findAll() {
-        return reservationRepository.findAll();
+    public List<ReservationDto> findAll() {
+        return mapper.toDto(reservationRepository.findAll());
     }
 
-    public List<Reservation> getByReservationStatus(ReservationStatus reservationStatus){return  reservationRepository.findReservationsByReservationStatus(reservationStatus);}
-
-    public Reservation save(Reservation accommodation) {
-        return reservationRepository.save(accommodation);
+    public List<ReservationDto> getByReservationStatus(ReservationStatus reservationStatus){return mapper.toDto(reservationRepository.findReservationsByReservationStatus(reservationStatus));}
+    public ReservationDto save(ReservationDto reservationDto) {
+        reservationRepository.save(mapper.fromDto(reservationDto));
+        return reservationDto;
     }
-
     public void delete(Long id) {
         reservationRepository.deleteById(id);
     }

@@ -18,15 +18,16 @@ public class ReservationDto {
     private int days;
     private double price;
     private ReservationStatus reservationStatus;
-    private Long accommodationId;
+    private AccommodationDto accommodationDto;
 
-    public ReservationDto(Reservation reservation){
-        this.id=reservation.getId();
-        this.startDate=reservation.getStartDate();
-        this.days=reservation.getDays();
-        this.price=reservation.getPrice();
-        this.reservationStatus=reservation.getReservationStatus();
-        this.accommodationId=reservation.getAccommodation().getId();
-    }
+
+//    public ReservationDto(Reservation reservation){
+//        this.id=reservation.getId();
+//        this.startDate=reservation.getStartDate();
+//        this.days=reservation.getDays();
+//        this.price=reservation.getPrice();
+//        this.reservationStatus=reservation.getReservationStatus();
+//        this.accommodationId=reservation.getAccommodation().getId();
+//    }
 
 }

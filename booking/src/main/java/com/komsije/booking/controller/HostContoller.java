@@ -24,48 +24,31 @@ public class HostContoller {
 
     @GetMapping(value = "/all")
     public ResponseEntity<List<HostDto>> getAllHosts() {
-        List<Host> hosts = hostService.findAll();
-
-        List<HostDto> hostDtos = new ArrayList<>();
-        for (Host host : hosts) {
-            hostDtos.add(new HostDto(host));
-        }
+        List<HostDto> hostDtos = hostService.findAll();
         return new ResponseEntity<>(hostDtos, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<HostDto> getHost(@PathVariable Long id) {
-        Host host = hostService.findById(id);
-
-        if (host == null) {
+        HostDto hostDto = hostService.findById(id);
+        if (hostDto == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(new HostDto(host), HttpStatus.OK);
+        return new ResponseEntity<>(hostDto, HttpStatus.OK);
     }
 
     @PostMapping(consumes = "application/json")
     public ResponseEntity<HostDto> saveHost(@RequestBody HostDto hostDTO) {
-
-        Host host = new Host();
-        host.setEmail(hostDTO.getEmail());
-        host.setPassword(hostDTO.getPassword());
-        host.setBlocked(hostDTO.isBlocked());
-        host.setAccountType(AccountType.Host);
-        host.setAddress(hostDTO.getAddress());
-        host.setFirstName(hostDTO.getFirstName());
-        host.setLastName(hostDTO.getLastName());
-        host.setPhone(hostDTO.getPhone());
-
-        host = hostService.save(host);
-        return new ResponseEntity<>(new HostDto(host), HttpStatus.CREATED);
+        HostDto hostDto = hostService.save(hostDTO);
+        return new ResponseEntity<>(hostDto, HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteHost(@PathVariable Long id) {
 
-        Host host = hostService.findById(id);
+        HostDto hostDto = hostService.findById(id);
 
-        if (host != null) {
+        if (hostDto != null) {
             hostService.delete(id);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {

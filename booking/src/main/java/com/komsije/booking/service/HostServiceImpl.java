@@ -1,5 +1,7 @@
 package com.komsije.booking.service;
 
+import com.komsije.booking.dto.HostDto;
+import com.komsije.booking.mapper.HostMapper;
 import com.komsije.booking.model.Host;
 import com.komsije.booking.repository.HostRepository;
 import com.komsije.booking.service.interfaces.HostService;
@@ -10,6 +12,8 @@ import java.util.List;
 
 @Service
 public class HostServiceImpl implements HostService {
+    @Autowired
+    private HostMapper mapper;
     private final HostRepository hostRepository;
 
     @Autowired
@@ -17,18 +21,18 @@ public class HostServiceImpl implements HostService {
         this.hostRepository = hostRepository;
     }
 
-    public Host findById(Long id) {
-        return hostRepository.findById(id).orElseGet(null);
+    public HostDto findById(Long id) {
+        return mapper.toDto(hostRepository.findById(id).orElseGet(null));
     }
 
-    public List<Host> findAll() {
-        return hostRepository.findAll();
+    public List<HostDto> findAll() {
+        return mapper.toDto(hostRepository.findAll());
     }
 
-    public Host save(Host accommodation) {
-        return hostRepository.save(accommodation);
+    public HostDto save(HostDto hostDto) {
+        hostRepository.save(mapper.fromDto(hostDto));
+        return hostDto;
     }
-
     public void delete(Long id) {
         hostRepository.deleteById(id);
     }

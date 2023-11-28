@@ -1,5 +1,7 @@
 package com.komsije.booking.service;
 
+import com.komsije.booking.dto.GuestDto;
+import com.komsije.booking.mapper.GuestMapper;
 import com.komsije.booking.model.Guest;
 import com.komsije.booking.repository.GuestRepository;
 import com.komsije.booking.service.interfaces.GuestService;
@@ -10,6 +12,8 @@ import java.util.List;
 
 @Service
 public class GuestServiceImpl implements GuestService {
+    @Autowired
+    private GuestMapper mapper;
     private final GuestRepository guestRepository;
 
     @Autowired
@@ -17,18 +21,18 @@ public class GuestServiceImpl implements GuestService {
         this.guestRepository = guestRepository;
     }
 
-    public Guest findById(Long id) {
-        return guestRepository.findById(id).orElseGet(null);
+    public GuestDto findById(Long id) {
+        return mapper.toDto( guestRepository.findById(id).orElseGet(null));
     }
 
-    public List<Guest> findAll() {
-        return guestRepository.findAll();
+    public List<GuestDto> findAll() {
+        return mapper.toDto(guestRepository.findAll());
     }
 
-    public Guest save(Guest accommodation) {
-        return guestRepository.save(accommodation);
+    public GuestDto save(GuestDto guestDto) {
+        guestRepository.save(mapper.fromDto(guestDto));
+        return guestDto;
     }
-
     public void delete(Long id) {
         guestRepository.deleteById(id);
     }

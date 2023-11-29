@@ -15,6 +15,7 @@ import java.util.List;
 public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
+    @Autowired
     private NotificationMapper mapper;
 
     @Autowired
@@ -25,7 +26,8 @@ public class NotificationServiceImpl implements NotificationService {
 
     public NotificationDto findById(Long id) {
         try {
-            return mapper.toDto(notificationRepository.findById(id).orElseGet(null));
+            Notification notification = notificationRepository.findById(id).orElseGet(null);
+            return mapper.toDto(notification);
         }
         catch (NullPointerException e){
             return null;

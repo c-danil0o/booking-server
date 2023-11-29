@@ -8,6 +8,7 @@ import com.komsije.booking.model.Address;
 import com.komsije.booking.model.Guest;
 import com.komsije.booking.model.Host;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
@@ -27,4 +28,5 @@ public abstract class HostMapper {
         return host;
     }
     public abstract List<HostDto> toDto(List<Host> hostList);
+    public abstract void update(@MappingTarget Host host, HostDto hostDto);
 }

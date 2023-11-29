@@ -1,9 +1,12 @@
 package com.komsije.booking.controller;
 
+import com.komsije.booking.dto.AccommodationDto;
 import com.komsije.booking.dto.ReviewDto;
 import com.komsije.booking.model.Review;
 import com.komsije.booking.service.AccountServiceImpl;
 import com.komsije.booking.service.ReviewServiceImpl;
+import com.komsije.booking.service.interfaces.AccountService;
+import com.komsije.booking.service.interfaces.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,12 +18,12 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "api/reviews")
 public class ReviewController {
-    private final ReviewServiceImpl reviewService;
+    private final ReviewService reviewService;
 
-    private final AccountServiceImpl accountService;
+    private final AccountService accountService;
 
     @Autowired
-    public ReviewController(ReviewServiceImpl reviewService, AccountServiceImpl accountService) {
+    public ReviewController(ReviewService reviewService, AccountService accountService) {
         this.reviewService = reviewService;
         this.accountService = accountService;
     }
@@ -57,6 +60,17 @@ public class ReviewController {
     public ResponseEntity<ReviewDto> saveReview(@RequestBody ReviewDto reviewDTO) {
         ReviewDto reviewDto = reviewService.save(reviewDTO);
         return new ResponseEntity<>(reviewDto, HttpStatus.CREATED);
+    }
+
+    @PatchMapping(value = "/{id}/approve")
+    public ResponseEntity<ReviewDto> approveReview(@PathVariable("id") Long id) {
+        ReviewDto reviewDto = reviewService.findById(id);
+        if (reviewDto == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        reviewDto.setApproved(true);
+        reviewService.setApproved(reviewDto.getId());
+        return new ResponseEntity<>(reviewDto, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/{id}")

@@ -22,14 +22,31 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     public ReviewDto findById(Long id) {
-        return mapper.toDto(reviewRepository.findById(id).orElseGet(null));
+        try {
+            return mapper.toDto(reviewRepository.findById(id).orElseGet(null));
+        }
+        catch (NullPointerException e){
+            return null;
+        }
     }
 
     public List<ReviewDto> findAll() {
         return mapper.toDto(reviewRepository.findAll());
     }
+
     public ReviewDto save(ReviewDto reviewDto) {
         reviewRepository.save(mapper.fromDto(reviewDto));
+        return reviewDto;
+    }
+
+    @Override
+    public ReviewDto update(ReviewDto reviewDto) {
+        Review review = reviewRepository.findById(reviewDto.getId()).orElseGet(null);
+        if (review == null) {
+            return null;
+        }
+        mapper.update(review, reviewDto);
+        reviewRepository.save(review);
         return reviewDto;
     }
 
@@ -37,5 +54,16 @@ public class ReviewServiceImpl implements ReviewService {
         reviewRepository.deleteById(id);
     }
 
-    public List<ReviewDto> getApprovedReviews() {return mapper.toDto(reviewRepository.getReviewsByIsApprovedIsTrue());}
+    public List<ReviewDto> getApprovedReviews() {
+        return mapper.toDto(reviewRepository.getReviewsByIsApprovedIsTrue());
+    }
+
+    public void setApproved(Long id){
+        Review review = reviewRepository.findById(id).orElseGet(null);
+        if(review==null){
+            return;
+        }
+        review.setApproved(true);
+        reviewRepository.save(review);
+    }
 }

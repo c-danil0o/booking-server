@@ -11,6 +11,5 @@ public class AccountDto {
     private String password;
     private boolean isBlocked;
     private AccountType accountType;
-
-
+    private boolean isActivated;
 }

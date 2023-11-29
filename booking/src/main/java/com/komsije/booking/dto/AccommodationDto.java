@@ -27,6 +27,8 @@ public class AccommodationDto {
     private int cancellationDeadline;
     private double averageGrade;
     private Set<TimeSlotDto> availability = new HashSet<>();
+    private boolean isApproved;
+    private boolean isAutoApproval;
 
    /* public AccommodationDto(Long id, String name, String description, Address address, AccommodationType accommodationType, Set<String> amenities, int maxGuests, int minGuests, Set<String> photos, boolean isPricePerGuest, int cancellationDeadline, double averageGrade, Set<TimeSlot> availability) {
         this.id = id;

@@ -22,6 +22,8 @@ public class Account {
     private String password;
     @Column(nullable = false)
     private boolean isBlocked = false;
+    @Column(nullable = false)
+    private boolean isActivated = false;
     @Enumerated(EnumType.STRING)
     private AccountType accountType;
 

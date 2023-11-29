@@ -22,7 +22,12 @@ public class HostServiceImpl implements HostService {
     }
 
     public HostDto findById(Long id) {
-        return mapper.toDto(hostRepository.findById(id).orElseGet(null));
+        try {
+            return mapper.toDto(hostRepository.findById(id).orElseGet(null));
+        }
+        catch (NullPointerException e){
+            return null;
+        }
     }
 
     public List<HostDto> findAll() {
@@ -33,6 +38,18 @@ public class HostServiceImpl implements HostService {
         hostRepository.save(mapper.fromDto(hostDto));
         return hostDto;
     }
+
+    @Override
+    public HostDto update(HostDto hostDto) {
+        Host host = hostRepository.findById(hostDto.getId()).orElseGet(null);
+        if (host == null){
+            return null;
+        }
+        mapper.update(host, hostDto);
+        hostRepository.save(host);
+        return hostDto;
+    }
+
     public void delete(Long id) {
         hostRepository.deleteById(id);
     }

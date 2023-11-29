@@ -6,6 +6,8 @@ import com.komsije.booking.model.Reservation;
 import com.komsije.booking.model.ReservationStatus;
 import com.komsije.booking.service.AccommodationServiceImpl;
 import com.komsije.booking.service.ReservationServiceImpl;
+import com.komsije.booking.service.interfaces.AccommodationService;
+import com.komsije.booking.service.interfaces.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,12 +18,12 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "api/reservations")
 public class ReservationController {
-    private final ReservationServiceImpl reservationService;
+    private final ReservationService reservationService;
 
-//    private final AccommodationServiceImpl accommodationService;
+//    private final AccommodationService accommodationService;
 
     @Autowired
-    public ReservationController(ReservationServiceImpl reservationService, AccommodationServiceImpl accommodationService) {
+    public ReservationController(ReservationService reservationService, AccommodationService accommodationService) {
         this.reservationService = reservationService;
 //        this.accommodationService = accommodationService;
     }

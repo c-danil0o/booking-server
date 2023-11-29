@@ -4,6 +4,7 @@ import com.komsije.booking.dto.GuestDto;
 import com.komsije.booking.model.AccountType;
 import com.komsije.booking.model.Guest;
 import com.komsije.booking.service.GuestServiceImpl;
+import com.komsije.booking.service.interfaces.GuestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +16,10 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "api/guests")
 public class GuestController {
-    private final GuestServiceImpl guestService;
+    private final GuestService guestService;
 
     @Autowired
-    public GuestController(GuestServiceImpl guestService) {
+    public GuestController(GuestService guestService) {
         this.guestService = guestService;
     }
 

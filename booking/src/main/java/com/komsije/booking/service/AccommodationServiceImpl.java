@@ -32,6 +32,8 @@ public class AccommodationServiceImpl implements AccommodationService {
         }
     }
 
+
+
     public List<AccommodationDto> findAll() {
        return mapper.toDto(accommodationRepository.findAll());
     }
@@ -78,6 +80,15 @@ public class AccommodationServiceImpl implements AccommodationService {
 
     public List<AccommodationDto> getByAmenities(List<String> amenities){
         return mapper.toDto(accommodationRepository.getAccommodationsByAmenities(amenities));
+    }
+
+    public Accommodation findModelById(Long id){
+        try {
+            return accommodationRepository.findById(id).orElseGet(null);
+        }
+        catch (Exception e){
+            return null;
+        }
     }
 
 

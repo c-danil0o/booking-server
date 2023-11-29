@@ -5,6 +5,8 @@ import com.komsije.booking.dto.ReviewDto;
 import com.komsije.booking.model.Review;
 import com.komsije.booking.service.AccountServiceImpl;
 import com.komsije.booking.service.ReviewServiceImpl;
+import com.komsije.booking.service.interfaces.AccountService;
+import com.komsije.booking.service.interfaces.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,12 +18,12 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "api/reviews")
 public class ReviewController {
-    private final ReviewServiceImpl reviewService;
+    private final ReviewService reviewService;
 
-    private final AccountServiceImpl accountService;
+    private final AccountService accountService;
 
     @Autowired
-    public ReviewController(ReviewServiceImpl reviewService, AccountServiceImpl accountService) {
+    public ReviewController(ReviewService reviewService, AccountService accountService) {
         this.reviewService = reviewService;
         this.accountService = accountService;
     }

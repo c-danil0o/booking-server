@@ -4,6 +4,7 @@ import com.komsije.booking.dto.HostDto;
 import com.komsije.booking.model.AccountType;
 import com.komsije.booking.model.Host;
 import com.komsije.booking.service.HostServiceImpl;
+import com.komsije.booking.service.interfaces.HostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +16,10 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "api/hosts")
 public class HostContoller {
-    private final HostServiceImpl hostService;
+    private final HostService hostService;
 
     @Autowired
-    public HostContoller(HostServiceImpl hostService) {
+    public HostContoller(HostService hostService) {
         this.hostService = hostService;
     }
 

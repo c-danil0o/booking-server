@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface ReviewService extends CrudService<ReviewDto, Long> {
     public List<ReviewDto> getApprovedReviews();
+    public void setApproved(Long id);
 }

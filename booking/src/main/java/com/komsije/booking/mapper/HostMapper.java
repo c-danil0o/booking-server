@@ -23,7 +23,7 @@ public abstract class HostMapper {
         host.setEmail(hostDto.getEmail());
         host.setPassword(hostDto.getPassword());
         host.setBlocked(hostDto.isBlocked());
-        host.setAddress(hostDto.getAddress());
+        host.setAddress(new Address(null, hostDto.getAddress().getStreet(), hostDto.getAddress().getCity(), hostDto.getAddress().getNumber()));
         host.setFirstName(hostDto.getFirstName());
         host.setLastName(hostDto.getLastName());
         host.setPhone(hostDto.getPhone());

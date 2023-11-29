@@ -2,6 +2,7 @@ package com.komsije.booking.mapper;
 
 import com.komsije.booking.dto.GuestDto;
 import com.komsije.booking.model.AccountType;
+import com.komsije.booking.model.Address;
 import com.komsije.booking.model.Guest;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
@@ -20,7 +21,7 @@ public abstract class GuestMapper {
         guest.setEmail(guestDto.getEmail());
         guest.setPassword(guestDto.getPassword());
         guest.setBlocked(guestDto.isBlocked());
-        guest.setAddress(guestDto.getAddress());
+        guest.setAddress(new Address(null, guestDto.getAddress().getStreet(), guestDto.getAddress().getCity(), guestDto.getAddress().getNumber()));
         guest.setFirstName(guestDto.getFirstName());
         guest.setLastName(guestDto.getLastName());
         guest.setPhone(guestDto.getPhone());

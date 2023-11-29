@@ -6,10 +6,12 @@ import com.komsije.booking.model.Reservation;
 import com.komsije.booking.model.Review;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValueCheckStrategy;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {UserDtoMapper.class})
+@Mapper(componentModel = "spring", uses = {UserDtoMapper.class}, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE )
 public interface ReviewMapper {
     ReviewDto toDto(Review review);
     Review fromDto(ReviewDto reviewDto);

@@ -22,7 +22,7 @@ public class Host extends Account {
     private String lastName;
     @Column(nullable = false)
     private String phone;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Address address;
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Accommodation> properties = new HashSet<>();

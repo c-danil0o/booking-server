@@ -47,5 +47,9 @@ public class Accommodation {
     private double averageGrade;
     @Column(nullable = false)
     private boolean isApproved;
+    @Column(nullable = true)
+    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "favorites")
+    private Set<Guest> favoriteTo = new HashSet<>();
+
 
 }

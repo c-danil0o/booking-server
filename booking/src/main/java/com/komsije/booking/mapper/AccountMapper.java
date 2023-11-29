@@ -6,10 +6,12 @@ import com.komsije.booking.model.Accommodation;
 import com.komsije.booking.model.Account;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValueCheckStrategy;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.List;
 
-@Mapper
+@Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE )
 public interface AccountMapper {
     AccountDto toDto(Account account);
     Account fromDto(AccountDto accountDto);

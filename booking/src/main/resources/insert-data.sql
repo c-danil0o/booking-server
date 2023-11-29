@@ -100,13 +100,20 @@ VALUES
     (5, 'room2_1.jpg, room2_2.jpg');
 
 -- Insert data into the guest_favorites table
-INSERT INTO guest_favorites (favorites_id, guest_id)
-VALUES
-    (1, 6),
-    (2, 7),
-    (3, 8),
-    (4, 9),
-    (5, 10);
+INSERT INTO guest_favorites (favorites_id, favorite_to_id)
+VALUES (1, 6),
+       (2, 7),
+       (3, 8),
+       (4, 9),
+       (5, 10);
+
+
+/*INSERT INTO accommodation_favorite_to (favorites_id,favorite_to_id)
+VALUES (1, 6),
+       (2, 7),
+       (3, 8),
+       (4, 9),
+       (5, 10);*/
 
 -- Insert data into the host_host_reviews table
 INSERT INTO review (grade, is_approved, author_id, comment)

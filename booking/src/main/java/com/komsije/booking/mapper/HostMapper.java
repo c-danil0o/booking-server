@@ -9,10 +9,12 @@ import com.komsije.booking.model.Guest;
 import com.komsije.booking.model.Host;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValueCheckStrategy;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {AddressMapper.class})
+@Mapper(componentModel = "spring", uses = {AddressMapper.class}, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE )
 public abstract class HostMapper {
     public abstract HostDto toDto(Host host);
     public Host fromDto(HostDto hostDto){

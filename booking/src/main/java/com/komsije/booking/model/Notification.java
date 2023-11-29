@@ -21,6 +21,6 @@ public class Notification {
     private Long id;
     private String message;
     private LocalDateTime date;
-    @ManyToOne
+    @ManyToOne()
     private Account receiver;
 }

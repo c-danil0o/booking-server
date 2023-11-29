@@ -26,4 +26,6 @@ public class Guest extends Account {
     private Address address;
     @ManyToMany(fetch = FetchType.LAZY, cascade = {})
     private Set<Accommodation> favorites = new HashSet<>();
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, mappedBy = "guest")
+    private Set<Reservation> reservations = new HashSet<>();
 }

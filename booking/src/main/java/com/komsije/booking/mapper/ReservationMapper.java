@@ -6,11 +6,13 @@ import com.komsije.booking.model.Accommodation;
 import com.komsije.booking.model.Reservation;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValueCheckStrategy;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE )
 public abstract class ReservationMapper {
     public ReservationDto toDto(Reservation reservation){
         ReservationDto reservationDto = new ReservationDto();

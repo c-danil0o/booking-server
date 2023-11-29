@@ -13,9 +13,11 @@ import com.komsije.booking.service.interfaces.GuestService;
 import com.komsije.booking.service.interfaces.HostService;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValueCheckStrategy;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE )
 public abstract class UserDtoMapper {
     @Autowired
     private HostService hostService;

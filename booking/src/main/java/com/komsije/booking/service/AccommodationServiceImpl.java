@@ -10,6 +10,7 @@ import com.komsije.booking.service.interfaces.AccommodationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -74,8 +75,8 @@ public class AccommodationServiceImpl implements AccommodationService {
         return mapper.toDto(accommodation);
     }
 
-    public List<AccommodationDto> getByLocationNumOfGuestsAndDate(String location, int numOfGuests){
-        return mapper.toDto(accommodationRepository.getAccommodationsByLocationNumOfGuestsAndDate(location,numOfGuests));
+    public List<AccommodationDto> getByLocationNumOfGuestsAndDate(String location, Integer numOfGuests, LocalDateTime startDate, LocalDateTime endDate){
+        return mapper.toDto(accommodationRepository.getAccommodationsByLocationNumOfGuestsAndDate(location,numOfGuests, startDate, endDate));
     }
 
     public List<AccommodationDto> getByAmenities(List<String> amenities){

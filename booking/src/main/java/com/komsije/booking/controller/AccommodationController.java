@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,9 +56,9 @@ public class AccommodationController {
     }
 
     @GetMapping(value = "/search")
-    public ResponseEntity<List<AccommodationDto>> getByLocationGuestNumberAndDate(@RequestParam String location, @RequestParam int guests) {
+    public ResponseEntity<List<AccommodationDto>> getByLocationGuestNumberAndDate(@RequestParam(required = false) String location, @RequestParam(required = false) Integer guests, @RequestParam(required = false) LocalDateTime startDate, @RequestParam(required = false) LocalDateTime endDate) {
         try {
-            List<AccommodationDto> accommodations = accommodationService.getByLocationNumOfGuestsAndDate(location,guests);
+            List<AccommodationDto> accommodations = accommodationService.getByLocationNumOfGuestsAndDate(location,guests, startDate, endDate);
             return new ResponseEntity<>(accommodations, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

@@ -5,18 +5,29 @@ import com.komsije.booking.model.AccommodationType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface AccommodationRepository extends JpaRepository<Accommodation, Long> {
     List<Accommodation> getAccommodationByAccommodationType(AccommodationType type);
 
-    @Query("select a from Accommodation a " +
+/*    @Query("select a from Accommodation a " +
             "where a.address.city = ?1 " +
-            "and ?2 between a.minGuests and a.maxGuests")
-    List<Accommodation> getAccommodationsByLocationNumOfGuestsAndDate(String location, int numOfGuests);
+            "and ?2 between a.minGuests and a.maxGuests")*/
 
-//    @Query("select a from Accommodation a " +
+    @Query("SELECT DISTINCT a FROM Accommodation a " +
+            "JOIN FETCH a.availability timeSlot " +
+            "WHERE (:location is null or a.address.city = :location) " +
+            "AND (:numOfGuests is null or a.maxGuests >= :numOfGuests) " +
+            "AND (cast(:endDate as date) is null or timeSlot.startDate <= :endDate) " +
+            "AND (cast(:startDate as date) is null or timeSlot.endDate >= :startDate) ")
+    List<Accommodation> getAccommodationsByLocationNumOfGuestsAndDate(String location, Integer numOfGuests,
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate);
+
+    //    @Query("select a from Accommodation a " +
 //            "where ?1 in a.amenities")
 //    @Query("SELECT a FROM Accommodation a JOIN a.amenities amenity WHERE amenity IN :amenities")
 //    @Query("SELECT a FROM Accommodation a WHERE " +

@@ -12,13 +12,13 @@ INSERT INTO address (city, number, street) VALUES
                                                ('City10', '707', 'Street J');
 
 -- Insert data into the account table for hosts
-INSERT INTO account (is_blocked, account_type, email, password)
+INSERT INTO account (is_blocked, account_type, email, password, is_activated)
 VALUES
-    (false, 'Host', 'host1@example.com', 'password1'),
-    (false, 'Host', 'host2@example.com', 'password2'),
-    (false, 'Host', 'host3@example.com', 'password3'),
-    (false, 'Host', 'host4@example.com', 'password4'),
-    (false, 'Host', 'host5@example.com', 'password5');
+    (false, 'Host', 'host1@example.com', 'password1', true),
+    (false, 'Host', 'host2@example.com', 'password2', true),
+    (false, 'Host', 'host3@example.com', 'password3', true),
+    (false, 'Host', 'host4@example.com', 'password4', true),
+    (false, 'Host', 'host5@example.com', 'password5', true);
 
 -- Insert data into the host table
 INSERT INTO host (address_id, id, first_name, last_name, phone)
@@ -30,13 +30,13 @@ VALUES
     (5, 5, 'Host', 'Five', '+5678901234');
 
 -- Insert data into the account table for guests
-INSERT INTO account (is_blocked, account_type, email, password)
+INSERT INTO account (is_blocked, account_type, email, password, is_activated)
 VALUES
-    (false, 'Guest', 'guest1@example.com', 'password6'),
-    (false, 'Guest', 'guest2@example.com', 'password7'),
-    (false, 'Guest', 'guest3@example.com', 'password8'),
-    (false, 'Guest', 'guest4@example.com', 'password9'),
-    (false, 'Guest', 'guest5@example.com', 'password10');
+    (false, 'Guest', 'guest1@example.com', 'password6', true),
+    (false, 'Guest', 'guest2@example.com', 'password7', true),
+    (false, 'Guest', 'guest3@example.com', 'password8', true),
+    (false, 'Guest', 'guest4@example.com', 'password9', true),
+    (false, 'Guest', 'guest5@example.com', 'password10', true);
 
 -- Insert data into the guest table
 INSERT INTO guest (times_cancelled, address_id, id, first_name, last_name, phone)
@@ -48,13 +48,13 @@ VALUES
     (4, 10, 10, 'Guest', 'Five', '+0123456789');
 
 -- Insert data into the accommodation table
-INSERT INTO accommodation (average_grade, cancellation_deadline, is_auto_approval, is_price_per_guest, max_guests, min_guests, address_id, id, accommodation_type, description, name)
+INSERT INTO accommodation (average_grade, cancellation_deadline, is_auto_approval, is_price_per_guest, max_guests, min_guests, address_id, id, accommodation_type, description, name, is_approved)
 VALUES
-    (4.5, 7, true, true, 4, 1, 1, 1, 'Apartment', 'A cozy apartment', 'Cozy Apartment 1'),
-    (4.2, 5, false, false, 2, 1, 2, 2, 'Room', 'Comfortable room with a view', 'Room with a View'),
-    (4.8, 14, true, true, 6, 2, 3, 3, 'Hotel', 'Luxurious hotel with great amenities', 'Luxury Hotel'),
-    (4.0, 10, false, true, 8, 4, 4, 4, 'Apartment', 'Spacious apartment for groups', 'Spacious Group Apartment'),
-    (4.7, 3, true, false, 3, 1, 5, 5, 'Room', 'Charming room for a relaxing stay', 'Charming Room');
+    (4.5, 7, true, true, 4, 1, 1, 1, 'Apartment', 'A cozy apartment', 'Cozy Apartment 1', true),
+    (4.2, 5, false, false, 2, 1, 2, 2, 'Room', 'Comfortable room with a view', 'Room with a View', true),
+    (4.8, 14, true, true, 6, 2, 3, 3, 'Hotel', 'Luxurious hotel with great amenities', 'Luxury Hotel', true),
+    (4.0, 10, false, true, 8, 4, 4, 4, 'Apartment', 'Spacious apartment for groups', 'Spacious Group Apartment', true),
+    (4.7, 3, true, false, 3, 1, 5, 5, 'Room', 'Charming room for a relaxing stay', 'Charming Room', true);
 
 -- Insert data into the accommodation_amenities table
 INSERT INTO accommodation_amenities (accommodation_id, amenities)
@@ -137,7 +137,6 @@ VALUES
 
 -- Insert data into the reservation table
 INSERT INTO reservation (days, price, accommodation_id, guest_id, host_id, start_date, reservation_status)
-<<<<<<< Updated upstream
 VALUES
     (2, 200.0, 1, 6, 1, '2023-01-01 12:00:00', 'Approved'),
     (7, 560.0, 2, 7, 2, '2023-02-01 12:00:00', 'Pending'),

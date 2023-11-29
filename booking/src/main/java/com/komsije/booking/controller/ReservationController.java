@@ -1,11 +1,10 @@
 package com.komsije.booking.controller;
 
-import com.komsije.booking.dto.AccommodationDto;
 import com.komsije.booking.dto.ReservationDto;
-import com.komsije.booking.model.Reservation;
+import com.komsije.booking.exceptions.ElementNotFoundException;
+import com.komsije.booking.exceptions.HasActiveReservationsException;
+import com.komsije.booking.exceptions.PendingReservationException;
 import com.komsije.booking.model.ReservationStatus;
-import com.komsije.booking.service.AccommodationServiceImpl;
-import com.komsije.booking.service.ReservationServiceImpl;
 import com.komsije.booking.service.interfaces.AccommodationService;
 import com.komsije.booking.service.interfaces.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,10 +35,12 @@ public class ReservationController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<ReservationDto> getReservation(@PathVariable Long id) {
-        ReservationDto reservationDto = reservationService.findById(id);
-
-        if (reservationDto == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        ReservationDto reservationDto = null;
+        try {
+            reservationDto = reservationService.findById(id);
+        } catch (ElementNotFoundException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(reservationDto, HttpStatus.OK);
     }
@@ -56,54 +57,65 @@ public class ReservationController {
 
     @PostMapping(consumes = "application/json")
     public ResponseEntity<ReservationDto> saveReservation(@RequestBody ReservationDto reservationDTO) {
-        ReservationDto reservationDto = reservationService.save(reservationDTO);
+        ReservationDto reservationDto = null;
+        try {
+            reservationDto = reservationService.save(reservationDTO);
+        } catch (ElementNotFoundException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(reservationDto, HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
 
-        ReservationDto reservationDto = reservationService.findById(id);
-
-        if (reservationDto != null) {
+        try {
             reservationService.delete(id);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (HasActiveReservationsException | ElementNotFoundException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+        return new ResponseEntity<>(HttpStatus.OK);
+
     }
 
     @DeleteMapping(value = "/request/{id}")
     public ResponseEntity<Void> deleteReservationRequest(@PathVariable Long id) {
 
-        if (reservationService.deleteRequest(id)) {
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
+        try {
+            reservationService.deleteRequest(id);
+        } catch (ElementNotFoundException | PendingReservationException e) {
+            System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+        return new ResponseEntity<>(HttpStatus.OK);
+
     }
 
     @PatchMapping(value = "/{id}/changeStatus")
     public ResponseEntity<ReservationDto> changeStatus(@PathVariable("id") Long id, @RequestParam String status) {
-        try{
+        try {
             ReservationStatus newStatus = ReservationStatus.valueOf(status);
             ReservationDto reservationDto = reservationService.updateStatus(id, newStatus);
-            if (reservationDto == null) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
             return new ResponseEntity<>(reservationDto, HttpStatus.OK);
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException | ElementNotFoundException e) {
+            System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
     }
+
     @PutMapping(value = "/{id}/approve")
-    public ResponseEntity<Void> approveReservationRequest(@PathVariable("id")Long id){
-        if (reservationService.acceptReservationRequest(id)){
-            return new ResponseEntity<>(HttpStatus.OK);
-        }else{
+    public ResponseEntity<Void> approveReservationRequest(@PathVariable("id") Long id) {
+        try {
+            reservationService.acceptReservationRequest(id);
+        } catch (ElementNotFoundException | PendingReservationException e) {
+            System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+        return new ResponseEntity<>(HttpStatus.OK);
+
     }
 
 

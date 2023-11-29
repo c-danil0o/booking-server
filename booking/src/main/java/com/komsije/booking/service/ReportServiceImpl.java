@@ -1,6 +1,7 @@
 package com.komsije.booking.service;
 
 import com.komsije.booking.dto.ReportDto;
+import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.mapper.ReportMapper;
 import com.komsije.booking.model.Report;
 import com.komsije.booking.repository.ReportRepository;
@@ -20,13 +21,9 @@ public class ReportServiceImpl implements ReportService {
         this.reportRepository = reportRepository;
     }
 
-    public ReportDto findById(Long id) {
-        try {
-            return mapper.toDto(reportRepository.findById(id).orElseGet(null));
-        }
-        catch (NullPointerException e){
-            return null;
-        }
+    public ReportDto findById(Long id) throws ElementNotFoundException {
+        return mapper.toDto(reportRepository.findById(id).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!")));
+
     }
 
     public List<ReportDto> findAll() {
@@ -39,17 +36,19 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public ReportDto update(ReportDto reportDto) {
-        Report report = reportRepository.findById(reportDto.getId()).orElseGet(null);
-        if (report == null){
-            return null;
-        }
+    public ReportDto update(ReportDto reportDto) throws ElementNotFoundException {
+        Report report = reportRepository.findById(reportDto.getId()).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
         mapper.update(report, reportDto);
         reportRepository.save(report);
         return reportDto;
     }
 
-    public void delete(Long id) {
-        reportRepository.deleteById(id);
+    public void delete(Long id) throws ElementNotFoundException {
+        if (reportRepository.existsById(id)){
+            reportRepository.deleteById(id);
+        }else{
+            throw new ElementNotFoundException("Element with given ID doesn't exist!");
+        }
+
     }
 }

@@ -3,6 +3,7 @@ package com.komsije.booking.mapper;
 import com.komsije.booking.dto.GuestDto;
 import com.komsije.booking.dto.HostDto;
 import com.komsije.booking.dto.UserDto;
+import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.model.Account;
 import com.komsije.booking.model.AccountType;
 import com.komsije.booking.model.Guest;
@@ -23,7 +24,7 @@ public abstract class UserDtoMapper {
     @Autowired
     private AccountService accountService;
 
-    public UserDto toDto(Account account) {
+    public UserDto toDto(Account account) throws ElementNotFoundException {
         UserDto userDto = new UserDto();
         userDto.setEmail(account.getEmail());
         userDto.setAccountId(account.getId());
@@ -39,7 +40,7 @@ public abstract class UserDtoMapper {
         return userDto;
     }
 
-    public Account fromDto(UserDto userDto){
+    public Account fromDto(UserDto userDto) throws ElementNotFoundException {
         return accountService.getByEmail(userDto.getEmail());
     }
 

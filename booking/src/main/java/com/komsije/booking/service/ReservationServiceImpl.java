@@ -1,6 +1,9 @@
 package com.komsije.booking.service;
 
 import com.komsije.booking.dto.ReservationDto;
+import com.komsije.booking.exceptions.ElementNotFoundException;
+import com.komsije.booking.exceptions.InvalidTimeSlotException;
+import com.komsije.booking.exceptions.PendingReservationException;
 import com.komsije.booking.mapper.ReservationMapper;
 import com.komsije.booking.model.Accommodation;
 import com.komsije.booking.model.Reservation;
@@ -29,13 +32,8 @@ public class ReservationServiceImpl implements ReservationService {
         this.accommodationService = accommodationService;
     }
 
-    public ReservationDto findById(Long id) {
-        try{
-            return mapper.toDto(reservationRepository.findById(id).orElseGet(null));
-        }
-        catch (NullPointerException e){
-            return null;
-        }
+    public ReservationDto findById(Long id) throws ElementNotFoundException {
+        return mapper.toDto(reservationRepository.findById(id).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!")));
     }
 
     public List<ReservationDto> findAll() {
@@ -54,11 +52,11 @@ public class ReservationServiceImpl implements ReservationService {
         }
         return false;
     }
-    /*public static boolean isOverlapping(Date start1, Date end1, Date start2, Date end2) {
-        return start1.before(end2) && start2.before(end1);
-    }*/
     @Override
-    public boolean hasOverlappingReservations(LocalDateTime startDate, LocalDateTime endDate) {
+    public boolean overlappingActiveReservationsExist(LocalDateTime startDate, LocalDateTime endDate) throws InvalidTimeSlotException {
+        if (startDate.isAfter(endDate)){
+            throw new InvalidTimeSlotException("Start date is after end date");
+        }
        List<Reservation> reservations = reservationRepository.findReservationsByReservationStatus(ReservationStatus.Active);
        for(Reservation reservation: reservations){
            if (startDate.isBefore(reservation.getStartDate().plusDays(reservation.getDays()))&& reservation.getStartDate().isBefore(endDate)){
@@ -69,40 +67,32 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public boolean deleteRequest(Long id) {
-        Reservation reservation = reservationRepository.findById(id).orElseGet(null);
-        if (reservation == null){
-            return false;
-        }
+    public boolean deleteRequest(Long id) throws ElementNotFoundException, PendingReservationException {
+        Reservation reservation = reservationRepository.findById(id).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
         if (reservation.getReservationStatus().equals(ReservationStatus.Pending)){
             reservationRepository.delete(reservation);
             return true;
+        }else{
+            throw new PendingReservationException("Can't delete non pending reservations!");
         }
-        return false;
 
     }
 
     @Override
-    public ReservationDto updateStatus(Long id, ReservationStatus status) {
-        Reservation reservation = reservationRepository.findById(id).orElseGet(null);
-        if (reservation == null){
-            return null;
-        }
+    public ReservationDto updateStatus(Long id, ReservationStatus status) throws ElementNotFoundException {
+        Reservation reservation = reservationRepository.findById(id).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
         reservation.setReservationStatus(status);
         return mapper.toDto(reservationRepository.save(reservation));
     }
 
     @Override
-    public boolean acceptReservationRequest(Long id) {
-        Reservation reservation = reservationRepository.findById(id).orElseGet(null);
-        if (reservation == null){
-            return false;
-        }
-        if(reservation.getReservationStatus().equals(ReservationStatus.Pending)){
+    public boolean acceptReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException {
+        Reservation reservation = reservationRepository.findById(id).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
+        if(reservation.getReservationStatus().equals(ReservationStatus.Pending) || reservation.getReservationStatus().equals(ReservationStatus.Denied)){
             reservation.setReservationStatus(ReservationStatus.Approved);
             reservationRepository.save(reservation);
         }else{
-            return false;
+            throw new PendingReservationException("Reservation is not in pending or denied state!");
         }
         LocalDateTime startDate = reservation.getStartDate();
         LocalDateTime endDate = reservation.getStartDate().plusDays(reservation.getDays());
@@ -117,7 +107,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
 
-    public ReservationDto save(ReservationDto reservationDto) {
+    public ReservationDto save(ReservationDto reservationDto) throws ElementNotFoundException {
         Reservation reservation = mapper.fromDto(reservationDto);
         Accommodation accommodation = accommodationService.findModelById(reservationDto.getAccommodationId());
         reservation.setAccommodation(accommodation);
@@ -126,17 +116,19 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public ReservationDto update(ReservationDto reservationDto) {
-        Reservation reservation = reservationRepository.findById(reservationDto.getId()).orElseGet(null);
-        if (reservation == null){
-            return null;
-        }
+    public ReservationDto update(ReservationDto reservationDto) throws ElementNotFoundException {
+        Reservation reservation = reservationRepository.findById(reservationDto.getId()).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
         mapper.update(reservation, reservationDto);
         reservationRepository.save(reservation);
         return reservationDto;
     }
 
-    public void delete(Long id) {
-        reservationRepository.deleteById(id);
+    public void delete(Long id) throws ElementNotFoundException {
+        if (reservationRepository.existsById(id)){
+            reservationRepository.deleteById(id);
+        }else{
+            throw  new ElementNotFoundException("Element with given ID doesn't exist!");
+        }
+
     }
 }

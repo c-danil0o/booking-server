@@ -1,11 +1,11 @@
 package com.komsije.booking.service;
 
 import com.komsije.booking.dto.NotificationDto;
+import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.mapper.NotificationMapper;
 import com.komsije.booking.model.Notification;
 import com.komsije.booking.repository.NotificationRepository;
 import com.komsije.booking.service.interfaces.NotificationService;
-import jakarta.validation.constraints.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,14 +24,9 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
 
-    public NotificationDto findById(Long id) {
-        try {
-            Notification notification = notificationRepository.findById(id).orElseGet(null);
-            return mapper.toDto(notification);
-        }
-        catch (NullPointerException e){
-            return null;
-        }
+    public NotificationDto findById(Long id) throws ElementNotFoundException {
+        Notification notification = notificationRepository.findById(id).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
+        return mapper.toDto(notification);
     }
 
     public List<NotificationDto> findAll() {
@@ -44,17 +39,19 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public NotificationDto update(NotificationDto notificationDto) {
-        Notification notification = notificationRepository.findById(notificationDto.getId()).orElseGet(null);
-        if (notification == null){
-            return null;
-        }
+    public NotificationDto update(NotificationDto notificationDto) throws ElementNotFoundException {
+        Notification notification = notificationRepository.findById(notificationDto.getId()).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
         mapper.update(notification, notificationDto);
         notificationRepository.save(notification);
         return notificationDto;
     }
 
-    public void delete(Long id) {
-        notificationRepository.deleteById(id);
+    public void delete(Long id) throws ElementNotFoundException {
+        if (notificationRepository.existsById(id)){
+            notificationRepository.deleteById(id);
+        }else{
+           throw new ElementNotFoundException("Element with given ID doesn't exist!");
+        }
+
     }
 }

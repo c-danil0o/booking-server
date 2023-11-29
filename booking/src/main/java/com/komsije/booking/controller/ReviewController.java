@@ -2,6 +2,8 @@ package com.komsije.booking.controller;
 
 import com.komsije.booking.dto.AccommodationDto;
 import com.komsije.booking.dto.ReviewDto;
+import com.komsije.booking.exceptions.ElementNotFoundException;
+import com.komsije.booking.exceptions.HasActiveReservationsException;
 import com.komsije.booking.model.Review;
 import com.komsije.booking.service.AccountServiceImpl;
 import com.komsije.booking.service.ReviewServiceImpl;
@@ -37,11 +39,14 @@ public class ReviewController {
     @GetMapping(value = "/{id}")
     public ResponseEntity<ReviewDto> getReview(@PathVariable Long id) {
 
-        ReviewDto reviewDto = reviewService.findById(id);
-
-        if (reviewDto == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        ReviewDto reviewDto = null;
+        try {
+            reviewDto = reviewService.findById(id);
+        } catch (ElementNotFoundException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+
 
         return new ResponseEntity<>(reviewDto, HttpStatus.OK);
     }
@@ -58,29 +63,40 @@ public class ReviewController {
 
     @PostMapping(consumes = "application/json")
     public ResponseEntity<ReviewDto> saveReview(@RequestBody ReviewDto reviewDTO) {
-        ReviewDto reviewDto = reviewService.save(reviewDTO);
+        ReviewDto reviewDto = null;
+        try {
+            reviewDto = reviewService.save(reviewDTO);
+        } catch (ElementNotFoundException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(reviewDto, HttpStatus.CREATED);
     }
 
     @PatchMapping(value = "/{id}/approve")
     public ResponseEntity<ReviewDto> approveReview(@PathVariable("id") Long id) {
-        ReviewDto reviewDto = reviewService.findById(id);
-        if (reviewDto == null) {
+
+        ReviewDto reviewDto = null;
+        try {
+            reviewService.setApproved(id);
+            reviewDto = reviewService.findById(id);
+        } catch (ElementNotFoundException e) {
+            System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        reviewDto.setApproved(true);
-        reviewService.setApproved(reviewDto.getId());
         return new ResponseEntity<>(reviewDto, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
-        ReviewDto reviewDto = reviewService.findById(id);
-        if (reviewDto != null) {
+
+        try {
             reviewService.delete(id);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (HasActiveReservationsException | ElementNotFoundException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+        return new ResponseEntity<>(HttpStatus.OK);
+
     }
 }

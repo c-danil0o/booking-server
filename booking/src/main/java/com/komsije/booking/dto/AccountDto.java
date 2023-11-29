@@ -12,6 +12,4 @@ public class AccountDto {
     private boolean isBlocked;
     private AccountType accountType;
     private boolean isActivated;
-
-
 }

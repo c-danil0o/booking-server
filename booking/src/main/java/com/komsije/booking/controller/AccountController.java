@@ -6,6 +6,7 @@ import com.komsije.booking.dto.LoginDto;
 import com.komsije.booking.model.Account;
 import com.komsije.booking.model.AccountType;
 import com.komsije.booking.service.AccountServiceImpl;
+import com.komsije.booking.service.interfaces.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +18,10 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "api")
 public class AccountController {
-    private final AccountServiceImpl accountService;
+    private final AccountService accountService;
 
     @Autowired
-    public AccountController(AccountServiceImpl accountService) {
+    public AccountController(AccountService  accountService) {
         this.accountService = accountService;
     }
 

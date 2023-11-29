@@ -8,9 +8,9 @@ import org.mapstruct.MappingTarget;
 import java.util.List;
 
 @Mapper(componentModel = "spring", uses = {UserDtoMapper.class})
-public interface NotificationMapper {
-    NotificationDto toDto(Notification notification);
-    Notification fromDto(NotificationDto notificationDto);
-    List<NotificationDto> toDto(List<Notification> notificationList);
-    void update(@MappingTarget Notification notification, NotificationDto notificationDto);
+public abstract class NotificationMapper {
+    public abstract NotificationDto toDto(Notification notification);
+    public abstract Notification fromDto(NotificationDto notificationDto);
+    public abstract List<NotificationDto> toDto(List<Notification> notificationList);
+    public abstract void update(@MappingTarget Notification notification, NotificationDto notificationDto);
 }

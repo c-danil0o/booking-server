@@ -5,6 +5,7 @@ import com.komsije.booking.dto.AvailabilityDto;
 import com.komsije.booking.model.Accommodation;
 import com.komsije.booking.model.AccommodationType;
 import com.komsije.booking.service.AccommodationServiceImpl;
+import com.komsije.booking.service.interfaces.AccommodationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +17,10 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "api/accommodations")
 public class AccommodationController {
-    private final AccommodationServiceImpl accommodationService;
+    private final AccommodationService accommodationService;
 
     @Autowired
-    public AccommodationController(AccommodationServiceImpl accommodationService) {
+    public AccommodationController(AccommodationService accommodationService) {
         this.accommodationService = accommodationService;
     }
 

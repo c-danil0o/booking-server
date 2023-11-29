@@ -22,7 +22,12 @@ public class HostServiceImpl implements HostService {
     }
 
     public HostDto findById(Long id) {
-        return mapper.toDto(hostRepository.findById(id).orElseGet(null));
+        try {
+            return mapper.toDto(hostRepository.findById(id).orElseGet(null));
+        }
+        catch (NullPointerException e){
+            return null;
+        }
     }
 
     public List<HostDto> findAll() {

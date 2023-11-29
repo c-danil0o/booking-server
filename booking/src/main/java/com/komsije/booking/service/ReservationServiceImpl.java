@@ -2,9 +2,11 @@ package com.komsije.booking.service;
 
 import com.komsije.booking.dto.ReservationDto;
 import com.komsije.booking.mapper.ReservationMapper;
+import com.komsije.booking.model.Accommodation;
 import com.komsije.booking.model.Reservation;
 import com.komsije.booking.model.ReservationStatus;
 import com.komsije.booking.repository.ReservationRepository;
+import com.komsije.booking.service.interfaces.AccommodationService;
 import com.komsije.booking.service.interfaces.ReportService;
 import com.komsije.booking.service.interfaces.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +21,21 @@ public class ReservationServiceImpl implements ReservationService {
     @Autowired
     private ReservationMapper mapper;
     private final ReservationRepository reservationRepository;
+    private final AccommodationService accommodationService;
 
     @Autowired
-    public ReservationServiceImpl(ReservationRepository reservationRepository) {
+    public ReservationServiceImpl(ReservationRepository reservationRepository, AccommodationService accommodationService) {
         this.reservationRepository = reservationRepository;
+        this.accommodationService = accommodationService;
     }
 
     public ReservationDto findById(Long id) {
-        return mapper.toDto(reservationRepository.findById(id).orElseGet(null));
+        try{
+            return mapper.toDto(reservationRepository.findById(id).orElseGet(null));
+        }
+        catch (NullPointerException e){
+            return null;
+        }
     }
 
     public List<ReservationDto> findAll() {
@@ -105,12 +114,14 @@ public class ReservationServiceImpl implements ReservationService {
             }
         }
         return true;
-
     }
 
 
     public ReservationDto save(ReservationDto reservationDto) {
-        reservationRepository.save(mapper.fromDto(reservationDto));
+        Reservation reservation = mapper.fromDto(reservationDto);
+        Accommodation accommodation = accommodationService.findModelById(reservationDto.getAccommodationId());
+        reservation.setAccommodation(accommodation);
+        reservationRepository.save(reservation);
         return reservationDto;
     }
 

@@ -31,7 +31,12 @@ public class AccountServiceImpl implements AccountService {
     }
 
     public AccountDto findById(Long id) {
-        return mapper.toDto(accountRepository.findById(id).orElseGet(null));
+        try {
+            return mapper.toDto(accountRepository.findById(id).orElseGet(null));
+        }
+        catch (NullPointerException e){
+            return null;
+        }
     }
 
     public List<AccountDto> findAll() {

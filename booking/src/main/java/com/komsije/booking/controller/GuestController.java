@@ -1,5 +1,6 @@
 package com.komsije.booking.controller;
 
+import com.komsije.booking.dto.AccommodationDto;
 import com.komsije.booking.dto.GuestDto;
 import com.komsije.booking.model.AccountType;
 import com.komsije.booking.model.Guest;
@@ -54,6 +55,25 @@ public class GuestController {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+    @GetMapping(value = "/favorites/{id}")
+    public ResponseEntity<List<AccommodationDto>> getFavorites(@PathVariable Long id){
+        GuestDto guest = guestService.findById(id);
+        if (guest == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        List<AccommodationDto> favorites = guestService.getFavoritesByGuestId(id);
+        return new ResponseEntity<>(favorites, HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/favorites/{id}")
+    public ResponseEntity<List<AccommodationDto>> addToFavorites(@PathVariable Long id, @RequestBody AccommodationDto accommodationDto){
+        GuestDto guest = guestService.findById(id);
+        if (guest == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        List<AccommodationDto> favorites = guestService.addToFavorites(id, accommodationDto);
+        return new ResponseEntity<>(favorites, HttpStatus.OK);
     }
 
 }

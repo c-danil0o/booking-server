@@ -4,6 +4,9 @@ import com.komsije.booking.model.Address;
 import com.komsije.booking.model.Guest;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Data
 public class GuestDto {
     private Long id;

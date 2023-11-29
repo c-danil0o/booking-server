@@ -5,10 +5,11 @@ import com.komsije.booking.model.AccountType;
 import com.komsije.booking.model.Guest;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {AddressMapper.class})
+@Mapper(componentModel = "spring", uses = {AddressMapper.class, AccommodationMapper.class})
 public abstract class GuestMapper {
     public abstract GuestDto toDto(Guest guest);
     public Guest fromDto(GuestDto guestDto){

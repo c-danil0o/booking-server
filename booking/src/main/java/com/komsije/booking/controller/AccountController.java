@@ -3,6 +3,10 @@ package com.komsije.booking.controller;
 import com.komsije.booking.dto.AccommodationDto;
 import com.komsije.booking.dto.AccountDto;
 import com.komsije.booking.dto.LoginDto;
+import com.komsije.booking.exceptions.AccountNotActivateException;
+import com.komsije.booking.exceptions.ElementNotFoundException;
+import com.komsije.booking.exceptions.HasActiveReservationsException;
+import com.komsije.booking.exceptions.IncorrectPasswordException;
 import com.komsije.booking.model.Account;
 import com.komsije.booking.model.AccountType;
 import com.komsije.booking.service.AccountServiceImpl;
@@ -34,10 +38,12 @@ public class AccountController {
     @GetMapping(value = "/accounts/{id}")
     public ResponseEntity<AccountDto> getAccount(@PathVariable Long id) {
 
-        AccountDto account = accountService.findById(id);
-
-        if (account == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        AccountDto account = null;
+        try {
+            account = accountService.findById(id);
+        } catch (ElementNotFoundException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         return new ResponseEntity<>(account, HttpStatus.OK);
@@ -65,47 +71,60 @@ public class AccountController {
 
     @PostMapping(value="/register", consumes = "application/json")
     public ResponseEntity<AccountDto> saveAccount(@RequestBody AccountDto accountDTO) {
-        AccountDto account = accountService.save(accountDTO);
+        AccountDto account = null;
+        try {
+            account = accountService.save(accountDTO);
+        } catch (ElementNotFoundException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(account, HttpStatus.CREATED);
     }
 
     @PatchMapping(value = "/accounts/{id}/block")
     public ResponseEntity<AccountDto> blockAccount(@PathVariable("id") Long id) {
-        AccountDto accountDto = accountService.findById(id);
-        if (accountDto == null) {
+        AccountDto accountDto = null;
+        try {
+            accountDto = accountService.findById(id);
+            accountDto.setBlocked(true);
+            accountDto = accountService.update(accountDto);
+        } catch (ElementNotFoundException e) {
+            System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        accountDto.setBlocked(true);
-        accountDto = accountService.update(accountDto);
+
         return new ResponseEntity<>(accountDto, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/accounts/{id}")
     public ResponseEntity<Void> deleteAccount(@PathVariable Long id) {
-        AccountDto account = accountService.findById(id);
-        if (account != null) {
+        try {
             accountService.delete(id);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (HasActiveReservationsException | ElementNotFoundException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping(value = "/login", consumes = "application/json")
     public ResponseEntity<AccountDto> login(@RequestBody LoginDto loginDto){
-        AccountDto account = accountService.checkLoginCredentials(loginDto);
-
-        if (account == null) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        AccountDto account = null;
+        try {
+            account = accountService.checkLoginCredentials(loginDto);
+        } catch (ElementNotFoundException | IncorrectPasswordException | AccountNotActivateException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-
         return new ResponseEntity<>(account, HttpStatus.OK);
     }
     @PutMapping(value = "/accounts/update", consumes = "application/json")
     public ResponseEntity<AccountDto> updateAccount(@RequestBody AccountDto accountDto){
-        AccountDto account = accountService.update(accountDto);
-        if (account == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        AccountDto account = null;
+        try {
+            account = accountService.update(accountDto);
+        } catch (ElementNotFoundException e) {
+            throw new RuntimeException(e);
         }
         return new ResponseEntity<>(account, HttpStatus.OK);
     }

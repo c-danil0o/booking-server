@@ -1,6 +1,7 @@
 package com.komsije.booking.service;
 
 import com.komsije.booking.dto.HostDto;
+import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.mapper.HostMapper;
 import com.komsije.booking.model.Host;
 import com.komsije.booking.repository.HostRepository;
@@ -21,13 +22,8 @@ public class HostServiceImpl implements HostService {
         this.hostRepository = hostRepository;
     }
 
-    public HostDto findById(Long id) {
-        try {
-            return mapper.toDto(hostRepository.findById(id).orElseGet(null));
-        }
-        catch (NullPointerException e){
-            return null;
-        }
+    public HostDto findById(Long id) throws ElementNotFoundException {
+        return mapper.toDto(hostRepository.findById(id).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!")));
     }
 
     public List<HostDto> findAll() {
@@ -40,18 +36,20 @@ public class HostServiceImpl implements HostService {
     }
 
     @Override
-    public HostDto update(HostDto hostDto) {
-        Host host = hostRepository.findById(hostDto.getId()).orElseGet(null);
-        if (host == null){
-            return null;
-        }
+    public HostDto update(HostDto hostDto) throws ElementNotFoundException {
+        Host host = hostRepository.findById(hostDto.getId()).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
         mapper.update(host, hostDto);
         hostRepository.save(host);
         return hostDto;
     }
 
-    public void delete(Long id) {
-        hostRepository.deleteById(id);
+    public void delete(Long id) throws ElementNotFoundException {
+        if (hostRepository.existsById(id)){
+            hostRepository.deleteById(id);
+        }else{
+            throw new  ElementNotFoundException("Element with given ID doesn't exist!");
+        }
+
     }
 
 

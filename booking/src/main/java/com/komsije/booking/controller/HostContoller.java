@@ -1,6 +1,8 @@
 package com.komsije.booking.controller;
 
 import com.komsije.booking.dto.HostDto;
+import com.komsije.booking.exceptions.ElementNotFoundException;
+import com.komsije.booking.exceptions.HasActiveReservationsException;
 import com.komsije.booking.model.AccountType;
 import com.komsije.booking.model.Host;
 import com.komsije.booking.service.HostServiceImpl;
@@ -31,30 +33,38 @@ public class HostContoller {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<HostDto> getHost(@PathVariable Long id) {
-        HostDto hostDto = hostService.findById(id);
-        if (hostDto == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        HostDto hostDto = null;
+        try {
+            hostDto = hostService.findById(id);
+        } catch (ElementNotFoundException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(hostDto, HttpStatus.OK);
     }
 
     @PostMapping(consumes = "application/json")
     public ResponseEntity<HostDto> saveHost(@RequestBody HostDto hostDTO) {
-        HostDto hostDto = hostService.save(hostDTO);
+        HostDto hostDto = null;
+        try {
+            hostDto = hostService.save(hostDTO);
+        } catch (ElementNotFoundException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(hostDto, HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteHost(@PathVariable Long id) {
-
-        HostDto hostDto = hostService.findById(id);
-
-        if (hostDto != null) {
+        try {
             hostService.delete(id);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (HasActiveReservationsException | ElementNotFoundException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+        return new ResponseEntity<>(HttpStatus.OK);
+
     }
 
 

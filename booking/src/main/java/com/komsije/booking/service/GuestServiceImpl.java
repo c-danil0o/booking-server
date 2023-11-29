@@ -2,6 +2,7 @@ package com.komsije.booking.service;
 
 import com.komsije.booking.dto.AccommodationDto;
 import com.komsije.booking.dto.GuestDto;
+import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.mapper.AccommodationMapper;
 import com.komsije.booking.mapper.GuestMapper;
 import com.komsije.booking.model.Account;
@@ -28,13 +29,8 @@ public class GuestServiceImpl implements GuestService {
         this.guestRepository = guestRepository;
     }
 
-    public GuestDto findById(Long id) {
-        try {
-            return mapper.toDto( guestRepository.findById(id).orElseGet(null));
-        }
-        catch (NullPointerException e){
-            return null;
-        }
+    public GuestDto findById(Long id) throws ElementNotFoundException {
+        return mapper.toDto( guestRepository.findById(id).orElseThrow(()-> new ElementNotFoundException("Element with given ID doesn't exist!")));
     }
 
     public List<GuestDto> findAll() {
@@ -47,35 +43,31 @@ public class GuestServiceImpl implements GuestService {
     }
 
     @Override
-    public GuestDto update(GuestDto guestDto) {
-        Guest guest = guestRepository.findById(guestDto.getId()).orElseGet(null);
-        if (guest == null){
-            return null;
-        }
+    public GuestDto update(GuestDto guestDto) throws ElementNotFoundException {
+        Guest guest = guestRepository.findById(guestDto.getId()).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
         mapper.update(guest, guestDto);
         guestRepository.save(guest);
         return guestDto;
     }
 
-    public void delete(Long id) {
-        guestRepository.deleteById(id);
+    public void delete(Long id) throws ElementNotFoundException {
+        if (guestRepository.existsById(id)){
+            guestRepository.deleteById(id);
+        }else{
+            throw  new ElementNotFoundException("Element with given ID doesn't exist!");
+        }
+
     }
 
     @Override
-    public List<AccommodationDto> getFavoritesByGuestId(Long id) {
-        Guest guest = guestRepository.findById(id).orElseGet(null);
-        if (guest == null){
-            return null;
-        }
+    public List<AccommodationDto> getFavoritesByGuestId(Long id) throws ElementNotFoundException {
+        Guest guest = guestRepository.findById(id).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
         return accommodationMapper.toDto(guest.getFavorites().stream().toList());
     }
 
     @Override
-    public List<AccommodationDto> addToFavorites(Long id, AccommodationDto accommodationDto) {
-        Guest guest = guestRepository.findById(id).orElseGet(null);
-        if (guest == null){
-            return null;
-        }
+    public List<AccommodationDto> addToFavorites(Long id, AccommodationDto accommodationDto) throws ElementNotFoundException {
+        Guest guest = guestRepository.findById(id).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
         guest.getFavorites().add(accommodationMapper.fromDto(accommodationDto));
         guestRepository.save(guest);
         return accommodationMapper.toDto(guest.getFavorites().stream().toList());

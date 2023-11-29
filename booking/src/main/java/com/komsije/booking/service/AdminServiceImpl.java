@@ -1,6 +1,7 @@
 package com.komsije.booking.service;
 
 import com.komsije.booking.dto.AccountDto;
+import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.mapper.AccountMapper;
 import com.komsije.booking.model.Account;
 import com.komsije.booking.model.AccountType;
@@ -28,13 +29,8 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public AccountDto findById(Long id) {
-        try {
-            return mapper.toDto(accountRepository.findById(id).orElseGet(null));
-        }
-        catch (NullPointerException e){
-            return null;
-        }
+    public AccountDto findById(Long id) throws ElementNotFoundException {
+            return mapper.toDto(accountRepository.findById(id).orElseThrow(() -> new ElementNotFoundException("No such element with given ID!")));
     }
 
 
@@ -45,18 +41,20 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public AccountDto update(AccountDto accountDto) {
-        Account account = accountRepository.findById(accountDto.getId()).orElseGet(null);
-        if (account == null){
-            return null;
-        }
+    public AccountDto update(AccountDto accountDto) throws ElementNotFoundException {
+        Account account = accountRepository.findById(accountDto.getId()).orElseThrow(() -> new ElementNotFoundException("No such element with given ID!"));
         mapper.update(account, accountDto);
         accountRepository.save(account);
         return accountDto;
     }
 
     @Override
-    public void delete(Long id) {
-        accountRepository.deleteById(id);
+    public void delete(Long id) throws ElementNotFoundException {
+        if (accountRepository.existsById(id)){
+            accountRepository.deleteById(id);
+        }else{
+            throw new ElementNotFoundException("Element with given ID doesn't exist!");
+        }
+
     }
 }

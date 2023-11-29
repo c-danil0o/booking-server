@@ -2,6 +2,8 @@ package com.komsije.booking.controller;
 
 import com.komsije.booking.dto.AccommodationDto;
 import com.komsije.booking.dto.GuestDto;
+import com.komsije.booking.exceptions.ElementNotFoundException;
+import com.komsije.booking.exceptions.HasActiveReservationsException;
 import com.komsije.booking.model.AccountType;
 import com.komsije.booking.model.Guest;
 import com.komsije.booking.service.GuestServiceImpl;
@@ -32,48 +34,60 @@ public class GuestController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<GuestDto> getGuest(@PathVariable Long id) {
-        GuestDto guestDto = guestService.findById(id);
-
-        if (guestDto == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        GuestDto guestDto = null;
+        try {
+            guestDto = guestService.findById(id);
+        } catch (ElementNotFoundException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(guestDto, HttpStatus.OK);
     }
 
     @PostMapping(consumes = "application/json")
     public ResponseEntity<GuestDto> saveGuest(@RequestBody GuestDto guestDTO) {
-        GuestDto guestDto = guestService.save(guestDTO);
+        GuestDto guestDto = null;
+        try {
+            guestDto = guestService.save(guestDTO);
+        } catch (ElementNotFoundException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(guestDto, HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteGuest(@PathVariable Long id) {
 
-        GuestDto guestDto = guestService.findById(id);
-        if (guestDto != null) {
+        try {
             guestService.delete(id);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (HasActiveReservationsException | ElementNotFoundException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
     @GetMapping(value = "/favorites/{id}")
     public ResponseEntity<List<AccommodationDto>> getFavorites(@PathVariable Long id){
-        GuestDto guest = guestService.findById(id);
-        if (guest == null){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        List<AccommodationDto> favorites = null;
+        try {
+            favorites = guestService.getFavoritesByGuestId(id);
+        } catch (ElementNotFoundException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        List<AccommodationDto> favorites = guestService.getFavoritesByGuestId(id);
         return new ResponseEntity<>(favorites, HttpStatus.OK);
     }
 
     @PutMapping(value = "/favorites/{id}")
     public ResponseEntity<List<AccommodationDto>> addToFavorites(@PathVariable Long id, @RequestBody AccommodationDto accommodationDto){
-        GuestDto guest = guestService.findById(id);
-        if (guest == null){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        List<AccommodationDto> favorites = null;
+        try {
+            favorites = guestService.addToFavorites(id, accommodationDto);
+        } catch (ElementNotFoundException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        List<AccommodationDto> favorites = guestService.addToFavorites(id, accommodationDto);
         return new ResponseEntity<>(favorites, HttpStatus.OK);
     }
 

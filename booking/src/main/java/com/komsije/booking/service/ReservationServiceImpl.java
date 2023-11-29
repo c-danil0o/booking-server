@@ -26,7 +26,12 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     public ReservationDto findById(Long id) {
-        return mapper.toDto(reservationRepository.findById(id).orElseGet(null));
+        try{
+            return mapper.toDto(reservationRepository.findById(id).orElseGet(null));
+        }
+        catch (NullPointerException e){
+            return null;
+        }
     }
 
     public List<ReservationDto> findAll() {

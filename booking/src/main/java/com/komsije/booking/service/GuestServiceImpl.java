@@ -22,7 +22,12 @@ public class GuestServiceImpl implements GuestService {
     }
 
     public GuestDto findById(Long id) {
-        return mapper.toDto( guestRepository.findById(id).orElseGet(null));
+        try {
+            return mapper.toDto( guestRepository.findById(id).orElseGet(null));
+        }
+        catch (NullPointerException e){
+            return null;
+        }
     }
 
     public List<GuestDto> findAll() {

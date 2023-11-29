@@ -5,6 +5,7 @@ import com.komsije.booking.mapper.NotificationMapper;
 import com.komsije.booking.model.Notification;
 import com.komsije.booking.repository.NotificationRepository;
 import com.komsije.booking.service.interfaces.NotificationService;
+import jakarta.validation.constraints.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,12 +20,16 @@ public class NotificationServiceImpl implements NotificationService {
     @Autowired
     NotificationServiceImpl(NotificationRepository notificationRepository) {
         this.notificationRepository = notificationRepository;
-
     }
 
 
     public NotificationDto findById(Long id) {
-        return mapper.toDto(notificationRepository.findById(id).orElseGet(null));
+        try {
+            return mapper.toDto(notificationRepository.findById(id).orElseGet(null));
+        }
+        catch (NullPointerException e){
+            return null;
+        }
     }
 
     public List<NotificationDto> findAll() {

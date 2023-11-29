@@ -22,7 +22,12 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     public ReviewDto findById(Long id) {
-        return mapper.toDto(reviewRepository.findById(id).orElseGet(null));
+        try {
+            return mapper.toDto(reviewRepository.findById(id).orElseGet(null));
+        }
+        catch (NullPointerException e){
+            return null;
+        }
     }
 
     public List<ReviewDto> findAll() {

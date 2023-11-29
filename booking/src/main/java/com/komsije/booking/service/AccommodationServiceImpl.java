@@ -24,7 +24,12 @@ public class AccommodationServiceImpl implements AccommodationService {
     }
 
     public AccommodationDto findById(Long id) {
-        return mapper.toDto(accommodationRepository.findById(id).orElseGet(null));
+        try {
+            return mapper.toDto(accommodationRepository.findById(id).orElseGet(null));
+        }
+        catch (NullPointerException e){
+            return null;
+        }
     }
 
     public List<AccommodationDto> findAll() {

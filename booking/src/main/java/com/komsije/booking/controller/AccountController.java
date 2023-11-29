@@ -1,12 +1,12 @@
 package com.komsije.booking.controller;
 
-import com.komsije.booking.dto.AccommodationDTO;
-import com.komsije.booking.dto.AccountDTO;
-import com.komsije.booking.model.Accommodation;
-import com.komsije.booking.model.AccommodationType;
+import com.komsije.booking.dto.AccommodationDto;
+import com.komsije.booking.dto.AccountDto;
+import com.komsije.booking.dto.LoginDto;
 import com.komsije.booking.model.Account;
 import com.komsije.booking.model.AccountType;
-import com.komsije.booking.service.AccountService;
+import com.komsije.booking.service.AccountServiceImpl;
+import com.komsije.booking.service.interfaces.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,92 +16,102 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "api/accounts")
+@RequestMapping(value = "api")
 public class AccountController {
     private final AccountService accountService;
 
     @Autowired
-    public AccountController(AccountService accountService) {
+    public AccountController(AccountService  accountService) {
         this.accountService = accountService;
     }
 
-    @GetMapping(value = "/all")
-    public ResponseEntity<List<AccountDTO>> getAllAccounts(){
-        List<Account> accounts = accountService.findAll();
-
-        List<AccountDTO> accountDTOs = new ArrayList<>();
-        for (Account account : accounts) {
-            accountDTOs.add(new AccountDTO(account));
-        }
-        return new ResponseEntity<>(accountDTOs, HttpStatus.OK);
+    @GetMapping(value = "/accounts/all")
+    public ResponseEntity<List<AccountDto>> getAllAccounts(){
+        List<AccountDto> accounts = accountService.findAll();
+        return new ResponseEntity<>(accounts, HttpStatus.OK);
 
     }
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<AccountDTO> getAccount(@PathVariable Long id) {
+    @GetMapping(value = "/accounts/{id}")
+    public ResponseEntity<AccountDto> getAccount(@PathVariable Long id) {
 
-        Account account = accountService.findOne(id);
+        AccountDto account = accountService.findById(id);
 
         if (account == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        return new ResponseEntity<>(new AccountDTO(account), HttpStatus.OK);
+        return new ResponseEntity<>(account, HttpStatus.OK);
     }
 
-    @GetMapping
-    public ResponseEntity<List<AccountDTO>> getAccountsByType(@RequestParam String type) {
+    @GetMapping(value = "/accounts")
+    public ResponseEntity<List<AccountDto>> getAccountsByType(@RequestParam String type) {
         try{
-            List<Account> accounts = accountService.getByAccountType(AccountType.valueOf(type));
-            List<AccountDTO> accountDTOs = new ArrayList<>();
-            for (Account account: accounts){
-                accountDTOs.add(new AccountDTO(account));
-            }
-            return new ResponseEntity<>(accountDTOs, HttpStatus.OK);
+            List<AccountDto> accounts = accountService.getByAccountType(AccountType.valueOf(type));
+            return new ResponseEntity<>(accounts, HttpStatus.OK);
         }catch (IllegalArgumentException e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    @GetMapping(value = "/blocked")
-    public ResponseEntity<List<AccountDTO>> getBlockedAccounts(){
+    @GetMapping(value = "/accounts/blocked")
+    public ResponseEntity<List<AccountDto>> getBlockedAccounts(){
         try{
-            List<Account> accounts = accountService.getBlockedAccounts();
-
-            List<AccountDTO> accountDTOs = new ArrayList<>();
-            for (Account account : accounts) {
-                accountDTOs.add(new AccountDTO(account));
-            }
-            return new ResponseEntity<>(accountDTOs, HttpStatus.OK);
+            List<AccountDto> accounts = accountService.getBlockedAccounts();
+            return new ResponseEntity<>(accounts, HttpStatus.OK);
         }catch (IllegalArgumentException e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    @PostMapping(consumes = "application/json")
-    public ResponseEntity<AccountDTO> saveAccount(@RequestBody AccountDTO accountDTO) {
-
-        Account account = new Account();
-        account.setEmail(accountDTO.getEmail());
-        account.setPassword(accountDTO.getPassword());
-        account.setBlocked(accountDTO.isBlocked());
-        account.setAccountType(accountDTO.getAccountType());
-
-        account = accountService.save(account);
-        return new ResponseEntity<>(new AccountDTO(account), HttpStatus.CREATED);
+    @PostMapping(value="/register", consumes = "application/json")
+    public ResponseEntity<AccountDto> saveAccount(@RequestBody AccountDto accountDTO) {
+        AccountDto account = accountService.save(accountDTO);
+        return new ResponseEntity<>(account, HttpStatus.CREATED);
     }
 
-    @DeleteMapping(value = "/{id}")
+    @PatchMapping(value = "/accounts/{id}/block")
+    public ResponseEntity<AccountDto> blockAccount(@PathVariable("id") Long id) {
+        AccountDto accountDto = accountService.findById(id);
+        if (accountDto == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        accountDto.setBlocked(true);
+        accountDto = accountService.update(accountDto);
+        return new ResponseEntity<>(accountDto, HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/accounts/{id}")
     public ResponseEntity<Void> deleteAccount(@PathVariable Long id) {
-
-        Account account = accountService.findOne(id);
-
+        AccountDto account = accountService.findById(id);
         if (account != null) {
-            accountService.remove(id);
+            accountService.delete(id);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    @PostMapping(value = "/login", consumes = "application/json")
+    public ResponseEntity<AccountDto> login(@RequestBody LoginDto loginDto){
+        AccountDto account = accountService.checkLoginCredentials(loginDto);
+
+        if (account == null) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        return new ResponseEntity<>(account, HttpStatus.OK);
+    }
+    @PutMapping(value = "/accounts/update", consumes = "application/json")
+    public ResponseEntity<AccountDto> updateAccount(@RequestBody AccountDto accountDto){
+        AccountDto account = accountService.update(accountDto);
+        if (account == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(account, HttpStatus.OK);
+    }
+
+
+
 
 
 

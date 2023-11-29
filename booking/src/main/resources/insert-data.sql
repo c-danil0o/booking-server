@@ -67,22 +67,6 @@ VALUES
 
 -- Insert data into the accommodation_availability table
 INSERT INTO time_slot (is_occupied, price, start_date, end_date)
-<<<<<<< Updated upstream
-VALUES
-    (false, 100.0, '2023-01-01 12:00:00', '2023-01-03 12:00:00'),
-    (false, 80.0, '2023-02-01 12:00:00', '2023-02-07 12:00:00'),
-    (false, 150.0, '2023-03-01 12:00:00', '2023-03-10 12:00:00'),
-    (false, 120.0, '2023-04-01 12:00:00', '2023-04-14 12:00:00'),
-    (false, 90.0, '2023-05-01 12:00:00', '2023-05-05 12:00:00');
-
-INSERT INTO accommodation_availability (accommodation_id, availability_id)
-VALUES
-    (1, 1),
-    (2, 2),
-    (3, 3),
-    (4, 4),
-    (5, 5);
-=======
 VALUES (false, 100.0, '2023-12-01 12:00:00', '2023-12-13 12:00:00'),
        (false, 110.0, '2024-01-01 12:00:00', '2024-01-17 12:00:00'),
        (false, 150.0, '2023-12-20 12:00:00', '2023-12-30 12:00:00'),
@@ -105,7 +89,6 @@ VALUES (1, 1),
        (4, 8),
        (5, 9),
        (5, 10);
->>>>>>> Stashed changes
 
 -- Insert data into the accommodation_photos table
 INSERT INTO accommodation_photos (accommodation_id, photos)
@@ -159,15 +142,8 @@ VALUES
     (2, 200.0, 1, 6, 1, '2023-01-01 12:00:00', 'Approved'),
     (7, 560.0, 2, 7, 2, '2023-02-01 12:00:00', 'Pending'),
     (10, 1500.0, 3, 8, 3, '2023-03-01 12:00:00', 'Active'),
-    (14, 1680.0, 4, 9, 4, '2023-04-01 12:00:00', 'Done'),
+    (14, 1680.0, 4, 9, 4, '2023-04-01 12:00:00', 'Pending'),
     (5, 450.0, 5, 10, 5, '2023-05-01 12:00:00', 'Approved');
-=======
-VALUES (2, 200.0, 1, 6, 1, '2023-01-01 12:00:00', 'Approved'),
-       (7, 560.0, 2, 7, 2, '2023-02-01 12:00:00', 'Pending'),
-       (10, 1500.0, 3, 8, 3, '2023-03-01 12:00:00', 'Pending'),
-       (14, 1680.0, 4, 9, 4, '2023-04-01 12:00:00', 'Done'),
-       (5, 450.0, 5, 10, 5, '2023-05-01 12:00:00', 'Approved');
->>>>>>> Stashed changes
 
 -- Insert data into the report table
 INSERT INTO report (author_id, date, reported_user_id, reason)

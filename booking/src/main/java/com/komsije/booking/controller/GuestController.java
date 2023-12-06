@@ -8,6 +8,7 @@ import com.komsije.booking.service.interfaces.GuestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,12 +23,14 @@ public class GuestController {
         this.guestService = guestService;
     }
 
+    @PreAuthorize("hasRole('Admin')")
     @GetMapping(value = "/all")
     public ResponseEntity<List<GuestDto>> getAllGuests() {
         List<GuestDto> guestsDtos = guestService.findAll();
         return new ResponseEntity<>(guestsDtos, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('Admin','Host')")
     @GetMapping(value = "/{id}")
     public ResponseEntity<GuestDto> getGuest(@PathVariable Long id) {
         GuestDto guestDto = null;
@@ -39,6 +42,7 @@ public class GuestController {
         }
         return new ResponseEntity<>(guestDto, HttpStatus.OK);
     }
+
 
     @PostMapping(consumes = "application/json")
     public ResponseEntity<GuestDto> saveGuest(@RequestBody GuestDto guestDTO) {
@@ -52,6 +56,7 @@ public class GuestController {
         return new ResponseEntity<>(guestDto, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('Admin')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteGuest(@PathVariable Long id) {
 
@@ -63,6 +68,8 @@ public class GuestController {
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @PreAuthorize("hasRole('Guest')")
     @GetMapping(value = "/favorites/{id}")
     public ResponseEntity<List<AccommodationDto>> getFavorites(@PathVariable Long id){
         List<AccommodationDto> favorites = null;
@@ -75,6 +82,7 @@ public class GuestController {
         return new ResponseEntity<>(favorites, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('Guest')")
     @PutMapping(value = "/favorites/{id}")
     public ResponseEntity<List<AccommodationDto>> addToFavorites(@PathVariable Long id, @RequestBody AccommodationDto accommodationDto){
         List<AccommodationDto> favorites = null;

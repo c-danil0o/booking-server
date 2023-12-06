@@ -12,6 +12,7 @@ import com.komsije.booking.service.interfaces.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
@@ -40,12 +41,15 @@ public class AccountController {
         this.accountService = accountService;
     }
 
+    @PreAuthorize("hasRole('Admin')")
     @GetMapping(value = "/accounts/all")
     public ResponseEntity<List<AccountDto>> getAllAccounts(){
         List<AccountDto> accounts = accountService.findAll();
         return new ResponseEntity<>(accounts, HttpStatus.OK);
 
     }
+
+    @PreAuthorize("hasRole('Admin')")
     @GetMapping(value = "/accounts/{id}")
     public ResponseEntity<AccountDto> getAccount(@PathVariable Long id) {
 
@@ -60,6 +64,7 @@ public class AccountController {
         return new ResponseEntity<>(account, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('Admin')")
     @GetMapping(value = "/accounts")
     public ResponseEntity<List<AccountDto>> getAccountsByType(@RequestParam String type) {
         try{
@@ -70,6 +75,7 @@ public class AccountController {
         }
     }
 
+    @PreAuthorize("hasRole('Admin')")
     @GetMapping(value = "/accounts/blocked")
     public ResponseEntity<List<AccountDto>> getBlockedAccounts(){
         try{
@@ -92,6 +98,7 @@ public class AccountController {
         return new ResponseEntity<>(account, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('Admin')")
     @PatchMapping(value = "/accounts/{id}/block")
     public ResponseEntity<AccountDto> blockAccount(@PathVariable("id") Long id) {
         AccountDto accountDto = null;
@@ -107,6 +114,7 @@ public class AccountController {
         return new ResponseEntity<>(accountDto, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('Admin')")
     @DeleteMapping(value = "/accounts/{id}")
     public ResponseEntity<Void> deleteAccount(@PathVariable Long id) {
         try {
@@ -146,9 +154,7 @@ public class AccountController {
     }
 
 
-
-
-
+    @PreAuthorize("hasRole('Admin')")
     @PutMapping(value = "/accounts/update", consumes = "application/json")
     public ResponseEntity<AccountDto> updateAccount(@RequestBody AccountDto accountDto){
         AccountDto account = null;

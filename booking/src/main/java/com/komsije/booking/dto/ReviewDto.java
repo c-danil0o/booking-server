@@ -10,5 +10,7 @@ public class ReviewDto {
     private String comment;
     private UserDto author;
     private boolean isApproved;
+    private HostDto host;
+    private AccommodationDto accommodation;
 
 }

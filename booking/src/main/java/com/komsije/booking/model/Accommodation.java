@@ -34,6 +34,8 @@ public class Accommodation {
     private Set<TimeSlot> availability = new HashSet<>();
     @Column(nullable = false)
     private int maxGuests;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Host host;
     @Column(nullable = false)
     private int minGuests;
     @ElementCollection
@@ -50,6 +52,9 @@ public class Accommodation {
     @Column(nullable = true)
     @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, mappedBy = "favorites")
     private Set<Guest> favoriteTo = new HashSet<>();
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "accommodation", cascade = CascadeType.ALL)
+    private Set<Review> reviews = new HashSet<>();
+
 
 
 }

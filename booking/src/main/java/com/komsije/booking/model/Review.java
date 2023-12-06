@@ -22,4 +22,8 @@ public class Review {
     private Account author;
     @Column(nullable = false)
     private boolean isApproved;
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    private Host host;
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    private Accommodation accommodation;
 }

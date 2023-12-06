@@ -17,6 +17,7 @@ VALUES (false, 'Host', 'host1@example.com', 'password1', true),
        (false, 'Host', 'host2@example.com', 'password2', true),
        (false, 'Host', 'host3@example.com', 'password3', true),
        (false, 'Host', 'host4@example.com', 'password4', true),
+
        (false, 'Host', 'host5@example.com', 'password5', true);
 
 -- Insert data into the host table
@@ -33,7 +34,8 @@ VALUES (false, 'Guest', 'guest1@example.com', 'password6', true),
        (false, 'Guest', 'guest2@example.com', 'password7', true),
        (false, 'Guest', 'guest3@example.com', 'password8', true),
        (false, 'Guest', 'guest4@example.com', 'password9', true),
-       (false, 'Guest', 'guest5@example.com', 'password10', true);
+       (false, 'Guest', 'guest5@example.com', 'password10', true),
+       (false, 'Admin', 'admin@example.com', 'admin', true);
 
 -- Insert data into the guest table
 INSERT INTO guest (times_cancelled, address_id, id, first_name, last_name, phone)
@@ -43,15 +45,16 @@ VALUES (0, 6, 6, 'Guest', 'One', '+6789012345'),
        (3, 9, 9, 'Guest', 'Four', '+9012345678'),
        (4, 10, 10, 'Guest', 'Five', '+0123456789');
 
+
 -- Insert data into the accommodation table
 INSERT INTO accommodation (average_grade, cancellation_deadline, is_auto_approval, is_price_per_guest, max_guests,
-                           min_guests, address_id, id, accommodation_type, description, name, is_approved)
-VALUES (4.5, 7, true, true, 4, 1, 1, 1, 'Apartment', 'A cozy apartment', 'Cozy Apartment 1', true),
-       (4.2, 5, false, false, 2, 1, 2, 2, 'Room', 'Comfortable room with a view', 'Room with a View', true),
-       (4.8, 14, true, true, 6, 2, 3, 3, 'Hotel', 'Luxurious hotel with great amenities', 'Luxury Hotel', true),
+                           min_guests, address_id, id, accommodation_type, description, name, is_approved, host_id)
+VALUES (4.5, 7, true, true, 4, 1, 1, 1, 'Apartment', 'A cozy apartment', 'Cozy Apartment 1', true, 1),
+       (4.2, 5, false, false, 2, 1, 2, 2, 'Room', 'Comfortable room with a view', 'Room with a View', true, 2),
+       (4.8, 14, true, true, 6, 2, 3, 3, 'Hotel', 'Luxurious hotel with great amenities', 'Luxury Hotel', true, 3),
        (4.0, 10, false, true, 8, 4, 4, 4, 'Apartment', 'Spacious apartment for groups', 'Spacious Group Apartment',
-        true),
-       (4.7, 3, true, false, 3, 1, 5, 5, 'Room', 'Charming room for a relaxing stay', 'Charming Room', true);
+        true, 4),
+       (4.7, 3, true, false, 3, 1, 5, 5, 'Room', 'Charming room for a relaxing stay', 'Charming Room', true, 5);
 
 -- Insert data into the accommodation_amenities table
 INSERT INTO accommodation_amenities (accommodation_id, amenities)
@@ -116,20 +119,33 @@ VALUES (1, 6),
        (5, 10);*/
 
 -- Insert data into the host_host_reviews table
-INSERT INTO review (grade, is_approved, author_id, comment)
-VALUES (4, true, 6, 'Great host!'),
-       (5, true, 7, 'Excellent hospitality'),
-       (4, true, 8, 'Wonderful stay, highly recommend'),
-       (3, true, 9, 'Good experience overall'),
-       (5, true, 10, 'Perfect host, would come again');
+INSERT INTO review (host_id, accommodation_id, grade, is_approved, author_id, comment)
+VALUES (1, null, 4, true, 6, 'Great host!'),
+       (2, null, 5, true, 7, 'Excellent hospitality'),
+       (3, null, 4, true, 8, 'Wonderful stay, highly recommend'),
+       (3, null, 3, true, 9, 'Good experience overall'),
+       (4, null, 5, true, 10, 'Perfect host, would come again'),
+       (5, null, 4, true, 6, 'Enjoyed my stay, great host!'),
+       (null, 1, 5, true, 7, 'Beautiful accommodation, highly recommended!'),
+       (null, 2, 4, true, 8, 'Comfortable and clean, would come again'),
+       (null, 3, 3, true, 9, 'Good location but room was a bit small'),
+       (null, 3, 5, true, 10, 'Exceptional service and amenities'),
+       (null, 4, 3, true, 1, 'Average experience, could be better'),
+       (null, 4, 4, true, 2, 'Lovely place with a friendly host'),
+       (null, 5, 5, true, 3, 'Outstanding accommodation, exceeded expectations'),
+       (null, 5, 4, true, 4, 'Great value for money, would recommend'),
+       (2, null, 5, true, 5, 'Fantastic experience, thank you!'),
+       (null, 4, 3, true, 6, 'Not bad, but room was noisy'),
+       (null, 2, 4, true, 7, 'Well-maintained property with good facilities'),
+       (null, 1,5, true, 8, 'Superb hospitality, felt like home'),
+       (null, 1, 3, true, 9, 'Average amenities, but good location'),
+       (3, null, 5, true, 10, 'Absolutely amazing, 10/10'),
+       (4, null, 4, true, 1, 'Friendly staff and comfortable stay'),
+       (null, 5, 5, true, 2, 'Impressive accommodation with a view'),
+       (null, 5, 4, true, 3, 'Clean and well-equipped, enjoyed my stay'),
+       (4, null, 3, true, 4, 'Satisfactory, but could use some improvements'),
+       (1, null, 5, true, 5, 'Incredible experience, highly satisfied');
 
--- Insert data into the host_host_reviews table
-INSERT INTO host_host_reviews (host_id, host_reviews_id)
-VALUES (1, 1),
-       (2, 2),
-       (3, 3),
-       (4, 4),
-       (5, 5);
 
 -- Insert data into the host_properties table
 INSERT INTO host_properties (host_id, properties_id)

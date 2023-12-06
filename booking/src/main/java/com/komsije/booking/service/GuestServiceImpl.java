@@ -5,8 +5,6 @@ import com.komsije.booking.dto.GuestDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.mapper.AccommodationMapper;
 import com.komsije.booking.mapper.GuestMapper;
-import com.komsije.booking.model.Account;
-import com.komsije.booking.model.AccountType;
 import com.komsije.booking.model.Guest;
 import com.komsije.booking.repository.GuestRepository;
 import com.komsije.booking.service.interfaces.GuestService;
@@ -14,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class GuestServiceImpl implements GuestService {

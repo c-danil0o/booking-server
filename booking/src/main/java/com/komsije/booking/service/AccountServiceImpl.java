@@ -1,6 +1,5 @@
 package com.komsije.booking.service;
 
-import com.komsije.booking.dto.AccommodationDto;
 import com.komsije.booking.dto.AccountDto;
 import com.komsije.booking.dto.LoginDto;
 import com.komsije.booking.exceptions.AccountNotActivateException;
@@ -9,21 +8,23 @@ import com.komsije.booking.exceptions.HasActiveReservationsException;
 import com.komsije.booking.exceptions.IncorrectPasswordException;
 import com.komsije.booking.mapper.AccountMapper;
 import com.komsije.booking.model.Account;
-import com.komsije.booking.model.AccountType;
-import com.komsije.booking.model.Guest;
+import com.komsije.booking.model.Role;
 import com.komsije.booking.repository.AccountRepository;
 import com.komsije.booking.service.interfaces.AccountService;
 import com.komsije.booking.service.interfaces.ReservationService;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-
-import static com.komsije.booking.model.AccountType.Guest;
+import java.util.Optional;
 
 @Service
-public class AccountServiceImpl implements AccountService {
+public class AccountServiceImpl implements AccountService{
     private final AccountRepository accountRepository;
     private final ReservationService reservationService;
     @Autowired
@@ -65,8 +66,8 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
-    public List<AccountDto> getByAccountType(AccountType type) {
-        return mapper.toDto(accountRepository.findAccountByAccountType(type));
+    public List<AccountDto> getByAccountType(Role type) {
+        return mapper.toDto(accountRepository.findAccountByRole(type));
     }
 
     public List<AccountDto> getBlockedAccounts() {

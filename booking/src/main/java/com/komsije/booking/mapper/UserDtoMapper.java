@@ -5,15 +5,11 @@ import com.komsije.booking.dto.HostDto;
 import com.komsije.booking.dto.UserDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.model.Account;
-import com.komsije.booking.model.AccountType;
-import com.komsije.booking.model.Guest;
-import com.komsije.booking.model.Host;
+import com.komsije.booking.model.Role;
 import com.komsije.booking.service.interfaces.AccountService;
 import com.komsije.booking.service.interfaces.GuestService;
 import com.komsije.booking.service.interfaces.HostService;
 import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -30,11 +26,11 @@ public abstract class UserDtoMapper {
         UserDto userDto = new UserDto();
         userDto.setEmail(account.getEmail());
         userDto.setAccountId(account.getId());
-        if (account.getAccountType().equals(AccountType.Host)){
+        if (account.getRole().equals(Role.Host)){
             HostDto host = hostService.findById(account.getId());
             userDto.setFirstName(host.getFirstName());
             userDto.setLastName(host.getLastName());
-        }else if (account.getAccountType().equals(AccountType.Guest)){
+        }else if (account.getRole().equals(com.komsije.booking.model.Role.Guest)){
             GuestDto guest = guestService.findById(account.getId());
             userDto.setFirstName(guest.getFirstName());
             userDto.setLastName(guest.getLastName());

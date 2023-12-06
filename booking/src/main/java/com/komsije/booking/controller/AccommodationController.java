@@ -9,6 +9,7 @@ import com.komsije.booking.service.interfaces.AccommodationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -71,6 +72,7 @@ public class AccommodationController {
         }
     }
 
+    @PreAuthorize("hasAnyRole('Host','Admin')")
     @PostMapping(consumes = "application/json")
     public ResponseEntity<AccommodationDto> saveAccommodation(@RequestBody AccommodationDto accommodationDTO) {
 
@@ -84,6 +86,7 @@ public class AccommodationController {
         return new ResponseEntity<>(accommodation, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('Admin')")
     @PatchMapping(value = "/{id}/approve")
     public ResponseEntity<AccommodationDto> approveAccommodation(@PathVariable("id") Long id) {
         AccommodationDto accommodationDto = null;
@@ -98,6 +101,7 @@ public class AccommodationController {
         return new ResponseEntity<>(accommodationDto, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('Host')")
     @PatchMapping(value = "/{id}/changeApproval")
     public ResponseEntity<AccommodationDto> changeApproval(@PathVariable("id") Long id, @RequestParam boolean auto) {
         AccommodationDto accommodationDto = null;
@@ -113,6 +117,7 @@ public class AccommodationController {
         return new ResponseEntity<>(accommodationDto, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('Host','Admin')")
     @PutMapping(value = "/update")
     public ResponseEntity<AccommodationDto> updateAccommodation(@RequestBody AccommodationDto accommodationDto) {
         AccommodationDto resultAccommodation = null;
@@ -125,6 +130,7 @@ public class AccommodationController {
         return new ResponseEntity<>(resultAccommodation, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('Host')")
     @PutMapping(value = "/add-availability/{id}")
     public ResponseEntity<AccommodationDto> updateAvailability(@PathVariable("id") Long id, @RequestBody AvailabilityDto availabilityDto) {
         AccommodationDto accommodationDto = null;
@@ -137,6 +143,7 @@ public class AccommodationController {
         return new ResponseEntity<>(accommodationDto, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('Host','Admin')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteAccommodation(@PathVariable Long id) {
 

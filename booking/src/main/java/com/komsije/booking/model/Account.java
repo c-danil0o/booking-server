@@ -28,12 +28,11 @@ public class Account {
     @Column(nullable = false)
     private boolean isActivated = false;
     @Enumerated(EnumType.STRING)
-    private AccountType accountType;
+    private Role role;
     @OneToMany(mappedBy = "receiver", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Notification> notifications = new HashSet<>();
     @OneToMany(mappedBy = "reportedUser", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Report> reports = new HashSet<>();
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Review> reviews = new HashSet<>();
-
 }

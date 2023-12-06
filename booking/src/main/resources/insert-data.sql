@@ -12,7 +12,7 @@ INSERT INTO address (city, number, street) VALUES
                                                ('City10', '707', 'Street J');
 
 -- Insert data into the account table for hosts
-INSERT INTO account (is_blocked, account_type, email, password, is_activated)
+INSERT INTO account (is_blocked, role, email, password, is_activated)
 VALUES
     (false, 'Host', 'host1@example.com', 'password1', true),
     (false, 'Host', 'host2@example.com', 'password2', true),
@@ -30,7 +30,7 @@ VALUES
     (5, 5, 'Host', 'Five', '+5678901234');
 
 -- Insert data into the account table for guests
-INSERT INTO account (is_blocked, account_type, email, password, is_activated)
+INSERT INTO account (is_blocked, role, email, password, is_activated)
 VALUES
     (false, 'Guest', 'guest1@example.com', 'password6', true),
     (false, 'Guest', 'guest2@example.com', 'password7', true),

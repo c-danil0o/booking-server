@@ -1,14 +1,12 @@
 package com.komsije.booking.mapper;
 
 import com.komsije.booking.dto.GuestDto;
-import com.komsije.booking.model.AccountType;
 import com.komsije.booking.model.Address;
 import com.komsije.booking.model.Guest;
+import com.komsije.booking.model.Role;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -17,7 +15,7 @@ public abstract class GuestMapper {
     public abstract GuestDto toDto(Guest guest);
     public Guest fromDto(GuestDto guestDto){
         Guest guest = new Guest();
-        guest.setAccountType(AccountType.Guest);
+        guest.setRole(Role.Guest);
         guest.setEmail(guestDto.getEmail());
         guest.setPassword(guestDto.getPassword());
         guest.setBlocked(guestDto.isBlocked());

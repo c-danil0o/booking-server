@@ -1,5 +1,5 @@
 package com.komsije.booking.model;
 
-public enum AccountType {
+public enum Role {
     Guest, Host, Admin
 }

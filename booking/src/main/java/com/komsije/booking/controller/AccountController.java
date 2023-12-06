@@ -1,27 +1,38 @@
 package com.komsije.booking.controller;
 
-import com.komsije.booking.dto.AccommodationDto;
 import com.komsije.booking.dto.AccountDto;
 import com.komsije.booking.dto.LoginDto;
 import com.komsije.booking.exceptions.AccountNotActivateException;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.exceptions.HasActiveReservationsException;
 import com.komsije.booking.exceptions.IncorrectPasswordException;
-import com.komsije.booking.model.Account;
-import com.komsije.booking.model.AccountType;
-import com.komsije.booking.service.AccountServiceImpl;
+import com.komsije.booking.model.Role;
+import com.komsije.booking.security.JwtTokenUtil;
 import com.komsije.booking.service.interfaces.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping(value = "api")
 public class AccountController {
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+    @Autowired
+    private UserDetailsService userDetailsService;
     private final AccountService accountService;
 
     @Autowired
@@ -52,7 +63,7 @@ public class AccountController {
     @GetMapping(value = "/accounts")
     public ResponseEntity<List<AccountDto>> getAccountsByType(@RequestParam String type) {
         try{
-            List<AccountDto> accounts = accountService.getByAccountType(AccountType.valueOf(type));
+            List<AccountDto> accounts = accountService.getByAccountType(Role.valueOf(type));
             return new ResponseEntity<>(accounts, HttpStatus.OK);
         }catch (IllegalArgumentException e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -108,16 +119,36 @@ public class AccountController {
     }
 
     @PostMapping(value = "/login", consumes = "application/json")
-    public ResponseEntity<AccountDto> login(@RequestBody LoginDto loginDto){
-        AccountDto account = null;
-        try {
-            account = accountService.checkLoginCredentials(loginDto);
-        } catch (ElementNotFoundException | IncorrectPasswordException | AccountNotActivateException e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(account, HttpStatus.OK);
+    public ResponseEntity<String> login(@RequestBody LoginDto loginDto){
+        UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(loginDto.getEmail(),
+                loginDto.getPassword());
+        Authentication auth = authenticationManager.authenticate(authReq);
+
+        SecurityContext sc = SecurityContextHolder.getContext();
+        sc.setAuthentication(auth);
+
+        UserDetails userDetail = userDetailsService.loadUserByUsername(loginDto.getEmail());
+
+        String token = jwtTokenUtil.generateToken(userDetail);
+//        loginDto.setJwt(token);
+
+        return ResponseEntity.ok(token);
+
+
+//        AccountDto account = null;
+//        try {
+//            account = accountService.checkLoginCredentials(loginDto);
+//        } catch (ElementNotFoundException | IncorrectPasswordException | AccountNotActivateException e) {
+//            System.out.println(e.getMessage());
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
+//        return new ResponseEntity<>(account, HttpStatus.OK);
     }
+
+
+
+
+
     @PutMapping(value = "/accounts/update", consumes = "application/json")
     public ResponseEntity<AccountDto> updateAccount(@RequestBody AccountDto accountDto){
         AccountDto account = null;

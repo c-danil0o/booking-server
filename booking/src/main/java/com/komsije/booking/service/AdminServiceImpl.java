@@ -4,7 +4,7 @@ import com.komsije.booking.dto.AccountDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.mapper.AccountMapper;
 import com.komsije.booking.model.Account;
-import com.komsije.booking.model.AccountType;
+import com.komsije.booking.model.Role;
 import com.komsije.booking.repository.AccountRepository;
 import com.komsije.booking.service.interfaces.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public List<AccountDto> findAll() {
-        return mapper.toDto(accountRepository.findAccountByAccountType(AccountType.Admin));
+        return mapper.toDto(accountRepository.findAccountByRole(Role.Admin));
     }
 
     @Override

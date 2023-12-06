@@ -4,16 +4,12 @@ import com.komsije.booking.dto.AccommodationDto;
 import com.komsije.booking.dto.GuestDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.exceptions.HasActiveReservationsException;
-import com.komsije.booking.model.AccountType;
-import com.komsije.booking.model.Guest;
-import com.komsije.booking.service.GuestServiceImpl;
 import com.komsije.booking.service.interfaces.GuestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController

@@ -13,7 +13,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-@Mapper(componentModel = "spring", uses = {AddressMapper.class, TimeSlotMapper.class}, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE )
+@Mapper(componentModel = "spring", uses = {AddressMapper.class, TimeSlotMapper.class, HostMapper.class}, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE )
 public abstract class AccommodationMapper {
     @Autowired
     private AddressMapper addressMapper;

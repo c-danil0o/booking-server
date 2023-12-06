@@ -11,7 +11,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {UserDtoMapper.class}, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE )
+@Mapper(componentModel = "spring", uses = {UserDtoMapper.class, HostMapper.class, AccommodationMapper.class}, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE )
 public interface ReviewMapper {
     ReviewDto toDto(Review review);
     Review fromDto(ReviewDto reviewDto);

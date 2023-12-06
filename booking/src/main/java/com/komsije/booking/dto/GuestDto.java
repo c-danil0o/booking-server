@@ -13,7 +13,7 @@ public class GuestDto {
     private String email;
     private String password;
     private boolean isBlocked;
-    private Address address;
+    private AddressDto address;
     private String firstName;
     private String lastName;
     private String phone;

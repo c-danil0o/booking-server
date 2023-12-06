@@ -26,6 +26,6 @@ public class Host extends Account {
     private Address address;
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Accommodation> properties = new HashSet<>();
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "host")
     private Set<Review> hostReviews = new HashSet<>();
 }

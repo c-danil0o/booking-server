@@ -61,4 +61,9 @@ public class ReviewServiceImpl implements ReviewService {
         review.setApproved(true);
         reviewRepository.save(review);
     }
+
+    @Override
+    public List<ReviewDto> findByAccommodationId(Long id) throws ElementNotFoundException {
+        return mapper.toDto(reviewRepository.findByAccommodationId(id));
+    }
 }

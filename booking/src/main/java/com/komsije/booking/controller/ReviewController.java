@@ -4,6 +4,7 @@ import com.komsije.booking.dto.AccommodationDto;
 import com.komsije.booking.dto.ReviewDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.exceptions.HasActiveReservationsException;
+import com.komsije.booking.model.AccommodationType;
 import com.komsije.booking.model.Review;
 import com.komsije.booking.service.AccountServiceImpl;
 import com.komsije.booking.service.ReviewServiceImpl;
@@ -100,5 +101,17 @@ public class ReviewController {
         }
         return new ResponseEntity<>(HttpStatus.OK);
 
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ReviewDto>> getByAccommodationId(@RequestParam Long accommodationId ) {
+        try {
+            List<ReviewDto> reviewDtos = reviewService.findByAccommodationId(accommodationId);
+            return new ResponseEntity<>(reviewDtos, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (ElementNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

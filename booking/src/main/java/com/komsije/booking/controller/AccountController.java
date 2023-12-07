@@ -2,6 +2,7 @@ package com.komsije.booking.controller;
 
 import com.komsije.booking.dto.AccountDto;
 import com.komsije.booking.dto.LoginDto;
+import com.komsije.booking.dto.TokenDto;
 import com.komsije.booking.exceptions.AccountNotActivateException;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.exceptions.HasActiveReservationsException;
@@ -11,8 +12,10 @@ import com.komsije.booking.security.JwtTokenUtil;
 import com.komsije.booking.service.interfaces.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
@@ -127,7 +130,7 @@ public class AccountController {
     }
 
     @PostMapping(value = "/login", consumes = "application/json")
-    public ResponseEntity<String> login(@RequestBody LoginDto loginDto){
+    public ResponseEntity<TokenDto> login(@RequestBody LoginDto loginDto){
         UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(loginDto.getEmail(),
                 loginDto.getPassword());
         Authentication auth = authenticationManager.authenticate(authReq);
@@ -138,9 +141,12 @@ public class AccountController {
         UserDetails userDetail = userDetailsService.loadUserByUsername(loginDto.getEmail());
 
         String token = jwtTokenUtil.generateToken(userDetail);
-//        loginDto.setJwt(token);
+        TokenDto tokenDto = new TokenDto();
+        tokenDto.setToken(token);
 
-        return ResponseEntity.ok(token);
+        return new ResponseEntity<>(tokenDto, HttpStatus.OK);
+
+
 
 
 //        AccountDto account = null;
@@ -154,6 +160,24 @@ public class AccountController {
     }
 
 
+    @GetMapping(
+            value = "/logout",
+            produces = MediaType.TEXT_PLAIN_VALUE
+    )
+    public ResponseEntity<String> logoutUser() {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        //if (!(auth instanceof AnonymousAuthenticationToken)){
+        if (true){
+            SecurityContextHolder.clearContext();
+
+            return new ResponseEntity<>("You successfully logged out!", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+    }
     @PreAuthorize("hasRole('Admin')")
     @PutMapping(value = "/accounts/update", consumes = "application/json")
     public ResponseEntity<AccountDto> updateAccount(@RequestBody AccountDto accountDto){

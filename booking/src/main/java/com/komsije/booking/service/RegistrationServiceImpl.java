@@ -34,7 +34,8 @@ public class RegistrationServiceImpl implements RegistrationService {
             else if (registrationDto.getRole()==Role.Host){
                 token = hostService.singUpUser(registrationDto);
             }
-            String link = "http://localhost:8080/api/register/confirm?token=" + token;
+            //String link = "http://localhost:8080/api/register/confirm?token=" + token;
+            String link = "http://localhost:4200/registration-confirmation?token=" + token;
 //            String link = "http://localhost:8080/api/accommodations/all";
             emailSenderService.send(
                     registrationDto.getEmail(),
@@ -302,7 +303,7 @@ public class RegistrationServiceImpl implements RegistrationService {
                 "                  <tbody><tr>\n" +
                 "                    <td align=\"left\" style=\"font-size:0px;padding:10px 25px;word-break:break-word;\">\n" +
                 "                      <div style=\"font-family:Muli, Arial, sans-serif;font-size:20px;font-weight:400;line-height:30px;text-align:left;color:#333333;\">\n" +
-                "                        <h1 style=\"margin: 0; font-size: 24px; line-height: normal; font-weight: bold;\">Hi " + name + " Activate Your Account Now</h1>\n" +
+                "                        <h1 style=\"margin: 0; font-size: 24px; line-height: normal; font-weight: bold;\">Hi " + name + ". Please activate your account!</h1>\n" +
                 "                      </div>\n" +
                 "                    </td>\n" +
                 "                  </tr>\n" +
@@ -326,14 +327,14 @@ public class RegistrationServiceImpl implements RegistrationService {
                 "                  <tr>\n" +
                 "                    <td align=\"left\" style=\"font-size:0px;padding:10px 25px;word-break:break-word;\">\n" +
                 "                      <div style=\"font-family:Muli, Arial, sans-serif;font-size:16px;font-weight:400;line-height:20px;text-align:left;color:#333333;\">\n" +
-                "                        <p style=\"margin: 0;\"> We got your request to activate your account! </p>\n" +
+                "                        <p style=\"margin: 0;\"> You've registered on our site and this is your activation email.</p>\n" +
                 "                      </div>\n" +
                 "                    </td>\n" +
                 "                  </tr>\n" +
                 "                  <tr>\n" +
                 "                    <td align=\"left\" style=\"font-size:0px;padding:10px 25px;word-break:break-word;\">\n" +
                 "                      <div style=\"font-family:Muli, Arial, sans-serif;font-size:16px;font-weight:400;line-height:20px;text-align:left;color:#333333;\">\n" +
-                "                        <p style=\"margin: 0;\"> Just so you know: You have 24 hours to activate your account. After that, you'll have to ask for a new activation. </p>\n" +
+                "                        <p style=\"margin: 0;\"> You have 24 hours to activate your account. </p>\n" +
                 "                      </div>\n" +
                 "                    </td>\n" +
                 "                  </tr>\n" +

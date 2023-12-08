@@ -1,6 +1,7 @@
 package com.komsije.booking.mapper;
 
 import com.komsije.booking.dto.HostDto;
+import com.komsije.booking.dto.RegistrationDto;
 import com.komsije.booking.model.Address;
 import com.komsije.booking.model.Host;
 import com.komsije.booking.model.Role;
@@ -27,4 +28,15 @@ public abstract class HostMapper {
     }
     public abstract List<HostDto> toDto(List<Host> hostList);
     public abstract void update(@MappingTarget Host host, HostDto hostDto);
+    public Host fromRegistrationDto(RegistrationDto registrationDto){
+        Host host = new Host();
+        host.setEmail(registrationDto.getEmail());
+        host.setPassword(registrationDto.getPassword());
+        host.setPhone(registrationDto.getPhone());
+        host.setAddress(new Address(null, registrationDto.getAddress().getStreet(), registrationDto.getAddress().getCity(), registrationDto.getAddress().getNumber()));
+        host.setFirstName(registrationDto.getFirstName());
+        host.setLastName(registrationDto.getLastName());
+        host.setRole(Role.Host);
+        return host;
+    }
 }

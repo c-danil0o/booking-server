@@ -1,8 +1,10 @@
 package com.komsije.booking.mapper;
 
 import com.komsije.booking.dto.GuestDto;
+import com.komsije.booking.dto.RegistrationDto;
 import com.komsije.booking.model.Address;
 import com.komsije.booking.model.Guest;
+import com.komsije.booking.model.Host;
 import com.komsije.booking.model.Role;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
@@ -28,4 +30,17 @@ public abstract class GuestMapper {
     }
     public abstract List<GuestDto> toDto(List<Guest> guestsList);
     public abstract void update(@MappingTarget Guest guest, GuestDto guestDto);
+
+    public Guest fromRegistrationDto(RegistrationDto registrationDto){
+        Guest guest = new Guest();
+        guest.setEmail(registrationDto.getEmail());
+        guest.setPassword(registrationDto.getPassword());
+        guest.setPhone(registrationDto.getPhone());
+        guest.setAddress(new Address(null, registrationDto.getAddress().getStreet(), registrationDto.getAddress().getCity(), registrationDto.getAddress().getNumber()));
+        guest.setFirstName(registrationDto.getFirstName());
+        guest.setLastName(registrationDto.getLastName());
+        guest.setTimesCancelled(0);
+        guest.setRole(Role.Guest);
+        return guest;
+    }
 }

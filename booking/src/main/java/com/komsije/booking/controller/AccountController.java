@@ -2,20 +2,19 @@ package com.komsije.booking.controller;
 
 import com.komsije.booking.dto.AccountDto;
 import com.komsije.booking.dto.LoginDto;
+import com.komsije.booking.dto.RegistrationDto;
 import com.komsije.booking.dto.TokenDto;
-import com.komsije.booking.exceptions.AccountNotActivateException;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.exceptions.HasActiveReservationsException;
-import com.komsije.booking.exceptions.IncorrectPasswordException;
 import com.komsije.booking.model.Role;
 import com.komsije.booking.security.JwtTokenUtil;
+import com.komsije.booking.service.RegistrationServiceImpl;
 import com.komsije.booking.service.interfaces.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
@@ -37,6 +36,8 @@ public class AccountController {
     private JwtTokenUtil jwtTokenUtil;
     @Autowired
     private UserDetailsService userDetailsService;
+    @Autowired
+    private RegistrationServiceImpl registrationService;
     private final AccountService accountService;
 
     @Autowired
@@ -89,7 +90,7 @@ public class AccountController {
         }
     }
 
-    @PostMapping(value="/register", consumes = "application/json")
+    @PostMapping(value="/accounts/save", consumes = "application/json")
     public ResponseEntity<AccountDto> saveAccount(@RequestBody AccountDto accountDTO) {
         AccountDto account = null;
         try {
@@ -101,6 +102,7 @@ public class AccountController {
         return new ResponseEntity<>(account, HttpStatus.CREATED);
     }
 
+    //blokirati u servisu
     @PreAuthorize("hasRole('Admin')")
     @PatchMapping(value = "/accounts/{id}/block")
     public ResponseEntity<AccountDto> blockAccount(@PathVariable("id") Long id) {
@@ -188,6 +190,27 @@ public class AccountController {
             throw new RuntimeException(e);
         }
         return new ResponseEntity<>(account, HttpStatus.OK);
+    }
+
+    @PostMapping(value="/register", consumes = "application/json")
+    public ResponseEntity<String> register1(@RequestBody RegistrationDto registrationDto) {
+        try {
+            return new ResponseEntity<>( registrationService.register(registrationDto),HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping(path = "/register/confirm")
+    public ResponseEntity<String> confirm(@RequestParam("token") String token) {
+        try{
+            return new ResponseEntity<>(registrationService.confirmToken(token),HttpStatus.OK);
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
 

@@ -17,5 +17,6 @@ public interface AccountService extends CrudService<AccountDto, Long> {
     public List<AccountDto> getBlockedAccounts();
     public Account getByEmail(String email) throws ElementNotFoundException;
     public AccountDto checkLoginCredentials(LoginDto loginDto) throws ElementNotFoundException, AccountNotActivateException, IncorrectPasswordException;
+    public void activateAccount(String email);
 
 }

@@ -2,28 +2,50 @@ package com.komsije.booking.service;
 
 import com.komsije.booking.dto.AccommodationDto;
 import com.komsije.booking.dto.GuestDto;
+import com.komsije.booking.dto.RegistrationDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.mapper.AccommodationMapper;
+import com.komsije.booking.mapper.AddressMapper;
 import com.komsije.booking.mapper.GuestMapper;
+import com.komsije.booking.model.Account;
+import com.komsije.booking.model.ConfirmationToken;
 import com.komsije.booking.model.Guest;
+import com.komsije.booking.model.Role;
+import com.komsije.booking.repository.AccountRepository;
 import com.komsije.booking.repository.GuestRepository;
+import com.komsije.booking.service.interfaces.ConfirmationTokenService;
 import com.komsije.booking.service.interfaces.GuestService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
+@AllArgsConstructor
 public class GuestServiceImpl implements GuestService {
     @Autowired
     private GuestMapper mapper;
     @Autowired
+    private AddressMapper addressMapper;
+    @Autowired
     private AccommodationMapper accommodationMapper;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     private final GuestRepository guestRepository;
+    private final AccountRepository accountRepository;
+    private final ConfirmationTokenService confirmationTokenService;
 
     @Autowired
-    public GuestServiceImpl(GuestRepository guestRepository) {
+    public GuestServiceImpl(GuestRepository guestRepository, AccountRepository accountRepository,ConfirmationTokenService confirmationTokenService) {
         this.guestRepository = guestRepository;
+        this.accountRepository = accountRepository;
+        this.confirmationTokenService=confirmationTokenService;
     }
 
     public GuestDto findById(Long id) throws ElementNotFoundException {
@@ -68,5 +90,29 @@ public class GuestServiceImpl implements GuestService {
         guest.getFavorites().add(accommodationMapper.fromDto(accommodationDto));
         guestRepository.save(guest);
         return accommodationMapper.toDto(guest.getFavorites().stream().toList());
+    }
+
+    @Override
+    public String singUpUser(RegistrationDto registrationDto) {
+        Account account = accountRepository.getAccountByEmail(registrationDto.getEmail());
+        Long id;
+        if (account==null){
+            String encodedPassword = passwordEncoder.encode(registrationDto.getPassword());
+            registrationDto.setPassword(encodedPassword);
+            Guest guest = mapper.fromRegistrationDto(registrationDto);
+            guestRepository.save(guest);
+            id = guest.getId();
+        }
+        else if (account.isActivated() || account.isBlocked()){
+            throw new IllegalStateException("can't register with this mail");
+        }else
+            id = account.getId();
+
+        String token = UUID.randomUUID().toString();
+        ConfirmationToken confirmationToken = new ConfirmationToken(token,LocalDateTime.now(),LocalDateTime.now().plusHours(24),accountRepository.findById(id).orElseGet(null));
+
+        confirmationTokenService.saveConfirmationToken(confirmationToken);
+
+        return token;
     }
 }

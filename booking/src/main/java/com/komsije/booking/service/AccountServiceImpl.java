@@ -100,5 +100,12 @@ public class AccountServiceImpl implements AccountService{
 
     }
 
+    @Override
+    public void activateAccount(String email) {
+        Account account = accountRepository.getAccountByEmail(email);
+        account.setActivated(true);
+        accountRepository.save(account);
+    }
+
 
 }

@@ -102,6 +102,7 @@ public class AccountController {
         return new ResponseEntity<>(account, HttpStatus.CREATED);
     }
 
+    //blokirati u servisu
     @PreAuthorize("hasRole('Admin')")
     @PatchMapping(value = "/accounts/{id}/block")
     public ResponseEntity<AccountDto> blockAccount(@PathVariable("id") Long id) {
@@ -196,6 +197,17 @@ public class AccountController {
         try {
             return new ResponseEntity<>( registrationService.register(registrationDto),HttpStatus.OK);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping(path = "/register/confirm")
+    public ResponseEntity<String> confirm(@RequestParam("token") String token) {
+        try{
+            return new ResponseEntity<>(registrationService.confirmToken(token),HttpStatus.OK);
+        }
+        catch (Exception e){
             System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

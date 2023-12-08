@@ -29,6 +29,7 @@ public class WebSecurityConfiguration {
         http.csrf().disable().authorizeRequests()
                 .requestMatchers("/*").permitAll()
                 .requestMatchers("/api/login/*").permitAll()
+                .requestMatchers("/api/register/*").permitAll()
                 .requestMatchers("/api/notifications/*").authenticated()
                 .requestMatchers("/api/reservations/*").authenticated()
                 .requestMatchers("/api/reviews/*").authenticated()
@@ -42,8 +43,8 @@ public class WebSecurityConfiguration {
     @Bean
     public PasswordEncoder passwordEncoder() {
         //System.out.println(encoder.encode("admin"));
-        return NoOpPasswordEncoder.getInstance();
-//        return new BCryptPasswordEncoder();
+//        return NoOpPasswordEncoder.getInstance();
+        return new BCryptPasswordEncoder();
     }
 
     @Bean

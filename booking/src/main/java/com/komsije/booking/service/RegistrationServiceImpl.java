@@ -1,13 +1,15 @@
 package com.komsije.booking.service;
 
 import com.komsije.booking.dto.RegistrationDto;
-import com.komsije.booking.service.interfaces.EmailSenderService;
-import com.komsije.booking.service.interfaces.GuestService;
-import com.komsije.booking.service.interfaces.HostService;
-import com.komsije.booking.service.interfaces.RegistrationService;
+import com.komsije.booking.model.ConfirmationToken;
+import com.komsije.booking.model.Role;
+import com.komsije.booking.service.interfaces.*;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @Service
@@ -18,21 +20,54 @@ public class RegistrationServiceImpl implements RegistrationService {
     HostService hostService;
     @Autowired
     EmailSenderService emailSenderService;
+    @Autowired
+    ConfirmationTokenService confirmationTokenService;
+    @Autowired
+    AccountService accountService;
 
     public String register(RegistrationDto registrationDto){
         try {
-            String token = guestService.singUpUser(registrationDto);
-            String link = "http://localhost:8080/api/accommodations/all";
+            String token = "";
+            if(registrationDto.getRole()== Role.Guest){
+                token = guestService.singUpUser(registrationDto);
+            }
+            else if (registrationDto.getRole()==Role.Host){
+                token = hostService.singUpUser(registrationDto);
+            }
+            String link = "http://localhost:8080/api/register/confirm?token=" + token;
+//            String link = "http://localhost:8080/api/accommodations/all";
             emailSenderService.send(
                     registrationDto.getEmail(),
                     buildEmail(registrationDto.getFirstName(), link));
             return token;
         }
         catch (Exception e){
-            return "ne valjda singUp";
+            return "ne valja singUp";
         }
     }
 
+    @Override
+    @Transactional
+    public String confirmToken(String token) {
+        ConfirmationToken confirmationToken = confirmationTokenService
+                .getToken(token)
+                .orElseThrow(() ->
+                        new IllegalStateException("token not found"));
+
+        if (confirmationToken.getConfirmedAt() != null) {
+            throw new IllegalStateException("email already confirmed");
+        }
+
+        LocalDateTime expiredAt = confirmationToken.getExpiresAt();
+
+        if (expiredAt.isBefore(LocalDateTime.now())) {
+            throw new IllegalStateException("token expired");
+        }
+
+        confirmationTokenService.setConfirmedAt(token);
+        accountService.activateAccount(confirmationToken.getAccount().getEmail());
+        return "confirmed";
+    }
 
 
     private String buildEmail(String name, String link) {
@@ -91,7 +126,7 @@ public class RegistrationServiceImpl implements RegistrationService {
                 "      <td width=\"10\" valign=\"middle\"><br></td>\n" +
                 "      <td style=\"font-family:Helvetica,Arial,sans-serif;font-size:19px;line-height:1.315789474;max-width:560px\">\n" +
                 "        \n" +
-                "            <p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\">Hi " + name + ",</p><p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\"> Thank you for registering. Please click on the below link to activate your account: </p><blockquote style=\"Margin:0 0 20px 0;border-left:10px solid #b1b4b6;padding:15px 0 0.1px 15px;font-size:19px;line-height:25px\"><p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\"> <a href=\"" + link + "\">Activate Now</a> </p></blockquote>\n Link will expire in 15 minutes. <p>See you soon</p>" +
+                "            <p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\">Hi " + name + ",</p><p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\"> Thank you for registering. Please click on the below link to activate your account: </p><blockquote style=\"Margin:0 0 20px 0;border-left:10px solid #b1b4b6;padding:15px 0 0.1px 15px;font-size:19px;line-height:25px\"><p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\"> <a href=\"" + link + "\">Activate Now</a> </p></blockquote>\n Link will expire in 24 hours. <p>See you soon</p>" +
                 "        \n" +
                 "      </td>\n" +
                 "      <td width=\"10\" valign=\"middle\"><br></td>\n" +

@@ -97,29 +97,19 @@ public class GuestServiceImpl implements GuestService {
         Account account = accountRepository.getAccountByEmail(registrationDto.getEmail());
         Long id;
         if (account==null){
-            Guest guest = new Guest();
-            guest.setEmail(registrationDto.getEmail());
-            guest.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
-            guest.setPhone(registrationDto.getPhone());
-            guest.setAddress(addressMapper.fromDto(registrationDto.getAddress()));
-            guest.setFirstName(registrationDto.getFirstName());
-            guest.setLastName(registrationDto.getLastName());
-            guest.setTimesCancelled(0);
-            guest.setRole(Role.Guest);
+            String encodedPassword = passwordEncoder.encode(registrationDto.getPassword());
+            registrationDto.setPassword(encodedPassword);
+            Guest guest = mapper.fromRegistrationDto(registrationDto);
             guestRepository.save(guest);
             id = guest.getId();
         }
         else if (account.isActivated() || account.isBlocked()){
-            throw new IllegalStateException("email already taken");
+            throw new IllegalStateException("can't register with this mail");
         }else
             id = account.getId();
 
         String token = UUID.randomUUID().toString();
-        ConfirmationToken confirmationToken = new ConfirmationToken();
-        confirmationToken.setToken(token);
-        confirmationToken.setCreatedAt(LocalDateTime.now());
-        confirmationToken.setExpiresAt(LocalDateTime.now().plusHours(24));
-        confirmationToken.setAccount(accountRepository.findById(id).orElseGet(null));
+        ConfirmationToken confirmationToken = new ConfirmationToken(token,LocalDateTime.now(),LocalDateTime.now().plusHours(24),accountRepository.findById(id).orElseGet(null));
 
         confirmationTokenService.saveConfirmationToken(confirmationToken);
 

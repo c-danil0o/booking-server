@@ -1,25 +1,41 @@
 package com.komsije.booking.service;
 
 import com.komsije.booking.dto.HostDto;
+import com.komsije.booking.dto.RegistrationDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
+import com.komsije.booking.mapper.AddressMapper;
 import com.komsije.booking.mapper.HostMapper;
-import com.komsije.booking.model.Host;
+import com.komsije.booking.model.*;
+import com.komsije.booking.repository.AccountRepository;
 import com.komsije.booking.repository.HostRepository;
+import com.komsije.booking.service.interfaces.ConfirmationTokenService;
 import com.komsije.booking.service.interfaces.HostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class HostServiceImpl implements HostService {
     @Autowired
     private HostMapper mapper;
+    @Autowired
+    AddressMapper addressMapper;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     private final HostRepository hostRepository;
+    private final AccountRepository accountRepository;
+    private final ConfirmationTokenService confirmationTokenService;
+
 
     @Autowired
-    public HostServiceImpl(HostRepository hostRepository) {
+    public HostServiceImpl(HostRepository hostRepository, AccountRepository accountRepository, ConfirmationTokenService confirmationTokenService) {
         this.hostRepository = hostRepository;
+        this.accountRepository = accountRepository;
+        this.confirmationTokenService = confirmationTokenService;
     }
 
     public HostDto findById(Long id) throws ElementNotFoundException {
@@ -53,4 +69,27 @@ public class HostServiceImpl implements HostService {
     }
 
 
+    @Override
+    public String singUpUser(RegistrationDto registrationDto) {
+        Account account = accountRepository.getAccountByEmail(registrationDto.getEmail());
+        Long id;
+        if (account==null){
+            String encodedPassword = passwordEncoder.encode(registrationDto.getPassword());
+            registrationDto.setPassword(encodedPassword);
+            Host host = mapper.fromRegistrationDto(registrationDto);
+            hostRepository.save(host);
+            id = host.getId();
+        }
+        else if (account.isActivated() || account.isBlocked()){
+            throw new IllegalStateException("can't register with this mail");
+        }else
+            id = account.getId();
+
+        String token = UUID.randomUUID().toString();
+        ConfirmationToken confirmationToken = new ConfirmationToken(token,LocalDateTime.now(),LocalDateTime.now().plusHours(24),accountRepository.findById(id).orElseGet(null));
+
+        confirmationTokenService.saveConfirmationToken(confirmationToken);
+
+        return token;
+    }
 }

@@ -35,4 +35,6 @@ public class Account {
     private Set<Report> reports = new HashSet<>();
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Review> reviews = new HashSet<>();
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<ConfirmationToken> tokens = new HashSet<>();
 }

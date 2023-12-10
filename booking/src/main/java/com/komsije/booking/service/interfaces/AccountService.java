@@ -2,6 +2,7 @@ package com.komsije.booking.service.interfaces;
 
 import com.komsije.booking.dto.AccountDto;
 import com.komsije.booking.dto.LoginDto;
+import com.komsije.booking.dto.NewPasswordDto;
 import com.komsije.booking.exceptions.AccountNotActivateException;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.exceptions.IncorrectPasswordException;
@@ -18,5 +19,6 @@ public interface AccountService extends CrudService<AccountDto, Long> {
     public Account getByEmail(String email) throws ElementNotFoundException;
     public AccountDto checkLoginCredentials(LoginDto loginDto) throws ElementNotFoundException, AccountNotActivateException, IncorrectPasswordException;
     public void activateAccount(String email);
+    public void changePassword(NewPasswordDto newPasswordDto) throws ElementNotFoundException, IncorrectPasswordException;
 
 }

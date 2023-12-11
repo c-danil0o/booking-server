@@ -3,6 +3,7 @@ package com.komsije.booking.controller;
 import com.komsije.booking.dto.*;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.exceptions.HasActiveReservationsException;
+import com.komsije.booking.model.Account;
 import com.komsije.booking.model.Role;
 import com.komsije.booking.security.JwtTokenUtil;
 import com.komsije.booking.service.RegistrationServiceImpl;
@@ -72,6 +73,17 @@ public class AccountController {
             List<AccountDto> accounts = accountService.getByAccountType(Role.valueOf(type));
             return new ResponseEntity<>(accounts, HttpStatus.OK);
         }catch (IllegalArgumentException e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping(value = "/account/{email}")
+    public ResponseEntity<AccountDto> getAccountByEmail(@PathVariable String email) {
+        try{
+            AccountDto account = accountService.getByEmail(email);
+            return new ResponseEntity<>(account, HttpStatus.OK);
+        }
+        catch (ElementNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -211,13 +223,13 @@ public class AccountController {
     }
 
     @PostMapping(value = "/passwordChange", consumes = "application/json")
-    public ResponseEntity<String> changePassword(@RequestBody NewPasswordDto newPasswordDto){
+    public ResponseEntity<Void> changePassword(@RequestBody NewPasswordDto newPasswordDto){
         try {
             accountService.changePassword(newPasswordDto);
-            return new ResponseEntity<>("Password changed", HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         }
         catch (Exception e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
     }

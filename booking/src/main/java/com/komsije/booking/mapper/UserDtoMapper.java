@@ -1,5 +1,6 @@
 package com.komsije.booking.mapper;
 
+import com.komsije.booking.dto.AccountDto;
 import com.komsije.booking.dto.GuestDto;
 import com.komsije.booking.dto.HostDto;
 import com.komsije.booking.dto.UserDto;
@@ -38,7 +39,7 @@ public abstract class UserDtoMapper {
         return userDto;
     }
 
-    public Account fromDto(UserDto userDto) throws ElementNotFoundException {
+    public AccountDto fromDto(UserDto userDto) throws ElementNotFoundException {
         return accountService.getByEmail(userDto.getEmail());
     }
 

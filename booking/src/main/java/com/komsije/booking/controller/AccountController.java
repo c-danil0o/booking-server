@@ -1,9 +1,6 @@
 package com.komsije.booking.controller;
 
-import com.komsije.booking.dto.AccountDto;
-import com.komsije.booking.dto.LoginDto;
-import com.komsije.booking.dto.RegistrationDto;
-import com.komsije.booking.dto.TokenDto;
+import com.komsije.booking.dto.*;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.exceptions.HasActiveReservationsException;
 import com.komsije.booking.model.Role;
@@ -53,7 +50,7 @@ public class AccountController {
 
     }
 
-    @PreAuthorize("hasRole('Admin')")
+//    @PreAuthorize("hasRole('Admin')")
     @GetMapping(value = "/accounts/{id}")
     public ResponseEntity<AccountDto> getAccount(@PathVariable Long id) {
 
@@ -180,7 +177,7 @@ public class AccountController {
         }
 
     }
-    @PreAuthorize("hasRole('Admin')")
+//    @PreAuthorize("hasRole('Admin')")
     @PutMapping(value = "/accounts/update", consumes = "application/json")
     public ResponseEntity<AccountDto> updateAccount(@RequestBody AccountDto accountDto){
         AccountDto account = null;
@@ -211,6 +208,18 @@ public class AccountController {
             System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @PostMapping(value = "/passwordChange", consumes = "application/json")
+    public ResponseEntity<Void> changePassword(@RequestBody NewPasswordDto newPasswordDto){
+        try {
+            accountService.changePassword(newPasswordDto);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
     }
 
 

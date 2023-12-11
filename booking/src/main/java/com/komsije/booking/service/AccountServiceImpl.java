@@ -2,6 +2,7 @@ package com.komsije.booking.service;
 
 import com.komsije.booking.dto.AccountDto;
 import com.komsije.booking.dto.LoginDto;
+import com.komsije.booking.dto.NewPasswordDto;
 import com.komsije.booking.exceptions.AccountNotActivateException;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.exceptions.HasActiveReservationsException;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -105,6 +107,19 @@ public class AccountServiceImpl implements AccountService{
         Account account = accountRepository.getAccountByEmail(email);
         account.setActivated(true);
         accountRepository.save(account);
+    }
+
+    @Override
+    public void changePassword(NewPasswordDto newPasswordDto) throws ElementNotFoundException, IncorrectPasswordException {
+        Account account = accountRepository.getAccountByEmail(newPasswordDto.getEmail());
+        if (account==null)
+            throw new ElementNotFoundException("Account with given email doesn't exist!");
+        if (!Objects.equals(account.getPassword(), newPasswordDto.getOldPassword()))
+            throw new IncorrectPasswordException("Old password is incorrect");
+        account.setPassword(newPasswordDto.getNewPassword());
+        accountRepository.save(account);
+
+
     }
 
 

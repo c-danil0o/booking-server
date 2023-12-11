@@ -31,7 +31,7 @@ public class GuestController {
     }
 
     @PreAuthorize("hasAnyRole('Admin','Host')")
-    @GetMapping(value = "/{id}")
+//    @GetMapping(value = "/{id}")
     public ResponseEntity<GuestDto> getGuest(@PathVariable Long id) {
         GuestDto guestDto = null;
         try {

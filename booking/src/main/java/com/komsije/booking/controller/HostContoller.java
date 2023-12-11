@@ -1,8 +1,10 @@
 package com.komsije.booking.controller;
 
+import com.komsije.booking.dto.AccountDto;
 import com.komsije.booking.dto.HostDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.exceptions.HasActiveReservationsException;
+import com.komsije.booking.model.Host;
 import com.komsije.booking.service.interfaces.HostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,7 +31,7 @@ public class HostContoller {
         return new ResponseEntity<>(hostDtos, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('Admin')")
+//    @PreAuthorize("hasRole('Admin')")
     @GetMapping(value = "/{id}")
     public ResponseEntity<HostDto> getHost(@PathVariable Long id) {
         HostDto hostDto = null;
@@ -55,7 +57,7 @@ public class HostContoller {
         return new ResponseEntity<>(hostDto, HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasRole('Admin')")
+//    @PreAuthorize("hasRole('Admin')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteHost(@PathVariable Long id) {
         try {
@@ -65,7 +67,17 @@ public class HostContoller {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(HttpStatus.OK);
+    }
 
+    @PutMapping(value = "/update", consumes = "application/json")
+    public ResponseEntity<HostDto> updateAccount(@RequestBody HostDto hostDto){
+        HostDto host = null;
+        try {
+            host = hostService.update(hostDto);
+        } catch (ElementNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        return new ResponseEntity<>(host, HttpStatus.OK);
     }
 
 

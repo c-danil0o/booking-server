@@ -193,7 +193,7 @@ public class AccountController {
     }
 
     @PostMapping(value="/register", consumes = "application/json")
-    public ResponseEntity<String> register1(@RequestHeader(HttpHeaders.USER_AGENT) String agent, @RequestBody RegistrationDto registrationDto) {
+    public ResponseEntity<TokenDto> register1(@RequestHeader(HttpHeaders.USER_AGENT) String agent, @RequestBody RegistrationDto registrationDto) {
         try {
             if (agent.equals("Mobile-Android")){
                 return new ResponseEntity<>( registrationService.registerAndroid(registrationDto),HttpStatus.OK);

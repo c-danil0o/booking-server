@@ -8,4 +8,5 @@ import java.util.List;
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<Review> getReviewsByIsApprovedIsTrue();
     List<Review> findByAccommodationId(Long id);
+    List<Review> findByHostId(Long id);
 }

@@ -66,4 +66,9 @@ public class ReviewServiceImpl implements ReviewService {
     public List<ReviewDto> findByAccommodationId(Long id) throws ElementNotFoundException {
         return mapper.toDto(reviewRepository.findByAccommodationId(id));
     }
+
+    @Override
+    public List<ReviewDto> findByHostId(Long id) throws ElementNotFoundException {
+        return mapper.toDto(reviewRepository.findByHostId(id));
+    }
 }

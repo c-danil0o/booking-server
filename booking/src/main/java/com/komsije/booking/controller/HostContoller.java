@@ -1,6 +1,7 @@
 package com.komsije.booking.controller;
 
 import com.komsije.booking.dto.AccountDto;
+import com.komsije.booking.dto.EmailDto;
 import com.komsije.booking.dto.HostDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.exceptions.HasActiveReservationsException;
@@ -78,6 +79,18 @@ public class HostContoller {
             throw new RuntimeException(e);
         }
         return new ResponseEntity<>(host, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/email", consumes = "application/json")
+    public ResponseEntity<HostDto> getByEmail(@RequestBody EmailDto emailDto) {
+        HostDto hostDto = null;
+        try {
+            hostDto = hostService.getByEmail(emailDto.getEmail());
+        } catch (ElementNotFoundException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(hostDto, HttpStatus.CREATED);
     }
 
 

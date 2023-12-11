@@ -11,6 +11,7 @@ import com.komsije.booking.security.JwtTokenUtil;
 import com.komsije.booking.service.RegistrationServiceImpl;
 import com.komsije.booking.service.interfaces.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -53,7 +54,7 @@ public class AccountController {
 
     }
 
-    @PreAuthorize("hasRole('Admin')")
+    //@PreAuthorize("hasRole('Admin')")
     @GetMapping(value = "/accounts/{id}")
     public ResponseEntity<AccountDto> getAccount(@PathVariable Long id) {
 
@@ -193,9 +194,15 @@ public class AccountController {
     }
 
     @PostMapping(value="/register", consumes = "application/json")
-    public ResponseEntity<String> register1(@RequestBody RegistrationDto registrationDto) {
+    public ResponseEntity<String> register1(@RequestHeader(HttpHeaders.USER_AGENT) String agent, @RequestBody RegistrationDto registrationDto) {
         try {
-            return new ResponseEntity<>( registrationService.register(registrationDto),HttpStatus.OK);
+            if (agent.equals("Mobile-Android")){
+                return new ResponseEntity<>( registrationService.registerAndroid(registrationDto),HttpStatus.OK);
+
+            }else{
+                return new ResponseEntity<>( registrationService.register(registrationDto),HttpStatus.OK);
+
+            }
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

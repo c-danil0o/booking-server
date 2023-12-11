@@ -47,6 +47,28 @@ public class RegistrationServiceImpl implements RegistrationService {
         }
     }
 
+    public String registerAndroid(RegistrationDto registrationDto){
+        try {
+            String token = "";
+            if(registrationDto.getRole()== Role.Guest){
+                token = guestService.singUpUser(registrationDto);
+            }
+            else if (registrationDto.getRole()==Role.Host){
+                token = hostService.singUpUser(registrationDto);
+            }
+            String link = "http://localhost:8080/api/register/confirm?token=" + token;
+            //String link = "http://localhost:4200/registration-confirmation?token=" + token;
+//            String link = "http://localhost:8080/api/accommodations/all";
+            emailSenderService.send(
+                    registrationDto.getEmail(),
+                    buildEmail(registrationDto.getFirstName(), link));
+            return token;
+        }
+        catch (Exception e){
+            return "ne valja singUp";
+        }
+    }
+
     @Override
     @Transactional
     public String confirmToken(String token) {

@@ -211,13 +211,13 @@ public class AccountController {
     }
 
     @PostMapping(value = "/passwordChange", consumes = "application/json")
-    public ResponseEntity<String> changePassword(@RequestBody NewPasswordDto newPasswordDto){
+    public ResponseEntity<Void> changePassword(@RequestBody NewPasswordDto newPasswordDto){
         try {
             accountService.changePassword(newPasswordDto);
-            return new ResponseEntity<>("Password changed", HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         }
         catch (Exception e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
     }

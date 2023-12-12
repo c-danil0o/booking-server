@@ -1,6 +1,7 @@
 package com.komsije.booking.controller;
 
 import com.komsije.booking.dto.ReservationDto;
+import com.komsije.booking.dto.ReservationViewDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.exceptions.HasActiveReservationsException;
 import com.komsije.booking.exceptions.PendingReservationException;
@@ -28,10 +29,10 @@ public class ReservationController {
 //        this.accommodationService = accommodationService;
     }
 
-    @PreAuthorize("hasRole('Admin')")
+//    @PreAuthorize("hasRole('Admin')")
     @GetMapping(value = "/all")
-    public ResponseEntity<List<ReservationDto>> getAllReservations() {
-        List<ReservationDto> reservationDtos = reservationService.findAll();
+    public ResponseEntity<List<ReservationViewDto>> getAllReservations() {
+        List<ReservationViewDto> reservationDtos = reservationService.getAll();
         return new ResponseEntity<>(reservationDtos, HttpStatus.OK);
     }
 
@@ -112,6 +113,18 @@ public class ReservationController {
     public ResponseEntity<Void> approveReservationRequest(@PathVariable("id") Long id) {
         try {
             reservationService.acceptReservationRequest(id);
+        } catch (ElementNotFoundException | PendingReservationException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+
+    }
+
+    @PutMapping(value = "/{id}/deny")
+    public ResponseEntity<Void> denyReservationRequest(@PathVariable("id") Long id) {
+        try {
+            reservationService.denyReservationRequest(id);
         } catch (ElementNotFoundException | PendingReservationException e) {
             System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

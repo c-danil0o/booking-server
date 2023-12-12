@@ -14,7 +14,7 @@ public class ReservationDto {
     private double price;
     private ReservationStatus reservationStatus;
     private Long accommodationId;
-
+    private GuestDto guest;
 
 //    public ReservationDto(Reservation reservation){
 //        this.id=reservation.getId();

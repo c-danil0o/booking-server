@@ -19,15 +19,14 @@ public class Reservation {
     private LocalDateTime startDate;
     @Column(nullable = false)
     private int days;
+    @Column
+    private int numberOfGuest;
     @Column(nullable = false)
     private double price;
-
     @ManyToOne()
     private Host host;
-
     @ManyToOne
     private Guest guest;
-
     @ManyToOne
     private Accommodation accommodation;
     @Column(nullable = false)

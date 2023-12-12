@@ -1,6 +1,7 @@
 package com.komsije.booking.service;
 
 import com.komsije.booking.dto.ReservationDto;
+import com.komsije.booking.dto.ReservationViewDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.exceptions.InvalidTimeSlotException;
 import com.komsije.booking.exceptions.PendingReservationException;
@@ -38,6 +39,10 @@ public class ReservationServiceImpl implements ReservationService {
 
     public List<ReservationDto> findAll() {
         return mapper.toDto(reservationRepository.findAll());
+    }
+
+    public List<ReservationViewDto> getAll(){
+        return mapper.toViewDto(reservationRepository.findAll());
     }
 
     public List<ReservationDto> getByReservationStatus(ReservationStatus reservationStatus){return mapper.toDto(reservationRepository.findReservationsByReservationStatus(reservationStatus));}
@@ -93,6 +98,27 @@ public class ReservationServiceImpl implements ReservationService {
             reservationRepository.save(reservation);
         }else{
             throw new PendingReservationException("Reservation is not in pending or denied state!");
+        }
+        LocalDateTime startDate = reservation.getStartDate();
+        LocalDateTime endDate = reservation.getStartDate().plusDays(reservation.getDays());
+        List<Reservation> reservations = reservationRepository.findReservationsByReservationStatus(ReservationStatus.Pending);
+        for(Reservation res: reservations){
+            if (startDate.isBefore(reservation.getStartDate().plusDays(reservation.getDays()))&& reservation.getStartDate().isBefore(endDate)){
+                res.setReservationStatus(ReservationStatus.Denied);
+                reservationRepository.save(res);
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean denyReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException {
+        Reservation reservation = reservationRepository.findById(id).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
+        if(reservation.getReservationStatus().equals(ReservationStatus.Pending) || reservation.getReservationStatus().equals(ReservationStatus.Approved)){
+            reservation.setReservationStatus(ReservationStatus.Denied);
+            reservationRepository.save(reservation);
+        }else{
+            throw new PendingReservationException("Reservation is not in pending or approved state!");
         }
         LocalDateTime startDate = reservation.getStartDate();
         LocalDateTime endDate = reservation.getStartDate().plusDays(reservation.getDays());

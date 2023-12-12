@@ -30,9 +30,6 @@ public class WebSecurityConfiguration {
                 .requestMatchers("/*").permitAll()
                 .requestMatchers("/api/login/*").permitAll()
                 .requestMatchers("/api/register/*").permitAll()
-                .requestMatchers("/api/notifications/*").authenticated()
-                .requestMatchers("/api/reservations/*").authenticated()
-                .requestMatchers("/api/reviews/*").authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);

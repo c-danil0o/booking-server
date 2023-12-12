@@ -114,4 +114,16 @@ public class ReviewController {
             throw new RuntimeException(e);
         }
     }
+
+    @GetMapping(value = "/host")
+    public ResponseEntity<List<ReviewDto>> getByHostId(@RequestParam Long hostId ) {
+        try {
+            List<ReviewDto> reviewDtos = reviewService.findByHostId(hostId);
+            return new ResponseEntity<>(reviewDtos, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (ElementNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

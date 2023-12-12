@@ -1,6 +1,7 @@
 package com.komsije.booking.service;
 
 import com.komsije.booking.dto.RegistrationDto;
+import com.komsije.booking.dto.TokenDto;
 import com.komsije.booking.model.ConfirmationToken;
 import com.komsije.booking.model.Role;
 import com.komsije.booking.service.interfaces.*;
@@ -25,13 +26,11 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Autowired
     AccountService accountService;
 
-    public String register(RegistrationDto registrationDto){
-        try {
+    public TokenDto register(RegistrationDto registrationDto) {
             String token = "";
-            if(registrationDto.getRole()== Role.Guest){
+            if (registrationDto.getRole() == Role.Guest) {
                 token = guestService.singUpUser(registrationDto);
-            }
-            else if (registrationDto.getRole()==Role.Host){
+            } else if (registrationDto.getRole() == Role.Host) {
                 token = hostService.singUpUser(registrationDto);
             }
             //String link = "http://localhost:8080/api/register/confirm?token=" + token;
@@ -40,33 +39,28 @@ public class RegistrationServiceImpl implements RegistrationService {
             emailSenderService.send(
                     registrationDto.getEmail(),
                     buildEmail(registrationDto.getFirstName(), link));
-            return token;
-        }
-        catch (Exception e){
-            return "ne valja singUp";
-        }
+            TokenDto tokenDto = new TokenDto();
+            tokenDto.setToken(token);
+            return tokenDto;
     }
 
-    public String registerAndroid(RegistrationDto registrationDto){
-        try {
-            String token = "";
-            if(registrationDto.getRole()== Role.Guest){
-                token = guestService.singUpUser(registrationDto);
-            }
-            else if (registrationDto.getRole()==Role.Host){
-                token = hostService.singUpUser(registrationDto);
-            }
-            String link = "http://localhost:8080/api/register/confirm?token=" + token;
-            //String link = "http://localhost:4200/registration-confirmation?token=" + token;
+    public TokenDto registerAndroid(RegistrationDto registrationDto){
+        String token = "";
+        if (registrationDto.getRole() == Role.Guest) {
+            token = guestService.singUpUser(registrationDto);
+        } else if (registrationDto.getRole() == Role.Host) {
+            token = hostService.singUpUser(registrationDto);
+        }
+        String link = "http://localhost:8080/api/register/confirm?token=" + token;
+        //String link = "http://localhost:4200/registration-confirmation?token=" + token;
 //            String link = "http://localhost:8080/api/accommodations/all";
-            emailSenderService.send(
-                    registrationDto.getEmail(),
-                    buildEmail(registrationDto.getFirstName(), link));
-            return token;
-        }
-        catch (Exception e){
-            return "ne valja singUp";
-        }
+        emailSenderService.send(
+                registrationDto.getEmail(),
+                buildEmail(registrationDto.getFirstName(), link));
+        TokenDto tokenDto = new TokenDto();
+        tokenDto.setToken(token);
+        return tokenDto;
+
     }
 
     @Override
@@ -93,7 +87,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
 
-    private String buildEmail(String name, String link){
+    private String buildEmail(String name, String link) {
         return "<!DOCTYPE html><html lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\"><head>\n" +
                 "  <title> Welcome to [Coded Mails] </title>\n" +
                 "  <!--[if !mso]><!-- -->\n" +

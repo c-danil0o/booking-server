@@ -2,6 +2,7 @@ package com.komsije.booking.controller;
 
 import com.komsije.booking.dto.AccommodationDto;
 import com.komsije.booking.dto.GuestDto;
+import com.komsije.booking.dto.HostDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.exceptions.HasActiveReservationsException;
 import com.komsije.booking.service.interfaces.GuestService;
@@ -30,8 +31,8 @@ public class GuestController {
         return new ResponseEntity<>(guestsDtos, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAnyRole('Admin','Host')")
-//    @GetMapping(value = "/{id}")
+//    @PreAuthorize("hasAnyRole('Admin','Host')")
+    @GetMapping(value = "/{id}")
     public ResponseEntity<GuestDto> getGuest(@PathVariable Long id) {
         GuestDto guestDto = null;
         try {
@@ -56,7 +57,7 @@ public class GuestController {
         return new ResponseEntity<>(guestDto, HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasRole('Admin')")
+//    @PreAuthorize("hasRole('Admin')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteGuest(@PathVariable Long id) {
 
@@ -93,6 +94,17 @@ public class GuestController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(favorites, HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/update", consumes = "application/json")
+    public ResponseEntity<GuestDto> updateAccount(@RequestBody GuestDto guestDto){
+        GuestDto guest = null;
+        try {
+            guest = guestService.update(guestDto);
+        } catch (ElementNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        return new ResponseEntity<>(guest, HttpStatus.OK);
     }
 
 }

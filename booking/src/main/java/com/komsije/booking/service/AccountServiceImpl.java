@@ -77,12 +77,12 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
-    public Account getByEmail(String email) throws ElementNotFoundException {
+    public AccountDto getByEmail(String email) throws ElementNotFoundException {
         Account account = accountRepository.getAccountByEmail(email);
         if (account == null){
             throw new ElementNotFoundException("Account with given email doesn't exit!");
         }
-        return account;
+        return mapper.toDto(account);
     }
 
     @Override

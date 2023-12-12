@@ -3,6 +3,7 @@ package com.komsije.booking.controller;
 import com.komsije.booking.dto.*;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.exceptions.HasActiveReservationsException;
+import com.komsije.booking.model.Account;
 import com.komsije.booking.model.Role;
 import com.komsije.booking.security.JwtTokenUtil;
 import com.komsije.booking.service.RegistrationServiceImpl;
@@ -75,6 +76,17 @@ public class AccountController {
             List<AccountDto> accounts = accountService.getByAccountType(Role.valueOf(type));
             return new ResponseEntity<>(accounts, HttpStatus.OK);
         }catch (IllegalArgumentException e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping(value = "/account/{email}")
+    public ResponseEntity<AccountDto> getAccountByEmail(@PathVariable String email) {
+        try{
+            AccountDto account = accountService.getByEmail(email);
+            return new ResponseEntity<>(account, HttpStatus.OK);
+        }
+        catch (ElementNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }

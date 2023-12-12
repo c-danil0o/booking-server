@@ -2,9 +2,11 @@ package com.komsije.booking.service;
 
 import com.komsije.booking.dto.AccommodationDto;
 import com.komsije.booking.dto.AvailabilityDto;
+import com.komsije.booking.dto.HostPropertyDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.mapper.AccommodationMapper;
 import com.komsije.booking.model.Accommodation;
+import com.komsije.booking.model.AccommodationStatus;
 import com.komsije.booking.model.AccommodationType;
 import com.komsije.booking.repository.AccommodationRepository;
 import com.komsije.booking.service.interfaces.AccommodationService;
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -79,6 +82,21 @@ public class AccommodationServiceImpl implements AccommodationService {
 
     public Accommodation findModelById(Long id) throws ElementNotFoundException {
         return accommodationRepository.findById(id).orElseThrow(()->new ElementNotFoundException("Element with given ID doesn't exist!"));
+    }
+
+    public List<HostPropertyDto> findByHostId(Long id){
+        List<HostPropertyDto> properties = new ArrayList<>();
+        for (Accommodation accommodation :accommodationRepository.findByHostId(id)){
+            String address = accommodation.getAddress().getStreet() + ", " + accommodation.getAddress().getCity();
+            AccommodationStatus status;
+            if (accommodation.isApproved()){
+                status = AccommodationStatus.Active;
+            }else{
+                status = AccommodationStatus.Pending;
+            }
+            properties.add(new HostPropertyDto(accommodation.getId(), accommodation.getName(), address, status));
+        }
+        return properties;
     }
 
 

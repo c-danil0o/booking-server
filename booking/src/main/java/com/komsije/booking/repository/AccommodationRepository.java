@@ -35,5 +35,6 @@ public interface AccommodationRepository extends JpaRepository<Accommodation, Lo
 //    @Query("SELECT a FROM Accommodation a WHERE :amenities intersect  a.amenities")
     @Query("SELECT a FROM Accommodation a JOIN a.amenities amenity WHERE amenity IN :amenities")
     List<Accommodation> getAccommodationsByAmenities(@Param("amenities") List<String> amenities);
+    List<Accommodation> findByHostId(Long hostId);
 
 }

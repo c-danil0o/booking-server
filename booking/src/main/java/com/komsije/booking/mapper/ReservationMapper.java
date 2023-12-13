@@ -2,6 +2,7 @@ package com.komsije.booking.mapper;
 
 import com.komsije.booking.dto.AccommodationDto;
 import com.komsije.booking.dto.ReservationDto;
+import com.komsije.booking.dto.ReservationViewDto;
 import com.komsije.booking.model.Accommodation;
 import com.komsije.booking.model.Reservation;
 import org.mapstruct.Mapper;
@@ -12,7 +13,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE )
+@Mapper(componentModel = "spring", uses={GuestMapper.class} , nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public abstract class ReservationMapper {
     public ReservationDto toDto(Reservation reservation){
         ReservationDto reservationDto = new ReservationDto();
@@ -33,4 +34,26 @@ public abstract class ReservationMapper {
         return reservationDtos;
     }
     public abstract void update(@MappingTarget Reservation reservation, ReservationDto reservationDto);
+
+    public ReservationViewDto toViewDto(Reservation reservation){
+        ReservationViewDto reservationDto = new ReservationViewDto();
+        reservationDto.setId(reservation.getId());
+        reservationDto.setStartDate(reservation.getStartDate());
+        reservationDto.setEndDate(reservation.getStartDate().plusDays(reservation.getDays()));
+        reservationDto.setPrice(reservation.getPrice());
+        Accommodation accommodation = reservation.getAccommodation();
+        reservationDto.setAccommodationName(accommodation.getName()+" , "+ accommodation.getAddress().getCity());
+        reservationDto.setGuestEmail(reservation.getGuest().getEmail());
+        reservationDto.setHostEmail(reservation.getHost().getEmail());
+        reservationDto.setReservationStatus(reservation.getReservationStatus());
+        return reservationDto;
+    }
+    public List<ReservationViewDto> toViewDto(List<Reservation> reservationList){
+        List<ReservationViewDto> reservationDtos = new ArrayList<>();
+        for (Reservation reservation:
+                reservationList) {
+            reservationDtos.add(toViewDto(reservation));
+        }
+        return reservationDtos;
+    }
 }

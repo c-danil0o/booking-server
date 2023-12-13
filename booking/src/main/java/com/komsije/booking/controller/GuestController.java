@@ -1,6 +1,7 @@
 package com.komsije.booking.controller;
 
 import com.komsije.booking.dto.AccommodationDto;
+import com.komsije.booking.dto.EmailDto;
 import com.komsije.booking.dto.GuestDto;
 import com.komsije.booking.dto.HostDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
@@ -70,7 +71,7 @@ public class GuestController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('Guest')")
+//    @PreAuthorize("hasRole('Guest')")
     @GetMapping(value = "/favorites/{id}")
     public ResponseEntity<List<AccommodationDto>> getFavorites(@PathVariable Long id){
         List<AccommodationDto> favorites = null;
@@ -106,5 +107,18 @@ public class GuestController {
         }
         return new ResponseEntity<>(guest, HttpStatus.OK);
     }
+
+    @PostMapping(value = "/email", consumes = "application/json")
+    public ResponseEntity<GuestDto> getByEmail(@RequestBody EmailDto emailDto) {
+        GuestDto guestDto = null;
+        try {
+            guestDto = guestService.getByEmail(emailDto.getEmail());
+        } catch (ElementNotFoundException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(guestDto, HttpStatus.CREATED);
+    }
+
 
 }

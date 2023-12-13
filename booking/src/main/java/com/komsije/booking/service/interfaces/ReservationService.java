@@ -1,6 +1,7 @@
 package com.komsije.booking.service.interfaces;
 
 import com.komsije.booking.dto.ReservationDto;
+import com.komsije.booking.dto.ReservationViewDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.exceptions.InvalidTimeSlotException;
 import com.komsije.booking.exceptions.PendingReservationException;
@@ -12,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 public interface ReservationService extends CrudService<ReservationDto, Long> {
+    public List<ReservationViewDto> getAll();
     public List<ReservationDto> getByReservationStatus(ReservationStatus reservationStatus);
 
     public boolean hasActiveReservations(Long accountId);
@@ -19,4 +21,8 @@ public interface ReservationService extends CrudService<ReservationDto, Long> {
     public boolean deleteRequest(Long id) throws ElementNotFoundException, PendingReservationException;
     public ReservationDto updateStatus(Long id, ReservationStatus status) throws ElementNotFoundException;
     public boolean acceptReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException;
+    public boolean denyReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException;
+    public boolean cancelReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException;
+
+
 }

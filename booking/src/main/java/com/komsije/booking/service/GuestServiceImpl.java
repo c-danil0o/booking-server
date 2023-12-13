@@ -7,10 +7,7 @@ import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.mapper.AccommodationMapper;
 import com.komsije.booking.mapper.AddressMapper;
 import com.komsije.booking.mapper.GuestMapper;
-import com.komsije.booking.model.Account;
-import com.komsije.booking.model.ConfirmationToken;
-import com.komsije.booking.model.Guest;
-import com.komsije.booking.model.Role;
+import com.komsije.booking.model.*;
 import com.komsije.booking.repository.AccountRepository;
 import com.komsije.booking.repository.GuestRepository;
 import com.komsije.booking.service.interfaces.ConfirmationTokenService;
@@ -114,5 +111,22 @@ public class GuestServiceImpl implements GuestService {
         confirmationTokenService.saveConfirmationToken(confirmationToken);
 
         return token;
+    }
+
+    @Override
+    public GuestDto getByEmail(String email) throws ElementNotFoundException {
+        Guest guest = guestRepository.findByEmail(email);
+        if (guest == null){
+            throw new ElementNotFoundException("Account with given email doesn't exit!");
+        }
+        return mapper.toDto(guest);
+    }
+
+    @Override
+    public void increaseCancelations(Long id) throws ElementNotFoundException {
+        Guest guest = guestRepository.findById(id).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
+        int timesCancelled =  guest.getTimesCancelled();
+        guest.setTimesCancelled(timesCancelled+1);
+        guestRepository.save(guest);
     }
 }

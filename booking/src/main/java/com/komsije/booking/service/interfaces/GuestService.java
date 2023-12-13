@@ -2,6 +2,7 @@ package com.komsije.booking.service.interfaces;
 
 import com.komsije.booking.dto.AccommodationDto;
 import com.komsije.booking.dto.GuestDto;
+import com.komsije.booking.dto.HostDto;
 import com.komsije.booking.dto.RegistrationDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.model.Guest;
@@ -14,4 +15,7 @@ public interface GuestService extends CrudService<GuestDto, Long> {
     public List<AccommodationDto> getFavoritesByGuestId(Long id) throws ElementNotFoundException;
     public List<AccommodationDto> addToFavorites(Long id, AccommodationDto accommodationDto) throws ElementNotFoundException;
     public String singUpUser(RegistrationDto registrationDto);
+    public GuestDto getByEmail(String email) throws ElementNotFoundException;
+    public void increaseCancelations(Long id) throws ElementNotFoundException;
+
  }

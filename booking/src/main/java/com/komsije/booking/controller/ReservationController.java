@@ -118,7 +118,6 @@ public class ReservationController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(HttpStatus.OK);
-
     }
 
     @PutMapping(value = "/{id}/deny")
@@ -130,7 +129,17 @@ public class ReservationController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(HttpStatus.OK);
+    }
 
+    @PutMapping(value = "/{id}/cancel")
+    public ResponseEntity<Void> cancelReservationRequest(@PathVariable("id") Long id) {
+        try {
+            reservationService.cancelReservationRequest(id);
+        } catch (ElementNotFoundException | PendingReservationException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 

@@ -11,13 +11,12 @@ import com.komsije.booking.model.Reservation;
 import com.komsije.booking.model.ReservationStatus;
 import com.komsije.booking.repository.ReservationRepository;
 import com.komsije.booking.service.interfaces.AccommodationService;
-import com.komsije.booking.service.interfaces.ReportService;
+import com.komsije.booking.service.interfaces.GuestService;
 import com.komsije.booking.service.interfaces.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -26,11 +25,13 @@ public class ReservationServiceImpl implements ReservationService {
     private ReservationMapper mapper;
     private final ReservationRepository reservationRepository;
     private final AccommodationService accommodationService;
+    private final GuestService guestService;
 
     @Autowired
-    public ReservationServiceImpl(ReservationRepository reservationRepository, AccommodationService accommodationService) {
+    public ReservationServiceImpl(ReservationRepository reservationRepository, AccommodationService accommodationService, GuestService guestService) {
         this.reservationRepository = reservationRepository;
         this.accommodationService = accommodationService;
+        this.guestService = guestService;
     }
 
     public ReservationDto findById(Long id) throws ElementNotFoundException {
@@ -120,15 +121,22 @@ public class ReservationServiceImpl implements ReservationService {
         }else{
             throw new PendingReservationException("Reservation is not in pending or approved state!");
         }
-        LocalDateTime startDate = reservation.getStartDate();
-        LocalDateTime endDate = reservation.getStartDate().plusDays(reservation.getDays());
-        List<Reservation> reservations = reservationRepository.findReservationsByReservationStatus(ReservationStatus.Pending);
-        for(Reservation res: reservations){
-            if (startDate.isBefore(reservation.getStartDate().plusDays(reservation.getDays()))&& reservation.getStartDate().isBefore(endDate)){
-                res.setReservationStatus(ReservationStatus.Denied);
-                reservationRepository.save(res);
-            }
+//        todo: update accommodations if reservation was approved
+        return true;
+    }
+
+    @Override
+    public boolean cancelReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException {
+        Reservation reservation = reservationRepository.findById(id).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
+        if(reservation.getReservationStatus().equals(ReservationStatus.Pending) || reservation.getReservationStatus().equals(ReservationStatus.Approved)){
+            reservation.setReservationStatus(ReservationStatus.Cancelled);
+            reservationRepository.save(reservation);
+        }else{
+            throw new PendingReservationException("Reservation is not in pending or approved state!");
         }
+//        todo: update accommodations if reservation was approved
+
+        guestService.increaseCancelations(reservation.getGuest().getId());
         return true;
     }
 

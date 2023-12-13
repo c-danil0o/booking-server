@@ -44,6 +44,7 @@ public abstract class ReservationMapper {
         Accommodation accommodation = reservation.getAccommodation();
         reservationDto.setAccommodationName(accommodation.getName()+" , "+ accommodation.getAddress().getCity());
         reservationDto.setGuestEmail(reservation.getGuest().getEmail());
+        reservationDto.setHostEmail(reservation.getHost().getEmail());
         reservationDto.setReservationStatus(reservation.getReservationStatus());
         return reservationDto;
     }

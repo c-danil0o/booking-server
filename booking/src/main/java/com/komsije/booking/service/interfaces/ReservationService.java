@@ -22,5 +22,7 @@ public interface ReservationService extends CrudService<ReservationDto, Long> {
     public ReservationDto updateStatus(Long id, ReservationStatus status) throws ElementNotFoundException;
     public boolean acceptReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException;
     public boolean denyReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException;
+    public boolean cancelReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException;
+
 
 }

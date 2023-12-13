@@ -13,5 +13,6 @@ public class ReservationViewDto {
     private double price;
     private String accommodationName;
     private String guestEmail;
+    private String hostEmail;
     private ReservationStatus reservationStatus;
 }

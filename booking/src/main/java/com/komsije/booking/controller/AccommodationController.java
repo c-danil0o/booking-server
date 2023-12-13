@@ -2,6 +2,7 @@ package com.komsije.booking.controller;
 
 import com.komsije.booking.dto.AccommodationDto;
 import com.komsije.booking.dto.AvailabilityDto;
+import com.komsije.booking.dto.HostPropertyDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.exceptions.HasActiveReservationsException;
 import com.komsije.booking.model.AccommodationType;
@@ -49,6 +50,16 @@ public class AccommodationController {
         } catch (ElementNotFoundException e) {
             System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping(value = "/host/{hostId}")
+    public ResponseEntity<List<HostPropertyDto>> getByHostId(@PathVariable Long hostId) {
+        try {
+            List<HostPropertyDto> accommodations = accommodationService.findByHostId(hostId);
+            return new ResponseEntity<>(accommodations, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 

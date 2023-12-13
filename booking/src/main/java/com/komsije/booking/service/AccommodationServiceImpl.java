@@ -94,7 +94,7 @@ public class AccommodationServiceImpl implements AccommodationService {
             }else{
                 status = AccommodationStatus.Pending;
             }
-            properties.add(new HostPropertyDto(accommodation.getId(), accommodation.getName(), address, status));
+            properties.add(new HostPropertyDto(accommodation.getId(),   accommodation.getName(), address, status));
         }
         return properties;
     }

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.domain.Persistable;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -13,7 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @PrimaryKeyJoinColumn(name = "id")
-public class Host extends Account {
+public class Host extends Account implements Persistable<Long> {
     @Column(nullable = false)
 
     private String firstName;
@@ -28,4 +29,9 @@ public class Host extends Account {
     private Set<Accommodation> properties = new HashSet<>();
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "host")
     private Set<Review> hostReviews = new HashSet<>();
+
+    @Override
+    public boolean isNew() {
+        return null == getId();
+    }
 }

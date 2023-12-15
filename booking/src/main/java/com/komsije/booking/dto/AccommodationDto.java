@@ -30,6 +30,8 @@ public class AccommodationDto {
     private boolean isApproved;
     private boolean isAutoApproval;
     private HostDto host;
+    private double price;
+    private double pricePerNight;
 
    /* public AccommodationDto(Long id, String name, String description, Address address, AccommodationType accommodationType, Set<String> amenities, int maxGuests, int minGuests, Set<String> photos, boolean isPricePerGuest, int cancellationDeadline, double averageGrade, Set<TimeSlot> availability) {
         this.id = id;

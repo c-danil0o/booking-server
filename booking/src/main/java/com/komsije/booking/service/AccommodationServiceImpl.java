@@ -3,20 +3,27 @@ package com.komsije.booking.service;
 import com.komsije.booking.dto.AccommodationDto;
 import com.komsije.booking.dto.AvailabilityDto;
 import com.komsije.booking.dto.HostPropertyDto;
+import com.komsije.booking.dto.SearchAccommodationsDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.mapper.AccommodationMapper;
 import com.komsije.booking.model.Accommodation;
 import com.komsije.booking.model.AccommodationStatus;
 import com.komsije.booking.model.AccommodationType;
+import com.komsije.booking.model.TimeSlot;
 import com.komsije.booking.repository.AccommodationRepository;
 import com.komsije.booking.service.interfaces.AccommodationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
+
+import static java.lang.StrictMath.round;
 
 @Service
 public class AccommodationServiceImpl implements AccommodationService {
@@ -97,6 +104,53 @@ public class AccommodationServiceImpl implements AccommodationService {
             properties.add(new HostPropertyDto(accommodation.getId(),   accommodation.getName(), address, status));
         }
         return properties;
+    }
+
+    @Override
+    public List<AccommodationDto> getSearchedAccommodations(SearchAccommodationsDto searchAccommodationsDto) {
+        List<AccommodationDto> filteredAccommodations = new ArrayList<>();
+        for (Accommodation accommodation: this.accommodationRepository.getAccommodationsByNumberOfGuests(searchAccommodationsDto.getGuests())) {
+            if(isValid(accommodation,searchAccommodationsDto)){
+                AccommodationDto accommodationDto = mapper.toDto(accommodation);
+                double price = calculatePrice(accommodation, searchAccommodationsDto.getStartDate(), searchAccommodationsDto.getEndDate());
+                accommodationDto.setPrice(price);
+                int days = (int) ChronoUnit.DAYS.between(searchAccommodationsDto.getStartDate(), searchAccommodationsDto.getEndDate());
+                DecimalFormat df = new DecimalFormat("#.##");
+                accommodationDto.setPricePerNight(Double.parseDouble(df.format(price/(days+1))));
+                filteredAccommodations.add(accommodationDto);
+            }
+        }
+        return filteredAccommodations;
+    }
+
+    private boolean isValid(Accommodation accommodation, SearchAccommodationsDto searchAccommodationsDto){
+        return accommodation.getAddress().getCity().equals(searchAccommodationsDto.getPlace()) && isAvailable(accommodation,searchAccommodationsDto.getStartDate(),searchAccommodationsDto.getEndDate());
+    }
+
+    private boolean isAvailable(Accommodation accommodation, LocalDateTime startDate, LocalDateTime endDate){
+//        TODO: Test this, not finished -Aleksaqm
+//        Set<TimeSlot> slots = accommodation.getAvailability();
+//        for (TimeSlot slot : slots) {
+//            if(slot.getEndDate().isBefore(startDate))
+//                continue;
+//            else if (slot.getStartDate().isAfter(startDate))
+//                if(slot.getEndDate().isAfter(endDate))
+//                    continue;
+//                else{
+//                    endDate = slot.getStartDate().minusDays(1);
+//                }
+//            else if(slot.getEndDate().isAfter(endDate))
+//                return true;
+//            else{
+//                startDate=slot.getEndDate().plusDays(1);
+//                continue;
+//            }
+//        }
+        return true;
+    }
+
+    private double calculatePrice(Accommodation accommodation, LocalDateTime startDate, LocalDateTime endDate){
+        return 100;
     }
 
 

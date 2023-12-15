@@ -3,6 +3,7 @@ package com.komsije.booking.service.interfaces;
 import com.komsije.booking.dto.AccommodationDto;
 import com.komsije.booking.dto.AvailabilityDto;
 import com.komsije.booking.dto.HostPropertyDto;
+import com.komsije.booking.dto.SearchAccommodationsDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.model.Accommodation;
 import com.komsije.booking.model.AccommodationType;
@@ -17,6 +18,7 @@ public interface AccommodationService extends CrudService<AccommodationDto, Long
     public List<AccommodationDto> getByLocationNumOfGuestsAndDate(String location, Integer numOfGuests, LocalDateTime startDate, LocalDateTime endDate);
     public List<AccommodationDto> getByAmenities(List<String> amenities);
     public Accommodation findModelById(Long id) throws ElementNotFoundException;
-    List<HostPropertyDto> findByHostId(Long id);
+    public List<HostPropertyDto> findByHostId(Long id);
+    public List<AccommodationDto> getSearchedAccommodations(SearchAccommodationsDto searchAccommodationsDto);
 
 }

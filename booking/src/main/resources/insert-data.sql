@@ -58,11 +58,21 @@ VALUES (4.5, 7, true, true, 4, 1, 1, 1, 'Apartment', 'A cozy apartment', 'Cozy A
 
 -- Insert data into the accommodation_amenities table
 INSERT INTO accommodation_amenities (accommodation_id, amenities)
-VALUES (1, 'WiFi, Kitchen, TV'),
-       (2, 'WiFi, Air Conditioning, Breakfast'),
-       (3, 'Swimming Pool, Gym, Spa'),
-       (4, 'WiFi, Kitchen, Parking'),
-       (5, 'Air Conditioning, TV, Coffee Maker');
+VALUES (1, 'WiFi'),
+       (1, 'TV'),
+       (1,'Kitchen'),
+       (2, 'WiFi'),
+       (2, 'Air Conditioning'),
+       (2,'Breakfast'),
+       (3, 'Swimming Pool'),
+       (3,'Gym'),
+       (3,'Spa'),
+       (4, 'WiFi'),
+       (4,'Kitchen'),
+       (4,'Parking'),
+       (5, 'Air Conditioning'),
+       (5, 'TV'),
+       (5,'Coffee Maker');
 
 -- Insert data into the accommodation_availability table
 INSERT INTO time_slot (is_occupied, price, start_date, end_date)

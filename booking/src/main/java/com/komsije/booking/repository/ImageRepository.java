@@ -35,7 +35,8 @@ public class ImageRepository {
             Files.copy(file.getInputStream(), this.root.resolve(file.getOriginalFilename()));
         } catch (Exception e) {
             if (e instanceof FileAlreadyExistsException) {
-                throw new RuntimeException("A file of that name already exists.");
+                System.out.println("File already exists, skipping upload!" + file.getOriginalFilename());
+                return;
             }
 
             throw new RuntimeException(e.getMessage());

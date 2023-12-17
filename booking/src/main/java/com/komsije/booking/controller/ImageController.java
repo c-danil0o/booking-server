@@ -1,5 +1,6 @@
 package com.komsije.booking.controller;
 
+import com.komsije.booking.dto.ImageDto;
 import com.komsije.booking.service.interfaces.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 public class ImageController {
@@ -41,17 +44,16 @@ public class ImageController {
     }
 
     @PostMapping(value="/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile[] file) {
-        String message = "";
+    public ResponseEntity<ImageDto> uploadFile(@RequestParam("file") MultipartFile[] file) {
+        List<String> files = new ArrayList<>();
         try {
             for (MultipartFile f: file){
                 this.imageService.save(f);
-                message = "Uploaded the file successfully: " + f.getOriginalFilename();
+                files.add(f.getOriginalFilename());
             }
-            return ResponseEntity.status(HttpStatus.OK).body("Uploaded!");
+            return new ResponseEntity<>(new ImageDto(files), HttpStatus.CREATED);
         } catch (Exception e) {
-            message = "Could not upload the file: " + file.toString() + ". Error: " + e.getMessage();
-            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("Upload failed!");
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ImageDto(files));
         }
     }
 }

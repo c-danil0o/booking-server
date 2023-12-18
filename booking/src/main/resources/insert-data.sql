@@ -1,15 +1,15 @@
 -- Insert data into the address table
-INSERT INTO address (city, number, street)
-VALUES ('City1', '123', 'Street A'),
-       ('City2', '456', 'Street B'),
-       ('City3', '789', 'Street C'),
-       ('City4', '101', 'Street D'),
-       ('City5', '202', 'Street E'),
-       ('City6', '303', 'Street F'),
-       ('City7', '404', 'Street G'),
-       ('City8', '505', 'Street H'),
-       ('City9', '606', 'Street I'),
-       ('City10', '707', 'Street J');
+INSERT INTO address (city, number, street, latitude, longitude)
+VALUES ('City1', '123', 'Street A', 45, 45),
+       ('City2', '456', 'Street B', 45, 45),
+       ('City3', '789', 'Street C', 45, 45),
+       ('City4', '101', 'Street D', 45, 45),
+       ('City5', '202', 'Street E', 45, 45),
+       ('City6', '303', 'Street F', 45, 45),
+       ('City7', '404', 'Street G', 45, 45),
+       ('City8', '505', 'Street H', 45, 45),
+       ('City9', '606', 'Street I', 45, 45),
+       ('City10', '707', 'Street J', 45, 45);
 
 -- Insert data into the account table for hosts
 INSERT INTO account (is_blocked, role, email, password, is_activated)

@@ -18,4 +18,7 @@ public class AddressDto {
     private String number;
 
     private String city;
+    private Double latitude;
+    private Double longitude;
+
 }

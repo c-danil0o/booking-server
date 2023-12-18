@@ -1,5 +1,6 @@
 package com.komsije.booking.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.komsije.booking.model.Review;
 import lombok.*;
 

@@ -58,7 +58,7 @@ public class HostContoller {
         return new ResponseEntity<>(hostDto, HttpStatus.CREATED);
     }
 
-//    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('Host')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteHost(@PathVariable Long id) {
         try {
@@ -70,6 +70,7 @@ public class HostContoller {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('Host')")
     @PutMapping(value = "/update", consumes = "application/json")
     public ResponseEntity<HostDto> updateAccount(@RequestBody HostDto hostDto){
         HostDto host = null;

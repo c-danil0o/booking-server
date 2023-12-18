@@ -29,7 +29,7 @@ public class ReservationController {
 //        this.accommodationService = accommodationService;
     }
 
-//    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('Admin')")
     @GetMapping(value = "/all")
     public ResponseEntity<List<ReservationViewDto>> getAllReservations() {
         List<ReservationViewDto> reservationDtos = reservationService.getAll();
@@ -109,6 +109,7 @@ public class ReservationController {
 
     }
 
+    @PreAuthorize("hasRole('Host')")
     @PutMapping(value = "/{id}/approve")
     public ResponseEntity<Void> approveReservationRequest(@PathVariable("id") Long id) {
         try {
@@ -120,6 +121,7 @@ public class ReservationController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('Host')")
     @PutMapping(value = "/{id}/deny")
     public ResponseEntity<Void> denyReservationRequest(@PathVariable("id") Long id) {
         try {
@@ -131,6 +133,7 @@ public class ReservationController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('Guest')")
     @PutMapping(value = "/{id}/cancel")
     public ResponseEntity<Void> cancelReservationRequest(@PathVariable("id") Long id) {
         try {

@@ -25,12 +25,14 @@ public class AccommodationController {
         this.accommodationService = accommodationService;
     }
 
+    @PreAuthorize("hasRole('Admin')")
     @GetMapping(value = "/all")
     public ResponseEntity<List<AccommodationDto>> getAllAccommodations() {
         List<AccommodationDto> accommodations = accommodationService.findAll();
         return new ResponseEntity<>(accommodations, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('Admin')")
     @GetMapping(value = "/type")
     public ResponseEntity<List<AccommodationDto>> getByAccommodationType(@RequestParam String type) {
         try {
@@ -52,6 +54,7 @@ public class AccommodationController {
         }
     }
 
+    @PreAuthorize("hasRole('Host')")
     @GetMapping(value = "/host/{hostId}")
     public ResponseEntity<List<HostPropertyDto>> getByHostId(@PathVariable Long hostId) {
         try {
@@ -62,6 +65,7 @@ public class AccommodationController {
         }
     }
 
+    @PreAuthorize("hasRole('Admin')")
     @GetMapping(value = "/unapproved")
     public ResponseEntity<List<HostPropertyDto>> getUnapproved() {
         try {
@@ -72,15 +76,16 @@ public class AccommodationController {
         }
     }
 
-    @GetMapping(value = "/search")
-    public ResponseEntity<List<AccommodationDto>> getByLocationGuestNumberAndDate(@RequestParam(required = false) String location, @RequestParam(required = false) Integer guests, @RequestParam(required = false) LocalDateTime startDate, @RequestParam(required = false) LocalDateTime endDate) {
-        try {
-            List<AccommodationDto> accommodations = accommodationService.getByLocationNumOfGuestsAndDate(location, guests, startDate, endDate);
-            return new ResponseEntity<>(accommodations, HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
+
+//    @GetMapping(value = "/search")
+//    public ResponseEntity<List<AccommodationDto>> getByLocationGuestNumberAndDate(@RequestParam(required = false) String location, @RequestParam(required = false) Integer guests, @RequestParam(required = false) LocalDateTime startDate, @RequestParam(required = false) LocalDateTime endDate) {
+//        try {
+//            List<AccommodationDto> accommodations = accommodationService.getByLocationNumOfGuestsAndDate(location, guests, startDate, endDate);
+//            return new ResponseEntity<>(accommodations, HttpStatus.OK);
+//        } catch (IllegalArgumentException e) {
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
+//    }
 
     @GetMapping(value = "/amenities")
     public ResponseEntity<List<AccommodationDto>> getByAmenities(@RequestParam List<String> amenities) {

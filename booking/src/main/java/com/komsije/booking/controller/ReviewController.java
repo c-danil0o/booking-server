@@ -76,6 +76,7 @@ public class ReviewController {
         return new ResponseEntity<>(reviewDto, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('Admin')")
     @PatchMapping(value = "/{id}/approve")
     public ResponseEntity<ReviewDto> approveReview(@PathVariable("id") Long id) {
 
@@ -90,6 +91,7 @@ public class ReviewController {
         return new ResponseEntity<>(reviewDto, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('Admin')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
 

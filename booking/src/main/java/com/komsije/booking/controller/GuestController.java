@@ -58,7 +58,7 @@ public class GuestController {
         return new ResponseEntity<>(guestDto, HttpStatus.CREATED);
     }
 
-//    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('Guest')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteGuest(@PathVariable Long id) {
 
@@ -71,7 +71,7 @@ public class GuestController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-//    @PreAuthorize("hasRole('Guest')")
+    @PreAuthorize("hasRole('Guest')")
     @GetMapping(value = "/favorites/{id}")
     public ResponseEntity<List<AccommodationDto>> getFavorites(@PathVariable Long id){
         List<AccommodationDto> favorites = null;
@@ -97,6 +97,7 @@ public class GuestController {
         return new ResponseEntity<>(favorites, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('Guest')")
     @PutMapping(value = "/update", consumes = "application/json")
     public ResponseEntity<GuestDto> updateAccount(@RequestBody GuestDto guestDto){
         GuestDto guest = null;

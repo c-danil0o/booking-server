@@ -53,8 +53,6 @@ public class AccountController {
     }
 
 
-    //@PreAuthorize("hasRole('Admin')")
-
     @GetMapping(value = "/accounts/{id}")
     public ResponseEntity<AccountDto> getAccount(@PathVariable Long id) {
 
@@ -131,7 +129,6 @@ public class AccountController {
         return new ResponseEntity<>(accountDto, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('Admin')")
     @DeleteMapping(value = "/accounts/{id}")
     public ResponseEntity<Void> deleteAccount(@PathVariable Long id) {
         try {

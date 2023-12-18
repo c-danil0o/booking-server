@@ -1,9 +1,6 @@
 package com.komsije.booking.dto;
 
-import com.komsije.booking.model.Accommodation;
-import com.komsije.booking.model.AccommodationType;
-import com.komsije.booking.model.Address;
-import com.komsije.booking.model.TimeSlot;
+import com.komsije.booking.model.*;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,8 +27,7 @@ public class AccommodationDto {
     private boolean isApproved;
     private boolean isAutoApproval;
     private HostDto host;
-    private double price;
-    private double pricePerNight;
+    private Set<Review> reviews = new HashSet<>();
 
    /* public AccommodationDto(Long id, String name, String description, Address address, AccommodationType accommodationType, Set<String> amenities, int maxGuests, int minGuests, Set<String> photos, boolean isPricePerGuest, int cancellationDeadline, double averageGrade, Set<TimeSlot> availability) {
         this.id = id;

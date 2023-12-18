@@ -1,8 +1,6 @@
 package com.komsije.booking.mapper;
 
-import com.komsije.booking.dto.AccommodationDto;
-import com.komsije.booking.dto.AvailabilityDto;
-import com.komsije.booking.dto.TimeSlotDto;
+import com.komsije.booking.dto.*;
 import com.komsije.booking.model.Accommodation;
 import com.komsije.booking.model.Address;
 import com.komsije.booking.model.TimeSlot;
@@ -25,6 +23,28 @@ public abstract class AccommodationMapper {
 
     public abstract List<AccommodationDto> toDto(List<Accommodation> accommodationList);
     public abstract void update(@MappingTarget Accommodation accommodation, AccommodationDto accommodationDto);
+
+    public SearchedAccommodationDto toSearchedDto(Accommodation accommodation){
+        SearchedAccommodationDto searchedAccommodationDto = new SearchedAccommodationDto();
+        searchedAccommodationDto.setId(accommodation.getId());
+        searchedAccommodationDto.setName(accommodation.getName());
+        searchedAccommodationDto.setDescription(accommodation.getDescription());
+        AddressDto addressDto = new AddressDto();
+        Address address = accommodation.getAddress();
+        addressDto.setCity(address.getCity());
+        addressDto.setStreet(address.getStreet());
+        addressDto.setNumber(address.getNumber());
+        addressDto.setId(address.getId());
+        searchedAccommodationDto.setAddress(addressDto);
+        searchedAccommodationDto.setAccommodationType(accommodation.getAccommodationType());
+        searchedAccommodationDto.setAmenities(accommodation.getAmenities());
+        searchedAccommodationDto.setMaxGuests(accommodation.getMaxGuests());
+        searchedAccommodationDto.setMinGuests(accommodation.getMinGuests());
+        searchedAccommodationDto.setPhotos(accommodation.getPhotos());
+        searchedAccommodationDto.setCancellationDeadline(accommodation.getCancellationDeadline());
+        searchedAccommodationDto.setAverageGrade(accommodation.getAverageGrade());
+        return searchedAccommodationDto;
+    }
 
     /*public void update(@MappingTarget Accommodation accommodation, AccommodationDto accommodationDto) {
         if (accommodationDto == null) {

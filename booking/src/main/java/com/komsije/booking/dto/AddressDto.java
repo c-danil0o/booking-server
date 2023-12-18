@@ -3,11 +3,10 @@ package com.komsije.booking.dto;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Value;
+import lombok.*;
 
 import java.io.Serializable;
+
 
 @Data
 public class AddressDto {

@@ -1,22 +1,27 @@
 package com.komsije.booking.service;
 
-import com.komsije.booking.dto.AccommodationDto;
-import com.komsije.booking.dto.AvailabilityDto;
-import com.komsije.booking.dto.HostPropertyDto;
+import com.komsije.booking.dto.*;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.mapper.AccommodationMapper;
 import com.komsije.booking.model.Accommodation;
 import com.komsije.booking.model.AccommodationStatus;
 import com.komsije.booking.model.AccommodationType;
+import com.komsije.booking.model.TimeSlot;
 import com.komsije.booking.repository.AccommodationRepository;
 import com.komsije.booking.service.interfaces.AccommodationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
+
+import static java.lang.StrictMath.round;
+import static java.lang.StrictMath.tan;
 
 @Service
 public class AccommodationServiceImpl implements AccommodationService {
@@ -97,6 +102,93 @@ public class AccommodationServiceImpl implements AccommodationService {
             properties.add(new HostPropertyDto(accommodation.getId(),   accommodation.getName(), address, status));
         }
         return properties;
+    }
+
+    @Override
+    public List<SearchedAccommodationDto> getSearchedAccommodations(SearchAccommodationsDto searchAccommodationsDto) {
+        List<SearchedAccommodationDto> filteredAccommodations = new ArrayList<>();
+        List<Accommodation> accommodations = new ArrayList<>();
+        if (searchAccommodationsDto.getGuests()==0)
+            accommodations = this.accommodationRepository.findAll();
+        else
+            accommodations = this.accommodationRepository.getAccommodationsByNumberOfGuests(searchAccommodationsDto.getGuests());
+
+        for (Accommodation accommodation: accommodations) {
+            if(isValid(accommodation,searchAccommodationsDto)){
+                SearchedAccommodationDto accommodationDto = mapper.toSearchedDto(accommodation);
+                double price = calculatePrice(accommodation, searchAccommodationsDto.getStartDate(), searchAccommodationsDto.getEndDate());
+                accommodationDto.setPrice(price);
+                int days = (int) ChronoUnit.DAYS.between(searchAccommodationsDto.getStartDate(), searchAccommodationsDto.getEndDate());
+                DecimalFormat df = new DecimalFormat("#.##");
+                accommodationDto.setPricePerNight(Double.parseDouble(df.format(price/days)));
+                filteredAccommodations.add(accommodationDto);
+            }
+        }
+        return filteredAccommodations;
+    }
+
+    private boolean isValid(Accommodation accommodation, SearchAccommodationsDto searchAccommodationsDto){
+        return accommodation.getAddress().getCity().equals(searchAccommodationsDto.getPlace()) && isAvailable(accommodation,searchAccommodationsDto.getStartDate(),searchAccommodationsDto.getEndDate());
+    }
+
+    private boolean isAvailable(Accommodation accommodation, LocalDateTime startDate, LocalDateTime endDate){
+        Set<TimeSlot> slots = accommodation.getAvailability();
+        for (TimeSlot slot : slots) {
+            slot.setStartDate(slot.getStartDate().withHour(startDate.getHour()));
+            slot.setEndDate(slot.getEndDate().withHour(endDate.getHour()));
+            if(slot.getEndDate().isBefore(startDate))
+                continue;
+            else if (slot.getStartDate().isAfter(startDate))
+                if(slot.getEndDate().isAfter(endDate))
+                    continue;
+                else{
+                    endDate = slot.getStartDate().minusDays(1);
+                }
+            else if(slot.getEndDate().isAfter(endDate) || slot.getEndDate().isEqual(endDate))
+                return true;
+            else{
+                startDate=slot.getEndDate().plusDays(1);
+                continue;
+            }
+        }
+        return false;
+    }
+
+    private double calculatePrice(Accommodation accommodation, LocalDateTime startDate, LocalDateTime endDate){
+        double price = 0;
+        Set<TimeSlot> slots = accommodation.getAvailability();
+        for (TimeSlot slot : slots) {
+            slot.setStartDate(slot.getStartDate().withHour(startDate.getHour()));
+            slot.setEndDate(slot.getEndDate().withHour(endDate.getHour()));
+            if(slot.getEndDate().isBefore(startDate))
+                continue;
+            else if (slot.getStartDate().isAfter(startDate))
+                if(slot.getEndDate().isAfter(endDate))
+                    continue;
+                else{
+                    int days = (int) ChronoUnit.DAYS.between(slot.getStartDate(), endDate) + 1;
+                    price = price + slot.getPrice()*days;
+                    endDate = slot.getStartDate().minusDays(1);
+                    if (startDate.isAfter(endDate) || startDate.isEqual(endDate))
+                        break;
+                }
+            else if(slot.getEndDate().isAfter(endDate) || slot.getEndDate().isEqual(endDate))
+            {
+                int days = (int) ChronoUnit.DAYS.between(startDate,endDate);
+                price = price+slot.getPrice()*days;
+                return price;
+            }
+            else{   //equals
+                int days = (int) ChronoUnit.DAYS.between(startDate, slot.getEndDate()) + 1;
+                price = price + slot.getPrice()*days;
+
+                startDate=slot.getEndDate().plusDays(1);
+                if (startDate.isAfter(endDate) || startDate.isEqual(endDate))
+                    break;
+                continue;
+            }
+        }
+        return price;
     }
 
 

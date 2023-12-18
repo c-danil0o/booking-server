@@ -22,6 +22,7 @@ public abstract class ReservationMapper {
         reservationDto.setDays(reservation.getDays());
         reservationDto.setReservationStatus(reservation.getReservationStatus());
         reservationDto.setAccommodationId(reservation.getAccommodation().getId());
+
         return reservationDto;
     }
     public abstract Reservation fromDto(ReservationDto reservationDto);
@@ -46,6 +47,7 @@ public abstract class ReservationMapper {
         reservationDto.setGuestEmail(reservation.getGuest().getEmail());
         reservationDto.setHostEmail(reservation.getHost().getEmail());
         reservationDto.setReservationStatus(reservation.getReservationStatus());
+        reservationDto.setNumberOfGuests(reservation.getNumberOfGuests());
         return reservationDto;
     }
     public List<ReservationViewDto> toViewDto(List<Reservation> reservationList){

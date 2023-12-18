@@ -15,6 +15,8 @@ public class ReservationDto {
     private ReservationStatus reservationStatus;
     private Long accommodationId;
     private GuestDto guest;
+    private Integer numberOfGuests;
+
 
 //    public ReservationDto(Reservation reservation){
 //        this.id=reservation.getId();

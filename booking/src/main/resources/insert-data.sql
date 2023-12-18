@@ -1,15 +1,15 @@
 -- Insert data into the address table
-INSERT INTO address (city, number, street, latitude, longitude)
-VALUES ('City1', '123', 'Street A', 45, 45),
-       ('City2', '456', 'Street B', 45, 45),
-       ('City3', '789', 'Street C', 45, 45),
-       ('City4', '101', 'Street D', 45, 45),
-       ('City5', '202', 'Street E', 45, 45),
-       ('City6', '303', 'Street F', 45, 45),
-       ('City7', '404', 'Street G', 45, 45),
-       ('City8', '505', 'Street H', 45, 45),
-       ('City9', '606', 'Street I', 45, 45),
-       ('City10', '707', 'Street J', 45, 45);
+INSERT INTO address (city, number, street, latitude, longitude, country)
+VALUES ('City1', '123', 'Street A', 45, 45, 'Serbia'),
+       ('City2', '456', 'Street B', 45, 45, 'Bosnia'),
+       ('City3', '789', 'Street C', 45, 45, 'Serbia'),
+       ('City4', '101', 'Street D', 45, 45, 'Serbia'),
+       ('City5', '202', 'Street E', 45, 45, 'Serbia'),
+       ('City6', '303', 'Street F', 45, 45, 'Serbia'),
+       ('City7', '404', 'Street G', 45, 45, 'Serbia'),
+       ('City8', '505', 'Street H', 45, 45, 'Serbia'),
+       ('City9', '606', 'Street I', 45, 45, 'Serbia'),
+       ('City10', '707', 'Street J', 45, 45, 'Serbia');
 
 -- Insert data into the account table for hosts
 INSERT INTO account (is_blocked, role, email, password, is_activated)
@@ -166,12 +166,12 @@ VALUES (1, 1),
        (5, 5);
 
 -- Insert data into the reservation table
-INSERT INTO reservation (days, price, accommodation_id, guest_id, host_id, start_date, reservation_status)
-VALUES (2, 200.0, 1, 6, 1, '2023-01-01 12:00:00', 'Approved'),
-       (7, 560.0, 2, 7, 2, '2023-02-01 12:00:00', 'Pending'),
-       (10, 1500.0, 3, 8, 3, '2023-03-01 12:00:00', 'Active'),
-       (14, 1680.0, 4, 9, 4, '2023-04-01 12:00:00', 'Pending'),
-       (5, 450.0, 5, 10, 5, '2023-05-01 12:00:00', 'Approved');
+INSERT INTO reservation (days, price, accommodation_id, guest_id, host_id, start_date, reservation_status, number_of_guests)
+VALUES (2, 200.0, 1, 6, 1, '2023-01-01 12:00:00', 'Approved', 2),
+       (7, 560.0, 2, 7, 2, '2023-02-01 12:00:00', 'Pending', 1),
+       (10, 1500.0, 3, 8, 3, '2023-03-01 12:00:00', 'Active', 3),
+       (14, 1680.0, 4, 9, 4, '2023-04-01 12:00:00', 'Pending', 4),
+       (5, 450.0, 5, 10, 5, '2023-05-01 12:00:00', 'Approved', 3);
 
 -- Insert data into the report table
 INSERT INTO report (author_id, date, reported_user_id, reason)

@@ -21,6 +21,8 @@ public class Address {
     private String city;
     @Column(nullable = true)
     private String number;
+    @Column(nullable = false)
+    private String country;
     @Column(nullable = true)
     private Double latitude;
     @Column(nullable = true)

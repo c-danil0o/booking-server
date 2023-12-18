@@ -1,9 +1,6 @@
 package com.komsije.booking.service;
 
-import com.komsije.booking.dto.AccommodationDto;
-import com.komsije.booking.dto.AvailabilityDto;
-import com.komsije.booking.dto.HostPropertyDto;
-import com.komsije.booking.dto.SearchAccommodationsDto;
+import com.komsije.booking.dto.*;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.mapper.AccommodationMapper;
 import com.komsije.booking.model.Accommodation;
@@ -108,8 +105,8 @@ public class AccommodationServiceImpl implements AccommodationService {
     }
 
     @Override
-    public List<AccommodationDto> getSearchedAccommodations(SearchAccommodationsDto searchAccommodationsDto) {
-        List<AccommodationDto> filteredAccommodations = new ArrayList<>();
+    public List<SearchedAccommodationDto> getSearchedAccommodations(SearchAccommodationsDto searchAccommodationsDto) {
+        List<SearchedAccommodationDto> filteredAccommodations = new ArrayList<>();
         List<Accommodation> accommodations = new ArrayList<>();
         if (searchAccommodationsDto.getGuests()==0)
             accommodations = this.accommodationRepository.findAll();
@@ -118,7 +115,7 @@ public class AccommodationServiceImpl implements AccommodationService {
 
         for (Accommodation accommodation: accommodations) {
             if(isValid(accommodation,searchAccommodationsDto)){
-                AccommodationDto accommodationDto = mapper.toDto(accommodation);
+                SearchedAccommodationDto accommodationDto = mapper.toSearchedDto(accommodation);
                 double price = calculatePrice(accommodation, searchAccommodationsDto.getStartDate(), searchAccommodationsDto.getEndDate());
                 accommodationDto.setPrice(price);
                 int days = (int) ChronoUnit.DAYS.between(searchAccommodationsDto.getStartDate(), searchAccommodationsDto.getEndDate());

@@ -1,9 +1,6 @@
 package com.komsije.booking.controller;
 
-import com.komsije.booking.dto.AccommodationDto;
-import com.komsije.booking.dto.AvailabilityDto;
-import com.komsije.booking.dto.HostPropertyDto;
-import com.komsije.booking.dto.SearchAccommodationsDto;
+import com.komsije.booking.dto.*;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.exceptions.HasActiveReservationsException;
 import com.komsije.booking.model.AccommodationType;
@@ -170,9 +167,9 @@ public class AccommodationController {
     }
 
     @PostMapping(value = "/search" , consumes = "application/json")
-    public ResponseEntity<List<AccommodationDto>> searchAccommodations(@RequestBody SearchAccommodationsDto searchAccommodationsDto) {
+    public ResponseEntity<List<SearchedAccommodationDto>> searchAccommodations(@RequestBody SearchAccommodationsDto searchAccommodationsDto) {
         try {
-            List<AccommodationDto> accommodations = accommodationService.getSearchedAccommodations(searchAccommodationsDto);
+            List<SearchedAccommodationDto> accommodations = accommodationService.getSearchedAccommodations(searchAccommodationsDto);
             return new ResponseEntity<>(accommodations, HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

@@ -1,15 +1,15 @@
 -- Insert data into the address table
-INSERT INTO address (city, number, street)
-VALUES ('City1', '123', 'Street A'),
-       ('City2', '456', 'Street B'),
-       ('City3', '789', 'Street C'),
-       ('City4', '101', 'Street D'),
-       ('City5', '202', 'Street E'),
-       ('City6', '303', 'Street F'),
-       ('City7', '404', 'Street G'),
-       ('City8', '505', 'Street H'),
-       ('City9', '606', 'Street I'),
-       ('City10', '707', 'Street J');
+INSERT INTO address (city, number, street, latitude, longitude)
+VALUES ('City1', '123', 'Street A', 45, 45),
+       ('City2', '456', 'Street B', 45, 45),
+       ('City3', '789', 'Street C', 45, 45),
+       ('City4', '101', 'Street D', 45, 45),
+       ('City5', '202', 'Street E', 45, 45),
+       ('City6', '303', 'Street F', 45, 45),
+       ('City7', '404', 'Street G', 45, 45),
+       ('City8', '505', 'Street H', 45, 45),
+       ('City9', '606', 'Street I', 45, 45),
+       ('City10', '707', 'Street J', 45, 45);
 
 -- Insert data into the account table for hosts
 INSERT INTO account (is_blocked, role, email, password, is_activated)
@@ -58,11 +58,21 @@ VALUES (4.5, 7, true, true, 4, 1, 1, 1, 'Apartment', 'A cozy apartment', 'Cozy A
 
 -- Insert data into the accommodation_amenities table
 INSERT INTO accommodation_amenities (accommodation_id, amenities)
-VALUES (1, 'WiFi, Kitchen, TV'),
-       (2, 'WiFi, Air Conditioning, Breakfast'),
-       (3, 'Swimming Pool, Gym, Spa'),
-       (4, 'WiFi, Kitchen, Parking'),
-       (5, 'Air Conditioning, TV, Coffee Maker');
+VALUES (1, 'WiFi'),
+       (1, 'TV'),
+       (1,'Kitchen'),
+       (2, 'WiFi'),
+       (2, 'Air Conditioning'),
+       (2,'Breakfast'),
+       (3, 'Swimming Pool'),
+       (3,'Gym'),
+       (3,'Spa'),
+       (4, 'WiFi'),
+       (4,'Kitchen'),
+       (4,'Parking'),
+       (5, 'Air Conditioning'),
+       (5, 'TV'),
+       (5,'Coffee Maker');
 
 -- Insert data into the accommodation_availability table
 INSERT INTO time_slot (is_occupied, price, start_date, end_date)

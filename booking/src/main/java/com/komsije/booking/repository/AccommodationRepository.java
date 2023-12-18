@@ -41,4 +41,7 @@ public interface AccommodationRepository extends JpaRepository<Accommodation, Lo
     List<Accommodation> getAccommodationsByAmenities(@Param("amenities") List<String> amenities);
     List<Accommodation> findByHostId(Long hostId);
 
+    @Query("SELECT a FROM Accommodation a where a.status!='Active'")
+    List<Accommodation> findUnapproved();
+
 }

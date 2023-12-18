@@ -93,12 +93,7 @@ public class AccommodationServiceImpl implements AccommodationService {
         List<HostPropertyDto> properties = new ArrayList<>();
         for (Accommodation accommodation :accommodationRepository.findByHostId(id)){
             String address = accommodation.getAddress().getStreet() + ", " + accommodation.getAddress().getCity();
-            AccommodationStatus status;
-            if (accommodation.isApproved()){
-                status = AccommodationStatus.Active;
-            }else{
-                status = AccommodationStatus.Pending;
-            }
+            AccommodationStatus status = accommodation.getStatus();
             properties.add(new HostPropertyDto(accommodation.getId(),   accommodation.getName(), address, status));
         }
         return properties;
@@ -125,6 +120,17 @@ public class AccommodationServiceImpl implements AccommodationService {
             }
         }
         return filteredAccommodations;
+    }
+
+    @Override
+    public List<HostPropertyDto> getUnapprovedAccommodations() {
+        List<HostPropertyDto> properties = new ArrayList<>();
+        for (Accommodation accommodation :accommodationRepository.findUnapproved()){
+            String address = accommodation.getAddress().getStreet() + ", " + accommodation.getAddress().getCity();
+            AccommodationStatus status = accommodation.getStatus();
+            properties.add(new HostPropertyDto(accommodation.getId(),   accommodation.getName(), address, status));
+        }
+        return properties;
     }
 
     private boolean isValid(Accommodation accommodation, SearchAccommodationsDto searchAccommodationsDto){

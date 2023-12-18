@@ -80,10 +80,10 @@ public class AccountController {
         }
     }
 
-    @GetMapping(value = "/account/{email}")
-    public ResponseEntity<AccountDto> getAccountByEmail(@PathVariable String email) {
+    @PostMapping(value = "/accounts/email")
+    public ResponseEntity<AccountDto> getAccountByEmail(@RequestBody EmailDto emailDto) {
         try{
-            AccountDto account = accountService.getByEmail(email);
+            AccountDto account = accountService.getByEmail(emailDto.getEmail());
             return new ResponseEntity<>(account, HttpStatus.OK);
         }
         catch (ElementNotFoundException e) {

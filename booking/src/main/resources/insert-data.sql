@@ -48,13 +48,13 @@ VALUES (0, 6, 6, 'Guest', 'One', '+6789012345'),
 
 -- Insert data into the accommodation table
 INSERT INTO accommodation (average_grade, cancellation_deadline, is_auto_approval, is_price_per_guest, max_guests,
-                           min_guests, address_id, id, accommodation_type, description, name, is_approved, host_id)
-VALUES (4.5, 7, true, true, 4, 1, 1, 1, 'Apartment', 'A cozy apartment', 'Cozy Apartment 1', true, 1),
-       (4.2, 5, false, false, 2, 1, 2, 2, 'Room', 'Comfortable room with a view', 'Room with a View', true, 2),
-       (4.8, 14, true, true, 6, 2, 3, 3, 'Hotel', 'Luxurious hotel with great amenities', 'Luxury Hotel', true, 3),
+                           min_guests, address_id, id, accommodation_type, description, name, status, host_id)
+VALUES (4.5, 7, true, true, 4, 1, 1, 1, 'Apartment', 'A cozy apartment', 'Cozy Apartment 1', 'Active', 1),
+       (4.2, 5, false, false, 2, 1, 2, 2, 'Room', 'Comfortable room with a view', 'Room with a View', 'Active', 2),
+       (4.8, 14, true, true, 6, 2, 3, 3, 'Hotel', 'Luxurious hotel with great amenities', 'Luxury Hotel', 'Pending', 3),
        (4.0, 10, false, true, 8, 4, 4, 4, 'Apartment', 'Spacious apartment for groups', 'Spacious Group Apartment',
-        true, 4),
-       (4.7, 3, true, false, 3, 1, 5, 5, 'Room', 'Charming room for a relaxing stay', 'Charming Room', true, 5);
+        'Inactive', 4),
+       (4.7, 3, true, false, 3, 1, 5, 5, 'Room', 'Charming room for a relaxing stay', 'Charming Room', 'Pending', 5);
 
 -- Insert data into the accommodation_amenities table
 INSERT INTO accommodation_amenities (accommodation_id, amenities)

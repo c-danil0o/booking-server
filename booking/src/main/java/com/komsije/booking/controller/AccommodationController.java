@@ -3,6 +3,7 @@ package com.komsije.booking.controller;
 import com.komsije.booking.dto.*;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.exceptions.HasActiveReservationsException;
+import com.komsije.booking.model.AccommodationStatus;
 import com.komsije.booking.model.AccommodationType;
 import com.komsije.booking.service.interfaces.AccommodationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +62,16 @@ public class AccommodationController {
         }
     }
 
+    @GetMapping(value = "/unapproved")
+    public ResponseEntity<List<HostPropertyDto>> getUnapproved() {
+        try {
+            List<HostPropertyDto> accommodations = accommodationService.getUnapprovedAccommodations();
+            return new ResponseEntity<>(accommodations, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @GetMapping(value = "/search")
     public ResponseEntity<List<AccommodationDto>> getByLocationGuestNumberAndDate(@RequestParam(required = false) String location, @RequestParam(required = false) Integer guests, @RequestParam(required = false) LocalDateTime startDate, @RequestParam(required = false) LocalDateTime endDate) {
         try {
@@ -101,7 +112,22 @@ public class AccommodationController {
         AccommodationDto accommodationDto = null;
         try {
             accommodationDto = accommodationService.findById(id);
-            accommodationDto.setApproved(true);
+            accommodationDto.setStatus(AccommodationStatus.Active);
+            accommodationDto = accommodationService.update(accommodationDto);
+        } catch (ElementNotFoundException e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(accommodationDto, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('Admin')")
+    @PatchMapping(value = "/{id}/deny")
+    public ResponseEntity<AccommodationDto> denyAccommodation(@PathVariable("id") Long id) {
+        AccommodationDto accommodationDto = null;
+        try {
+            accommodationDto = accommodationService.findById(id);
+            accommodationDto.setStatus(AccommodationStatus.Inactive);
             accommodationDto = accommodationService.update(accommodationDto);
         } catch (ElementNotFoundException e) {
             System.out.println(e.getMessage());

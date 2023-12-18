@@ -17,5 +17,6 @@ public interface AccommodationService extends CrudService<AccommodationDto, Long
     public Accommodation findModelById(Long id) throws ElementNotFoundException;
     public List<HostPropertyDto> findByHostId(Long id);
     public List<SearchedAccommodationDto> getSearchedAccommodations(SearchAccommodationsDto searchAccommodationsDto);
+    public List<HostPropertyDto> getUnapprovedAccommodations();
 
 }

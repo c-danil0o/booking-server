@@ -20,7 +20,7 @@ public class Reservation {
     @Column(nullable = false)
     private int days;
     @Column
-    private int numberOfGuest;
+    private Integer numberOfGuests;
     @Column(nullable = false)
     private double price;
     @ManyToOne()

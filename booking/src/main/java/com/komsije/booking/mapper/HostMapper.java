@@ -28,7 +28,7 @@ public abstract class HostMapper {
         host.setEmail(hostDto.getEmail());
         host.setPassword(hostDto.getPassword());
         host.setBlocked(hostDto.isBlocked());
-        host.setAddress(new Address(null, hostDto.getAddress().getStreet(), hostDto.getAddress().getCity(), hostDto.getAddress().getNumber(), hostDto.getAddress().getLatitude(), hostDto.getAddress().getLongitude()));
+        host.setAddress(new Address(null, hostDto.getAddress().getStreet(), hostDto.getAddress().getCity(), hostDto.getAddress().getNumber(),hostDto.getAddress().getCountry(), hostDto.getAddress().getLatitude(), hostDto.getAddress().getLongitude()));
         host.setFirstName(hostDto.getFirstName());
         host.setLastName(hostDto.getLastName());
         host.setPhone(hostDto.getPhone());
@@ -44,7 +44,7 @@ public abstract class HostMapper {
         host.setEmail(registrationDto.getEmail());
         host.setPassword(registrationDto.getPassword());
         host.setPhone(registrationDto.getPhone());
-        host.setAddress(new Address(null, registrationDto.getAddress().getStreet(), registrationDto.getAddress().getCity(), registrationDto.getAddress().getNumber(), null, null));
+        host.setAddress(new Address(null, registrationDto.getAddress().getStreet(), registrationDto.getAddress().getCity(), registrationDto.getAddress().getNumber(), registrationDto.getAddress().getCountry(), null, null));
         host.setFirstName(registrationDto.getFirstName());
         host.setLastName(registrationDto.getLastName());
         host.setRole(Role.Host);

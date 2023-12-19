@@ -33,6 +33,7 @@ public class WebSecurityConfiguration {
                 .requestMatchers("/api/login").permitAll()
                 .requestMatchers("/api/register").permitAll()
                 .requestMatchers("/api/logout").permitAll()
+                .requestMatchers("/api/accommodations/search").permitAll()
                 .requestMatchers("/upload/**").permitAll()
                 .requestMatchers("/files/**").permitAll()
                 .requestMatchers("/error/**").permitAll()

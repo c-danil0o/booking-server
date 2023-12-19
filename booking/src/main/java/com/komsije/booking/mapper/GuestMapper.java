@@ -21,7 +21,7 @@ public abstract class GuestMapper {
         guest.setEmail(guestDto.getEmail());
         guest.setPassword(guestDto.getPassword());
         guest.setBlocked(guestDto.isBlocked());
-        guest.setAddress(new Address(null, guestDto.getAddress().getStreet(), guestDto.getAddress().getCity(), guestDto.getAddress().getNumber(), guestDto.getAddress().getLatitude(), guestDto.getAddress().getLongitude()));
+        guest.setAddress(new Address(null, guestDto.getAddress().getStreet(), guestDto.getAddress().getCity(), guestDto.getAddress().getNumber(),guestDto.getAddress().getCountry(), guestDto.getAddress().getLatitude(), guestDto.getAddress().getLongitude()));
         guest.setFirstName(guestDto.getFirstName());
         guest.setLastName(guestDto.getLastName());
         guest.setPhone(guestDto.getPhone());
@@ -36,7 +36,7 @@ public abstract class GuestMapper {
         guest.setEmail(registrationDto.getEmail());
         guest.setPassword(registrationDto.getPassword());
         guest.setPhone(registrationDto.getPhone());
-        guest.setAddress(new Address(null, registrationDto.getAddress().getStreet(), registrationDto.getAddress().getCity(), registrationDto.getAddress().getNumber(), null, null));
+        guest.setAddress(new Address(null, registrationDto.getAddress().getStreet(), registrationDto.getAddress().getCity(), registrationDto.getAddress().getNumber(),registrationDto.getAddress().getCountry(), null, null));
         guest.setFirstName(registrationDto.getFirstName());
         guest.setLastName(registrationDto.getLastName());
         guest.setTimesCancelled(0);

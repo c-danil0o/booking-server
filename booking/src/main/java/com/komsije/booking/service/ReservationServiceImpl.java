@@ -46,6 +46,18 @@ public class ReservationServiceImpl implements ReservationService {
         return mapper.toViewDto(reservationRepository.findAll());
     }
 
+    @Override
+    public List<ReservationViewDto> getByHostId(Long id) {
+        List<Reservation> reservations = this.reservationRepository.findByHostId(id);
+        return mapper.toViewDto(reservations);
+    }
+
+    @Override
+    public List<ReservationViewDto> getByGuestId(Long id) {
+        List<Reservation> reservations = this.reservationRepository.findByGuestId(id);
+        return mapper.toViewDto(reservations);
+    }
+
     public List<ReservationDto> getByReservationStatus(ReservationStatus reservationStatus){return mapper.toDto(reservationRepository.findReservationsByReservationStatus(reservationStatus));}
 
     @Override

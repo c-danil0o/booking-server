@@ -13,8 +13,11 @@ import java.util.List;
 public interface AccommodationRepository extends JpaRepository<Accommodation, Long> {
     List<Accommodation> getAccommodationByAccommodationType(AccommodationType type);
 
-    @Query("SELECT a FROM Accommodation a WHERE :guests BETWEEN a.minGuests AND a.maxGuests")
+    @Query("SELECT a FROM Accommodation a WHERE :guests BETWEEN a.minGuests AND a.maxGuests AND a.status='Active'")
     List<Accommodation> getAccommodationsByNumberOfGuests(@Param("guests") int guests);
+
+    @Query("SELECT a FROM Accommodation a WHERE a.status='Active'")
+    List<Accommodation> getActive();
 
 
 /*    @Query("select a from Accommodation a " +

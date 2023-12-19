@@ -104,7 +104,7 @@ public class AccommodationServiceImpl implements AccommodationService {
         List<SearchedAccommodationDto> filteredAccommodations = new ArrayList<>();
         List<Accommodation> accommodations = new ArrayList<>();
         if (searchAccommodationsDto.getGuests()==0)
-            accommodations = this.accommodationRepository.findAll();
+            accommodations = this.accommodationRepository.getActive();
         else
             accommodations = this.accommodationRepository.getAccommodationsByNumberOfGuests(searchAccommodationsDto.getGuests());
 

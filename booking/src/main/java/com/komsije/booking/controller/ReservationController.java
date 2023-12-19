@@ -1,5 +1,6 @@
 package com.komsije.booking.controller;
 
+import com.komsije.booking.dto.HostPropertyDto;
 import com.komsije.booking.dto.ReservationDto;
 import com.komsije.booking.dto.ReservationViewDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
@@ -34,6 +35,26 @@ public class ReservationController {
     public ResponseEntity<List<ReservationViewDto>> getAllReservations() {
         List<ReservationViewDto> reservationDtos = reservationService.getAll();
         return new ResponseEntity<>(reservationDtos, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/host/{id}")
+    public ResponseEntity<List<ReservationViewDto>> getByHostId(@PathVariable Long id) {
+        try {
+            List<ReservationViewDto> reservationViewDtos = reservationService.getByHostId(id);
+            return new ResponseEntity<>(reservationViewDtos, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping(value = "/guest/{id}")
+    public ResponseEntity<List<ReservationViewDto>> getByGuestId(@PathVariable Long id) {
+        try {
+            List<ReservationViewDto> reservationViewDtos = reservationService.getByGuestId(id);
+            return new ResponseEntity<>(reservationViewDtos, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping(value = "/{id}")

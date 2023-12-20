@@ -3,7 +3,6 @@ package com.komsije.booking.controller;
 import com.komsije.booking.dto.*;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.exceptions.HasActiveReservationsException;
-import com.komsije.booking.model.Account;
 import com.komsije.booking.model.Role;
 import com.komsije.booking.security.JwtTokenUtil;
 import com.komsije.booking.service.RegistrationServiceImpl;
@@ -16,12 +15,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
@@ -40,13 +39,13 @@ public class AccountController {
     private final AccountService accountService;
 
     @Autowired
-    public AccountController(AccountService  accountService) {
+    public AccountController(AccountService accountService) {
         this.accountService = accountService;
     }
 
     @PreAuthorize("hasRole('Admin')")
     @GetMapping(value = "/accounts/all")
-    public ResponseEntity<List<AccountDto>> getAllAccounts(){
+    public ResponseEntity<List<AccountDto>> getAllAccounts() {
         List<AccountDto> accounts = accountService.findAll();
         return new ResponseEntity<>(accounts, HttpStatus.OK);
 
@@ -57,52 +56,43 @@ public class AccountController {
 
     @GetMapping(value = "/accounts/{id}")
     public ResponseEntity<AccountDto> getAccount(@PathVariable Long id) {
-
-        AccountDto account = null;
-        try {
-            account = accountService.findById(id);
-        } catch (ElementNotFoundException e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
+        AccountDto account = accountService.findById(id);
         return new ResponseEntity<>(account, HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('Admin')")
     @GetMapping(value = "/accounts")
     public ResponseEntity<List<AccountDto>> getAccountsByType(@RequestParam String type) {
-        try{
+        try {
             List<AccountDto> accounts = accountService.getByAccountType(Role.valueOf(type));
             return new ResponseEntity<>(accounts, HttpStatus.OK);
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
     @PostMapping(value = "/accounts/email")
     public ResponseEntity<AccountDto> getAccountByEmail(@RequestBody EmailDto emailDto) {
-        try{
+        try {
             AccountDto account = accountService.getByEmail(emailDto.getEmail());
             return new ResponseEntity<>(account, HttpStatus.OK);
-        }
-        catch (ElementNotFoundException e) {
+        } catch (ElementNotFoundException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
     @PreAuthorize("hasRole('Admin')")
     @GetMapping(value = "/accounts/blocked")
-    public ResponseEntity<List<AccountDto>> getBlockedAccounts(){
-        try{
+    public ResponseEntity<List<AccountDto>> getBlockedAccounts() {
+        try {
             List<AccountDto> accounts = accountService.getBlockedAccounts();
             return new ResponseEntity<>(accounts, HttpStatus.OK);
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    @PostMapping(value="/accounts/save", consumes = "application/json")
+    @PostMapping(value = "/accounts/save", consumes = "application/json")
     public ResponseEntity<AccountDto> saveAccount(@RequestBody AccountDto accountDTO) {
         AccountDto account = null;
         try {
@@ -144,7 +134,7 @@ public class AccountController {
     }
 
     @PostMapping(value = "/login", consumes = "application/json")
-    public ResponseEntity<TokenDto> login(@RequestBody LoginDto loginDto){
+    public ResponseEntity<TokenDto> login(@RequestBody LoginDto loginDto) {
         UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(loginDto.getEmail(),
                 loginDto.getPassword());
         Authentication auth = authenticationManager.authenticate(authReq);
@@ -159,8 +149,6 @@ public class AccountController {
         tokenDto.setToken(token);
 
         return new ResponseEntity<>(tokenDto, HttpStatus.OK);
-
-
 
 
 //        AccountDto account = null;
@@ -183,7 +171,7 @@ public class AccountController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         //if (!(auth instanceof AnonymousAuthenticationToken)){
-        if (true){
+        if (true) {
             SecurityContextHolder.clearContext();
 
             return new ResponseEntity<>("You successfully logged out!", HttpStatus.OK);
@@ -192,9 +180,10 @@ public class AccountController {
         }
 
     }
-//    @PreAuthorize("hasRole('Admin')")
+
+    //    @PreAuthorize("hasRole('Admin')")
     @PutMapping(value = "/accounts/update", consumes = "application/json")
-    public ResponseEntity<AccountDto> updateAccount(@RequestBody AccountDto accountDto){
+    public ResponseEntity<AccountDto> updateAccount(@RequestBody AccountDto accountDto) {
         AccountDto account = null;
         try {
             account = accountService.update(accountDto);
@@ -204,14 +193,14 @@ public class AccountController {
         return new ResponseEntity<>(account, HttpStatus.OK);
     }
 
-    @PostMapping(value="/register", consumes = "application/json")
+    @PostMapping(value = "/register", consumes = "application/json")
     public ResponseEntity<TokenDto> register1(@RequestHeader(HttpHeaders.USER_AGENT) String agent, @RequestBody RegistrationDto registrationDto) {
         try {
-            if (agent.equals("Mobile-Android")){
-                return new ResponseEntity<>( registrationService.registerAndroid(registrationDto),HttpStatus.OK);
+            if (agent.equals("Mobile-Android")) {
+                return new ResponseEntity<>(registrationService.registerAndroid(registrationDto), HttpStatus.OK);
 
-            }else{
-                return new ResponseEntity<>( registrationService.register(registrationDto),HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(registrationService.register(registrationDto), HttpStatus.OK);
 
             }
         } catch (Exception e) {
@@ -222,30 +211,24 @@ public class AccountController {
 
     @GetMapping(path = "/register/confirm")
     public ResponseEntity<String> confirm(@RequestParam("token") String token) {
-        try{
-            return new ResponseEntity<>(registrationService.confirmToken(token),HttpStatus.OK);
-        }
-        catch (Exception e){
+        try {
+            return new ResponseEntity<>(registrationService.confirmToken(token), HttpStatus.OK);
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
     @PostMapping(value = "/passwordChange", consumes = "application/json")
-    public ResponseEntity<Void> changePassword(@RequestBody NewPasswordDto newPasswordDto){
+    public ResponseEntity<Void> changePassword(@RequestBody NewPasswordDto newPasswordDto) {
         try {
             accountService.changePassword(newPasswordDto);
             return new ResponseEntity<>(HttpStatus.OK);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
     }
-
-
-
-
 
 
 }

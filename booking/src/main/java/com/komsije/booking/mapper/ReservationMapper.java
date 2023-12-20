@@ -9,12 +9,15 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Mapper(componentModel = "spring", uses={GuestMapper.class} , nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public abstract class ReservationMapper {
+    @Autowired
+    private GuestMapper guestMapper;
     public ReservationDto toDto(Reservation reservation){
         ReservationDto reservationDto = new ReservationDto();
         reservationDto.setId(reservation.getId());
@@ -22,6 +25,7 @@ public abstract class ReservationMapper {
         reservationDto.setDays(reservation.getDays());
         reservationDto.setReservationStatus(reservation.getReservationStatus());
         reservationDto.setAccommodationId(reservation.getAccommodation().getId());
+        reservationDto.setGuest(guestMapper.toDto(reservation.getGuest()));
 
         return reservationDto;
     }

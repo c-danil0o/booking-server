@@ -80,11 +80,11 @@ public class AccountController {
         return new ResponseEntity<>(accounts, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/accounts/save", consumes = "application/json")
+/*    @PostMapping(value = "/accounts/save", consumes = "application/json")
     public ResponseEntity<AccountDto> saveAccount(@RequestBody AccountDto accountDTO) {
         AccountDto account = accountService.save(accountDTO);
         return new ResponseEntity<>(account, HttpStatus.CREATED);
-    }
+    }*/
 
     //blokirati u servisu
     @PreAuthorize("hasRole('Admin')")
@@ -97,9 +97,9 @@ public class AccountController {
         return new ResponseEntity<>(accountDto, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('Admin')")
     @DeleteMapping(value = "/accounts/{id}")
     public ResponseEntity<Void> deleteAccount(@PathVariable Long id) {
+
         accountService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -131,6 +131,7 @@ public class AccountController {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
+        //if (!(auth instanceof AnonymousAuthenticationToken)){
         //if (!(auth instanceof AnonymousAuthenticationToken)){
         if (true) {
             SecurityContextHolder.clearContext();

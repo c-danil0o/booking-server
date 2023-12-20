@@ -40,19 +40,20 @@ public class HostContoller {
     }
 
 
-    @PostMapping(consumes = "application/json")
+/*    @PostMapping(consumes = "application/json")
     public ResponseEntity<HostDto> saveHost(@RequestBody HostDto hostDTO) {
         HostDto hostDto = hostService.save(hostDTO);
         return new ResponseEntity<>(hostDto, HttpStatus.CREATED);
-    }
+    }*/
 
 //    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasAnyRole('Host', 'Admin')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteHost(@PathVariable Long id) {
         hostService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
+    @PreAuthorize("hasAnyRole('Host', 'Admin')")
     @PutMapping(value = "/update", consumes = "application/json")
     public ResponseEntity<HostDto> updateAccount(@RequestBody HostDto hostDto){
         HostDto host = hostService.update(hostDto);

@@ -6,6 +6,7 @@ import com.komsije.booking.exceptions.HasActiveReservationsException;
 import com.komsije.booking.model.AccommodationStatus;
 import com.komsije.booking.model.AccommodationType;
 import com.komsije.booking.service.interfaces.AccommodationService;
+import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +38,7 @@ public class AccommodationController {
         return new ResponseEntity<>(accommodations, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/get/{id}")
     public ResponseEntity<AccommodationDto> getAccommodation(@PathVariable Long id) {
         AccommodationDto accommodation = accommodationService.findById(id);
         return new ResponseEntity<>(accommodation, HttpStatus.OK);
@@ -49,6 +50,7 @@ public class AccommodationController {
         return new ResponseEntity<>(accommodations, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('Admin')")
     @GetMapping(value = "/unapproved")
     public ResponseEntity<List<HostPropertyDto>> getUnapproved() {
         List<HostPropertyDto> accommodations = accommodationService.getUnapprovedAccommodations();

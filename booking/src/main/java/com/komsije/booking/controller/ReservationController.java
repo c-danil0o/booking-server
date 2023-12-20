@@ -4,10 +4,12 @@ import com.komsije.booking.dto.ReservationDto;
 import com.komsije.booking.dto.ReservationViewDto;
 import com.komsije.booking.model.ReservationStatus;
 import com.komsije.booking.service.interfaces.AccommodationService;
+import com.komsije.booking.service.interfaces.GuestService;
 import com.komsije.booking.service.interfaces.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,14 +18,15 @@ import java.util.List;
 @RequestMapping(value = "api/reservations")
 public class ReservationController {
     private final ReservationService reservationService;
+    private final GuestService guestService;
 
 
     @Autowired
-    public ReservationController(ReservationService reservationService, AccommodationService accommodationService) {
+    public ReservationController(ReservationService reservationService, AccommodationService accommodationService, GuestService guestService) {
         this.reservationService = reservationService;
+        this.guestService = guestService;
     }
-
-    //    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasRole('Admin')")
     @GetMapping(value = "/all")
     public ResponseEntity<List<ReservationViewDto>> getAllReservations() {
         List<ReservationViewDto> reservationDtos = reservationService.getAll();
@@ -77,30 +80,32 @@ public class ReservationController {
         return new ResponseEntity<>(HttpStatus.OK);
 
     }
-
+    @PreAuthorize("hasRole('Admin')")
     @PatchMapping(value = "/{id}/changeStatus")
     public ResponseEntity<ReservationDto> changeStatus(@PathVariable("id") Long id, @RequestParam String status) {
         ReservationStatus newStatus = ReservationStatus.valueOf(status);
         ReservationDto reservationDto = reservationService.updateStatus(id, newStatus);
         return new ResponseEntity<>(reservationDto, HttpStatus.OK);
     }
-
+    @PreAuthorize("hasAnyRole('Admin', 'Host')")
     @PutMapping(value = "/{id}/approve")
     public ResponseEntity<Void> approveReservationRequest(@PathVariable("id") Long id) {
         reservationService.acceptReservationRequest(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+    @PreAuthorize("hasAnyRole('Admin', 'Host')")
 
     @PutMapping(value = "/{id}/deny")
     public ResponseEntity<Void> denyReservationRequest(@PathVariable("id") Long id) {
         reservationService.denyReservationRequest(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+    @PreAuthorize("hasAnyRole('Admin', 'Guest')")
 
     @PutMapping(value = "/{id}/cancel")
     public ResponseEntity<Void> cancelReservationRequest(@PathVariable("id") Long id) {
 
-        reservationService.cancelReservationRequest(id);
+        guestService.cancelReservationRequest(id);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

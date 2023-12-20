@@ -10,6 +10,7 @@ import com.komsije.booking.service.AccountServiceImpl;
 import com.komsije.booking.service.ReviewServiceImpl;
 import com.komsije.booking.service.interfaces.AccountService;
 import com.komsije.booking.service.interfaces.ReviewService;
+import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,7 +57,7 @@ public class ReviewController {
         reviewDto = reviewService.save(reviewDTO);
         return new ResponseEntity<>(reviewDto, HttpStatus.CREATED);
     }
-
+    @PreAuthorize("hasRole('Admin')")
     @PatchMapping(value = "/{id}/approve")
     public ResponseEntity<ReviewDto> approveReview(@PathVariable("id") Long id) {
         ReviewDto reviewDto = null;
@@ -64,14 +65,14 @@ public class ReviewController {
         reviewDto = reviewService.findById(id);
         return new ResponseEntity<>(reviewDto, HttpStatus.OK);
     }
-
+    @PreAuthorize("hasRole('Admin')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
         reviewService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping
+    @GetMapping(value = "/acc")
     public ResponseEntity<List<ReviewDto>> getByAccommodationId(@RequestParam Long accommodationId ) {
         List<ReviewDto> reviewDtos = reviewService.findByAccommodationId(accommodationId);
         return new ResponseEntity<>(reviewDtos, HttpStatus.OK);

@@ -4,6 +4,7 @@ import com.komsije.booking.dto.HostDto;
 import com.komsije.booking.dto.RegistrationDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.exceptions.EmailAlreadyExistsException;
+import com.komsije.booking.exceptions.HasActiveReservationsException;
 import com.komsije.booking.mapper.AddressMapper;
 import com.komsije.booking.mapper.HostMapper;
 import com.komsije.booking.model.*;
@@ -11,12 +12,14 @@ import com.komsije.booking.repository.AccountRepository;
 import com.komsije.booking.repository.HostRepository;
 import com.komsije.booking.service.interfaces.ConfirmationTokenService;
 import com.komsije.booking.service.interfaces.HostService;
+import com.komsije.booking.service.interfaces.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
@@ -30,13 +33,15 @@ public class HostServiceImpl implements HostService {
     private final HostRepository hostRepository;
     private final AccountRepository accountRepository;
     private final ConfirmationTokenService confirmationTokenService;
+    private final ReservationService reservationService;
 
 
     @Autowired
-    public HostServiceImpl(HostRepository hostRepository, AccountRepository accountRepository, ConfirmationTokenService confirmationTokenService) {
+    public HostServiceImpl(HostRepository hostRepository, AccountRepository accountRepository, ConfirmationTokenService confirmationTokenService, ReservationService reservationService) {
         this.hostRepository = hostRepository;
         this.accountRepository = accountRepository;
         this.confirmationTokenService = confirmationTokenService;
+        this.reservationService = reservationService;
     }
 
     public HostDto findById(Long id) throws ElementNotFoundException {
@@ -59,10 +64,13 @@ public class HostServiceImpl implements HostService {
         hostRepository.save(host);
         return hostDto;
     }
-
     public void delete(Long id) throws ElementNotFoundException {
         if (hostRepository.existsById(id)){
-            hostRepository.deleteById(id);
+            if (!reservationService.hasHostActiveReservations(id)){
+                hostRepository.deleteById(id);
+            }else{
+                throw new HasActiveReservationsException("Account has active reservations and can't be deleted!");
+            }
         }else{
             throw new  ElementNotFoundException("Element with given ID doesn't exist!");
         }

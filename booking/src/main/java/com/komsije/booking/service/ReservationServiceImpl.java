@@ -25,13 +25,11 @@ public class ReservationServiceImpl implements ReservationService {
     private ReservationMapper mapper;
     private final ReservationRepository reservationRepository;
     private final AccommodationService accommodationService;
-    private final GuestService guestService;
 
     @Autowired
-    public ReservationServiceImpl(ReservationRepository reservationRepository, AccommodationService accommodationService, GuestService guestService) {
+    public ReservationServiceImpl(ReservationRepository reservationRepository, AccommodationService accommodationService) {
         this.reservationRepository = reservationRepository;
         this.accommodationService = accommodationService;
-        this.guestService = guestService;
     }
 
     public ReservationDto findById(Long id) throws ElementNotFoundException {
@@ -65,6 +63,16 @@ public class ReservationServiceImpl implements ReservationService {
         List<Reservation> reservations = reservationRepository.findAll();
         for (Reservation reservation: reservations){
             if (reservation.getGuest().getId().equals(accountId) && reservation.getReservationStatus().equals(ReservationStatus.Active)){
+                return true;
+            }
+        }
+        return false;
+    }
+    @Override
+    public boolean hasHostActiveReservations(Long accountId) {
+        List<Reservation> reservations = reservationRepository.findAll();
+        for (Reservation reservation: reservations){
+            if (reservation.getHost().getId().equals(accountId) && reservation.getReservationStatus().equals(ReservationStatus.Active)){
                 return true;
             }
         }
@@ -137,20 +145,7 @@ public class ReservationServiceImpl implements ReservationService {
         return true;
     }
 
-    @Override
-    public boolean cancelReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException {
-        Reservation reservation = reservationRepository.findById(id).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
-        if(reservation.getReservationStatus().equals(ReservationStatus.Pending) || reservation.getReservationStatus().equals(ReservationStatus.Approved)){
-            reservation.setReservationStatus(ReservationStatus.Cancelled);
-            reservationRepository.save(reservation);
-        }else{
-            throw new PendingReservationException("Reservation is not in pending or approved state!");
-        }
-//        todo: update accommodations if reservation was approved
 
-        guestService.increaseCancelations(reservation.getGuest().getId());
-        return true;
-    }
 
 
     public ReservationDto save(ReservationDto reservationDto) throws ElementNotFoundException {

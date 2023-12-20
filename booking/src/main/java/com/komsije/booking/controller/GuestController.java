@@ -39,14 +39,14 @@ public class GuestController {
         return new ResponseEntity<>(guestDto, HttpStatus.OK);
     }
 
-
-    @PostMapping(consumes = "application/json")
+/*    @PostMapping(consumes = "application/json")
     public ResponseEntity<GuestDto> saveGuest(@RequestBody GuestDto guestDTO) {
         GuestDto guestDto = guestService.save(guestDTO);
         return new ResponseEntity<>(guestDto, HttpStatus.CREATED);
-    }
+    }*/
 
 //    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasAnyRole('Guest', 'Admin')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteGuest(@PathVariable Long id) {
         guestService.delete(id);
@@ -67,6 +67,7 @@ public class GuestController {
         return new ResponseEntity<>(favorites, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('Guest', 'Admin')")
     @PutMapping(value = "/update", consumes = "application/json")
     public ResponseEntity<GuestDto> updateAccount(@RequestBody GuestDto guestDto){
         GuestDto guest = guestService.update(guestDto);

@@ -41,89 +41,45 @@ public class ReviewController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<ReviewDto> getReview(@PathVariable Long id) {
-
-        ReviewDto reviewDto = null;
-        try {
-            reviewDto = reviewService.findById(id);
-        } catch (ElementNotFoundException e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
-
+        ReviewDto reviewDto = reviewService.findById(id);
         return new ResponseEntity<>(reviewDto, HttpStatus.OK);
     }
     @GetMapping(value = "/approved")
     public ResponseEntity<List<ReviewDto>> getApprovedReviews(){
-        try{
-            List<ReviewDto> reviewDtos = reviewService.getApprovedReviews();
-
-            return new ResponseEntity<>(reviewDtos, HttpStatus.OK);
-        }catch (IllegalArgumentException e){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        List<ReviewDto> reviewDtos = reviewService.getApprovedReviews();
+        return new ResponseEntity<>(reviewDtos, HttpStatus.OK);
     }
 
     @PostMapping(consumes = "application/json")
     public ResponseEntity<ReviewDto> saveReview(@RequestBody ReviewDto reviewDTO) {
         ReviewDto reviewDto = null;
-        try {
-            reviewDto = reviewService.save(reviewDTO);
-        } catch (ElementNotFoundException e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        reviewDto = reviewService.save(reviewDTO);
         return new ResponseEntity<>(reviewDto, HttpStatus.CREATED);
     }
 
     @PatchMapping(value = "/{id}/approve")
     public ResponseEntity<ReviewDto> approveReview(@PathVariable("id") Long id) {
-
         ReviewDto reviewDto = null;
-        try {
-            reviewService.setApproved(id);
-            reviewDto = reviewService.findById(id);
-        } catch (ElementNotFoundException e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        reviewService.setApproved(id);
+        reviewDto = reviewService.findById(id);
         return new ResponseEntity<>(reviewDto, HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
-
-        try {
-            reviewService.delete(id);
-        } catch (HasActiveReservationsException | ElementNotFoundException e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        reviewService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
-
     }
 
     @GetMapping
     public ResponseEntity<List<ReviewDto>> getByAccommodationId(@RequestParam Long accommodationId ) {
-        try {
-            List<ReviewDto> reviewDtos = reviewService.findByAccommodationId(accommodationId);
-            return new ResponseEntity<>(reviewDtos, HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } catch (ElementNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        List<ReviewDto> reviewDtos = reviewService.findByAccommodationId(accommodationId);
+        return new ResponseEntity<>(reviewDtos, HttpStatus.OK);
     }
 
     @GetMapping(value = "/host")
     public ResponseEntity<List<ReviewDto>> getByHostId(@RequestParam Long hostId ) {
-        try {
-            List<ReviewDto> reviewDtos = reviewService.findByHostId(hostId);
-            return new ResponseEntity<>(reviewDtos, HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } catch (ElementNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        List<ReviewDto> reviewDtos = reviewService.findByHostId(hostId);
+        return new ResponseEntity<>(reviewDtos, HttpStatus.OK);
     }
 }

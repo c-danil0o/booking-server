@@ -27,20 +27,12 @@ public class ImageController {
             headers = "Accept=image/jpeg, image/jpg, image/png, image/gif",
             produces = "image/jpg",
             method = RequestMethod.GET)
-    public ResponseEntity<byte[]> getArticleImage(@PathVariable String id) {
-        byte[] image = new byte[0];
-        try {
-            image = imageService.findByFilename(id);
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.IMAGE_JPEG);
-            headers.setContentLength(image.length);
-            return new ResponseEntity<byte[]>(image,headers, HttpStatus.OK);
-        } catch (IOException e) {
-            System.out.println("image not found: " + id);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
-        }
-
+    public ResponseEntity<byte[]> getArticleImage(@PathVariable String id) throws IOException {
+        byte[] image = imageService.findByFilename(id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_JPEG);
+        headers.setContentLength(image.length);
+        return new ResponseEntity<byte[]>(image,headers, HttpStatus.OK);
     }
 
     @PostMapping(value="/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

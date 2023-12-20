@@ -35,88 +35,47 @@ public class GuestController {
 //    @PreAuthorize("hasAnyRole('Admin','Host')")
     @GetMapping(value = "/{id}")
     public ResponseEntity<GuestDto> getGuest(@PathVariable Long id) {
-        GuestDto guestDto = null;
-        try {
-            guestDto = guestService.findById(id);
-        } catch (ElementNotFoundException e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        GuestDto guestDto = guestService.findById(id);
         return new ResponseEntity<>(guestDto, HttpStatus.OK);
     }
 
 
     @PostMapping(consumes = "application/json")
     public ResponseEntity<GuestDto> saveGuest(@RequestBody GuestDto guestDTO) {
-        GuestDto guestDto = null;
-        try {
-            guestDto = guestService.save(guestDTO);
-        } catch (ElementNotFoundException e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        GuestDto guestDto = guestService.save(guestDTO);
         return new ResponseEntity<>(guestDto, HttpStatus.CREATED);
     }
 
 //    @PreAuthorize("hasRole('Admin')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteGuest(@PathVariable Long id) {
-
-        try {
-            guestService.delete(id);
-        } catch (HasActiveReservationsException | ElementNotFoundException e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        guestService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
 //    @PreAuthorize("hasRole('Guest')")
     @GetMapping(value = "/favorites/{id}")
     public ResponseEntity<List<AccommodationDto>> getFavorites(@PathVariable Long id){
-        List<AccommodationDto> favorites = null;
-        try {
-            favorites = guestService.getFavoritesByGuestId(id);
-        } catch (ElementNotFoundException e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        List<AccommodationDto> favorites = guestService.getFavoritesByGuestId(id);
         return new ResponseEntity<>(favorites, HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('Guest')")
     @PutMapping(value = "/favorites/{id}")
     public ResponseEntity<List<AccommodationDto>> addToFavorites(@PathVariable Long id, @RequestBody AccommodationDto accommodationDto){
-        List<AccommodationDto> favorites = null;
-        try {
-            favorites = guestService.addToFavorites(id, accommodationDto);
-        } catch (ElementNotFoundException e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        List<AccommodationDto> favorites = guestService.addToFavorites(id, accommodationDto);
         return new ResponseEntity<>(favorites, HttpStatus.OK);
     }
 
     @PutMapping(value = "/update", consumes = "application/json")
     public ResponseEntity<GuestDto> updateAccount(@RequestBody GuestDto guestDto){
-        GuestDto guest = null;
-        try {
-            guest = guestService.update(guestDto);
-        } catch (ElementNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        GuestDto guest = guestService.update(guestDto);
         return new ResponseEntity<>(guest, HttpStatus.OK);
     }
 
     @PostMapping(value = "/email", consumes = "application/json")
     public ResponseEntity<GuestDto> getByEmail(@RequestBody EmailDto emailDto) {
-        GuestDto guestDto = null;
-        try {
-            guestDto = guestService.getByEmail(emailDto.getEmail());
-        } catch (ElementNotFoundException e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        GuestDto guestDto = guestService.getByEmail(emailDto.getEmail());
         return new ResponseEntity<>(guestDto, HttpStatus.CREATED);
     }
 

@@ -1,5 +1,8 @@
 package com.komsije.booking.repository;
 
+import com.komsije.booking.exceptions.UploadFileException;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
+import org.apache.tomcat.util.http.fileupload.impl.FileUploadIOException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
@@ -39,7 +42,7 @@ public class ImageRepository {
                 return;
             }
 
-            throw new RuntimeException(e.getMessage());
+            throw new UploadFileException(e.getMessage());
         }
     }
 

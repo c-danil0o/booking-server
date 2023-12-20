@@ -58,25 +58,25 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<ApiError>(message, HttpStatus.I_AM_A_TEAPOT);
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler(EmailAlreadyExistsException.class)
-    public ResponseEntity<ApiError> authenticationException(EmailAlreadyExistsException ex, HttpServletRequest request) {
+    @org.springframework.web.bind.annotation.ExceptionHandler({EmailAlreadyExistsException.class})
+    public ResponseEntity<ApiError> authenticationException1(EmailAlreadyExistsException ex, HttpServletRequest request) {
         ApiError message = new ApiError(HttpStatus.I_AM_A_TEAPOT.value(), ex.getMessage(), request.getRequestURI());
         return new ResponseEntity<ApiError>(message, HttpStatus.I_AM_A_TEAPOT);
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(InvalidConfirmationTokenException.class)
-    public ResponseEntity<ApiError> authenticationException(InvalidConfirmationTokenException ex, HttpServletRequest request) {
+    public ResponseEntity<ApiError> authenticationException2(InvalidConfirmationTokenException ex, HttpServletRequest request) {
         ApiError message = new ApiError(HttpStatus.I_AM_A_TEAPOT.value(), ex.getMessage(), request.getRequestURI());
         return new ResponseEntity<ApiError>(message, HttpStatus.I_AM_A_TEAPOT);
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler(IncorrectPasswordException.class)
-    public ResponseEntity<ApiError> authenticationException(IncorrectPasswordException ex, HttpServletRequest request) {
+    public ResponseEntity<ApiError> authenticationException3(IncorrectPasswordException ex, HttpServletRequest request) {
         ApiError message = new ApiError(HttpStatus.I_AM_A_TEAPOT.value(), ex.getMessage(), request.getRequestURI());
         return new ResponseEntity<ApiError>(message, HttpStatus.I_AM_A_TEAPOT);
     }
     @org.springframework.web.bind.annotation.ExceptionHandler(PendingReservationException.class)
-    public ResponseEntity<ApiError> authenticationException(PendingReservationException ex, HttpServletRequest request) {
+    public ResponseEntity<ApiError> authenticationException4(PendingReservationException ex, HttpServletRequest request) {
         ApiError message = new ApiError(HttpStatus.I_AM_A_TEAPOT.value(), ex.getMessage(), request.getRequestURI());
         return new ResponseEntity<ApiError>(message, HttpStatus.I_AM_A_TEAPOT);
     }

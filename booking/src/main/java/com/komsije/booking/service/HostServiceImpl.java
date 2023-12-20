@@ -3,6 +3,7 @@ package com.komsije.booking.service;
 import com.komsije.booking.dto.HostDto;
 import com.komsije.booking.dto.RegistrationDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
+import com.komsije.booking.exceptions.EmailAlreadyExistsException;
 import com.komsije.booking.mapper.AddressMapper;
 import com.komsije.booking.mapper.HostMapper;
 import com.komsije.booking.model.*;
@@ -81,7 +82,7 @@ public class HostServiceImpl implements HostService {
             id = host.getId();
         }
         else if (account.isActivated() || account.isBlocked()){
-            throw new IllegalStateException("can't register with this mail");
+            throw new EmailAlreadyExistsException("Email already exists!");
         }else
             id = account.getId();
 

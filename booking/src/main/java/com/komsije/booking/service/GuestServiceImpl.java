@@ -4,6 +4,7 @@ import com.komsije.booking.dto.AccommodationDto;
 import com.komsije.booking.dto.GuestDto;
 import com.komsije.booking.dto.RegistrationDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
+import com.komsije.booking.exceptions.EmailAlreadyExistsException;
 import com.komsije.booking.mapper.AccommodationMapper;
 import com.komsije.booking.mapper.AddressMapper;
 import com.komsije.booking.mapper.GuestMapper;
@@ -101,7 +102,7 @@ public class GuestServiceImpl implements GuestService {
             id = guest.getId();
         }
         else if (account.isActivated() || account.isBlocked()){
-            throw new IllegalStateException("can't register with this mail");
+            throw new EmailAlreadyExistsException("Email already exists!");
         }else
             id = account.getId();
 

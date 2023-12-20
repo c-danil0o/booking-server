@@ -1,8 +1,6 @@
 package com.komsije.booking.controller;
 
 import com.komsije.booking.dto.*;
-import com.komsije.booking.exceptions.ElementNotFoundException;
-import com.komsije.booking.exceptions.HasActiveReservationsException;
 import com.komsije.booking.model.Role;
 import com.komsije.booking.security.JwtTokenUtil;
 import com.komsije.booking.service.RegistrationServiceImpl;
@@ -63,44 +61,28 @@ public class AccountController {
     @PreAuthorize("hasRole('Admin')")
     @GetMapping(value = "/accounts")
     public ResponseEntity<List<AccountDto>> getAccountsByType(@RequestParam String type) {
-        try {
-            List<AccountDto> accounts = accountService.getByAccountType(Role.valueOf(type));
-            return new ResponseEntity<>(accounts, HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        List<AccountDto> accounts = accountService.getByAccountType(Role.valueOf(type));
+        return new ResponseEntity<>(accounts, HttpStatus.OK);
     }
 
     @PostMapping(value = "/accounts/email")
     public ResponseEntity<AccountDto> getAccountByEmail(@RequestBody EmailDto emailDto) {
-        try {
-            AccountDto account = accountService.getByEmail(emailDto.getEmail());
-            return new ResponseEntity<>(account, HttpStatus.OK);
-        } catch (ElementNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+
+        AccountDto account = accountService.getByEmail(emailDto.getEmail());
+        return new ResponseEntity<>(account, HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('Admin')")
     @GetMapping(value = "/accounts/blocked")
     public ResponseEntity<List<AccountDto>> getBlockedAccounts() {
-        try {
-            List<AccountDto> accounts = accountService.getBlockedAccounts();
-            return new ResponseEntity<>(accounts, HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+
+        List<AccountDto> accounts = accountService.getBlockedAccounts();
+        return new ResponseEntity<>(accounts, HttpStatus.OK);
     }
 
     @PostMapping(value = "/accounts/save", consumes = "application/json")
     public ResponseEntity<AccountDto> saveAccount(@RequestBody AccountDto accountDTO) {
-        AccountDto account = null;
-        try {
-            account = accountService.save(accountDTO);
-        } catch (ElementNotFoundException e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        AccountDto account = accountService.save(accountDTO);
         return new ResponseEntity<>(account, HttpStatus.CREATED);
     }
 
@@ -109,27 +91,16 @@ public class AccountController {
     @PatchMapping(value = "/accounts/{id}/block")
     public ResponseEntity<AccountDto> blockAccount(@PathVariable("id") Long id) {
         AccountDto accountDto = null;
-        try {
-            accountDto = accountService.findById(id);
-            accountDto.setBlocked(true);
-            accountDto = accountService.update(accountDto);
-        } catch (ElementNotFoundException e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
+        accountDto = accountService.findById(id);
+        accountDto.setBlocked(true);
+        accountDto = accountService.update(accountDto);
         return new ResponseEntity<>(accountDto, HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('Admin')")
     @DeleteMapping(value = "/accounts/{id}")
     public ResponseEntity<Void> deleteAccount(@PathVariable Long id) {
-        try {
-            accountService.delete(id);
-        } catch (HasActiveReservationsException | ElementNotFoundException e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        accountService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -149,16 +120,6 @@ public class AccountController {
         tokenDto.setToken(token);
 
         return new ResponseEntity<>(tokenDto, HttpStatus.OK);
-
-
-//        AccountDto account = null;
-//        try {
-//            account = accountService.checkLoginCredentials(loginDto);
-//        } catch (ElementNotFoundException | IncorrectPasswordException | AccountNotActivateException e) {
-//            System.out.println(e.getMessage());
-//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//        }
-//        return new ResponseEntity<>(account, HttpStatus.OK);
     }
 
 
@@ -184,49 +145,34 @@ public class AccountController {
     //    @PreAuthorize("hasRole('Admin')")
     @PutMapping(value = "/accounts/update", consumes = "application/json")
     public ResponseEntity<AccountDto> updateAccount(@RequestBody AccountDto accountDto) {
-        AccountDto account = null;
-        try {
-            account = accountService.update(accountDto);
-        } catch (ElementNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        AccountDto account = accountService.update(accountDto);
         return new ResponseEntity<>(account, HttpStatus.OK);
     }
 
     @PostMapping(value = "/register", consumes = "application/json")
     public ResponseEntity<TokenDto> register1(@RequestHeader(HttpHeaders.USER_AGENT) String agent, @RequestBody RegistrationDto registrationDto) {
-        try {
-            if (agent.equals("Mobile-Android")) {
-                return new ResponseEntity<>(registrationService.registerAndroid(registrationDto), HttpStatus.OK);
 
-            } else {
-                return new ResponseEntity<>(registrationService.register(registrationDto), HttpStatus.OK);
+        if (agent.equals("Mobile-Android")) {
+            return new ResponseEntity<>(registrationService.registerAndroid(registrationDto), HttpStatus.OK);
 
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } else {
+            return new ResponseEntity<>(registrationService.register(registrationDto), HttpStatus.OK);
         }
+
     }
 
     @GetMapping(path = "/register/confirm")
     public ResponseEntity<String> confirm(@RequestParam("token") String token) {
-        try {
-            return new ResponseEntity<>(registrationService.confirmToken(token), HttpStatus.OK);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+
+        return new ResponseEntity<>(registrationService.confirmToken(token), HttpStatus.OK);
+
     }
 
     @PostMapping(value = "/passwordChange", consumes = "application/json")
     public ResponseEntity<Void> changePassword(@RequestBody NewPasswordDto newPasswordDto) {
-        try {
-            accountService.changePassword(newPasswordDto);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        accountService.changePassword(newPasswordDto);
+        return new ResponseEntity<>(HttpStatus.OK);
+
 
     }
 

@@ -35,61 +35,34 @@ public class HostContoller {
 //    @PreAuthorize("hasRole('Admin')")
     @GetMapping(value = "/{id}")
     public ResponseEntity<HostDto> getHost(@PathVariable Long id) {
-        HostDto hostDto = null;
-        try {
-            hostDto = hostService.findById(id);
-        } catch (ElementNotFoundException e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        HostDto hostDto = hostService.findById(id);
         return new ResponseEntity<>(hostDto, HttpStatus.OK);
     }
 
 
-    @PostMapping(consumes = "application/json")
+/*    @PostMapping(consumes = "application/json")
     public ResponseEntity<HostDto> saveHost(@RequestBody HostDto hostDTO) {
-        HostDto hostDto = null;
-        try {
-            hostDto = hostService.save(hostDTO);
-        } catch (ElementNotFoundException e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        HostDto hostDto = hostService.save(hostDTO);
         return new ResponseEntity<>(hostDto, HttpStatus.CREATED);
-    }
+    }*/
 
 //    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasAnyRole('Host', 'Admin')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteHost(@PathVariable Long id) {
-        try {
-            hostService.delete(id);
-        } catch (HasActiveReservationsException | ElementNotFoundException e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        hostService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
+    @PreAuthorize("hasAnyRole('Host', 'Admin')")
     @PutMapping(value = "/update", consumes = "application/json")
     public ResponseEntity<HostDto> updateAccount(@RequestBody HostDto hostDto){
-        HostDto host = null;
-        try {
-            host = hostService.update(hostDto);
-        } catch (ElementNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        HostDto host = hostService.update(hostDto);
         return new ResponseEntity<>(host, HttpStatus.OK);
     }
 
     @PostMapping(value = "/email", consumes = "application/json")
     public ResponseEntity<HostDto> getByEmail(@RequestBody EmailDto emailDto) {
-        HostDto hostDto = null;
-        try {
-            hostDto = hostService.getByEmail(emailDto.getEmail());
-        } catch (ElementNotFoundException e) {
-            System.out.println(e.getMessage());
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        HostDto hostDto = hostService.getByEmail(emailDto.getEmail());
         return new ResponseEntity<>(hostDto, HttpStatus.CREATED);
     }
 

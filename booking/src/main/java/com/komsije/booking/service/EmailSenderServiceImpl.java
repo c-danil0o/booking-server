@@ -34,7 +34,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
 
         } catch (MessagingException e) {
 //            LOGGER.error("failed to send email", e);
-            throw new IllegalStateException("failed to send email");
+            throw new IllegalStateException("Failed to send an activation email!");
         }
     }
 }

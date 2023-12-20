@@ -19,12 +19,15 @@ public interface ReservationService extends CrudService<ReservationDto, Long> {
     public List<ReservationDto> getByReservationStatus(ReservationStatus reservationStatus);
 
     public boolean hasActiveReservations(Long accountId);
+
+    boolean hasHostActiveReservations(Long accountId);
+
     public boolean overlappingActiveReservationsExist(LocalDateTime startDate, LocalDateTime endDate) throws InvalidTimeSlotException;
     public boolean deleteRequest(Long id) throws ElementNotFoundException, PendingReservationException;
     public ReservationDto updateStatus(Long id, ReservationStatus status) throws ElementNotFoundException;
     public boolean acceptReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException;
     public boolean denyReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException;
-    public boolean cancelReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException;
+   // public boolean cancelReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException;
 
 
 

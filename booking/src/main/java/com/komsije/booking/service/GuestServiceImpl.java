@@ -3,7 +3,11 @@ package com.komsije.booking.service;
 import com.komsije.booking.dto.AccommodationDto;
 import com.komsije.booking.dto.GuestDto;
 import com.komsije.booking.dto.RegistrationDto;
+import com.komsije.booking.dto.ReservationDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
+import com.komsije.booking.exceptions.EmailAlreadyExistsException;
+import com.komsije.booking.exceptions.HasActiveReservationsException;
+import com.komsije.booking.exceptions.PendingReservationException;
 import com.komsije.booking.mapper.AccommodationMapper;
 import com.komsije.booking.mapper.AddressMapper;
 import com.komsije.booking.mapper.GuestMapper;
@@ -12,15 +16,14 @@ import com.komsije.booking.repository.AccountRepository;
 import com.komsije.booking.repository.GuestRepository;
 import com.komsije.booking.service.interfaces.ConfirmationTokenService;
 import com.komsije.booking.service.interfaces.GuestService;
+import com.komsije.booking.service.interfaces.ReservationService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -37,12 +40,14 @@ public class GuestServiceImpl implements GuestService {
     private final GuestRepository guestRepository;
     private final AccountRepository accountRepository;
     private final ConfirmationTokenService confirmationTokenService;
+    private final ReservationService reservationService;
 
     @Autowired
-    public GuestServiceImpl(GuestRepository guestRepository, AccountRepository accountRepository,ConfirmationTokenService confirmationTokenService) {
+    public GuestServiceImpl(GuestRepository guestRepository, AccountRepository accountRepository, ConfirmationTokenService confirmationTokenService, ReservationService reservationService) {
         this.guestRepository = guestRepository;
         this.accountRepository = accountRepository;
         this.confirmationTokenService=confirmationTokenService;
+        this.reservationService = reservationService;
     }
 
     public GuestDto findById(Long id) throws ElementNotFoundException {
@@ -68,9 +73,13 @@ public class GuestServiceImpl implements GuestService {
 
     public void delete(Long id) throws ElementNotFoundException {
         if (guestRepository.existsById(id)){
-            guestRepository.deleteById(id);
+            if (!reservationService.hasActiveReservations(id)){
+                guestRepository.deleteById(id);
+            }else{
+                throw new HasActiveReservationsException("Account has active reservations and can't be deleted!");
+            }
         }else{
-            throw  new ElementNotFoundException("Element with given ID doesn't exist!");
+            throw new  ElementNotFoundException("Element with given ID doesn't exist!");
         }
 
     }
@@ -101,7 +110,7 @@ public class GuestServiceImpl implements GuestService {
             id = guest.getId();
         }
         else if (account.isActivated() || account.isBlocked()){
-            throw new IllegalStateException("can't register with this mail");
+            throw new EmailAlreadyExistsException("Email already exists!");
         }else
             id = account.getId();
 
@@ -128,5 +137,20 @@ public class GuestServiceImpl implements GuestService {
         int timesCancelled =  guest.getTimesCancelled();
         guest.setTimesCancelled(timesCancelled+1);
         guestRepository.save(guest);
+    }
+
+    @Override
+    public boolean cancelReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException {
+        ReservationDto reservation = reservationService.findById(id);
+        if(reservation.getReservationStatus().equals(ReservationStatus.Pending) || reservation.getReservationStatus().equals(ReservationStatus.Approved)){
+            reservation.setReservationStatus(ReservationStatus.Cancelled);
+            reservationService.updateStatus(reservation.getId(),ReservationStatus.Cancelled );
+        }else{
+            throw new PendingReservationException("Reservation is not in pending or approved state!");
+        }
+//        todo: update accommodations if reservation was approved
+
+        this.increaseCancelations(reservation.getGuest().getId());
+        return true;
     }
 }

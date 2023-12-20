@@ -2,6 +2,7 @@ package com.komsije.booking.service;
 
 import com.komsije.booking.dto.RegistrationDto;
 import com.komsije.booking.dto.TokenDto;
+import com.komsije.booking.exceptions.InvalidConfirmationTokenException;
 import com.komsije.booking.model.ConfirmationToken;
 import com.komsije.booking.model.Role;
 import com.komsije.booking.service.interfaces.*;
@@ -69,16 +70,16 @@ public class RegistrationServiceImpl implements RegistrationService {
         ConfirmationToken confirmationToken = confirmationTokenService
                 .getToken(token)
                 .orElseThrow(() ->
-                        new IllegalStateException("token not found"));
+                        new InvalidConfirmationTokenException("Confirmation token is not valid!"));
 
         if (confirmationToken.getConfirmedAt() != null) {
-            throw new IllegalStateException("email already confirmed");
+            throw  new InvalidConfirmationTokenException("Account is already confirmed!");
         }
 
         LocalDateTime expiredAt = confirmationToken.getExpiresAt();
 
         if (expiredAt.isBefore(LocalDateTime.now())) {
-            throw new IllegalStateException("token expired");
+           throw new InvalidConfirmationTokenException("Confirmation token is not valid!");
         }
 
         confirmationTokenService.setConfirmedAt(token);

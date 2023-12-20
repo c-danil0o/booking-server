@@ -1,24 +1,24 @@
 -- Insert data into the address table
 INSERT INTO address (city, number, street, latitude, longitude, country)
-VALUES ('City1', '123', 'Street A', 45, 45, 'Serbia'),
-       ('City2', '456', 'Street B', 45, 45, 'Bosnia'),
-       ('City3', '789', 'Street C', 45, 45, 'Serbia'),
-       ('City4', '101', 'Street D', 45, 45, 'Serbia'),
-       ('City5', '202', 'Street E', 45, 45, 'Serbia'),
-       ('City6', '303', 'Street F', 45, 45, 'Serbia'),
-       ('City7', '404', 'Street G', 45, 45, 'Serbia'),
-       ('City8', '505', 'Street H', 45, 45, 'Serbia'),
-       ('City9', '606', 'Street I', 45, 45, 'Serbia'),
-       ('City10', '707', 'Street J', 45, 45, 'Serbia');
+VALUES ('City1', '123', 'Street A', 45, 29, 'Serbia'),
+       ('City2', '456', 'Street B', 45, 29, 'Bosnia'),
+       ('City3', '789', 'Street C', 45, 29, 'Serbia'),
+       ('City4', '101', 'Street D', 45, 29, 'Serbia'),
+       ('City5', '202', 'Street E', 45, 29, 'Serbia'),
+       ('City6', '303', 'Street F', 45, 29, 'Serbia'),
+       ('City7', '404', 'Street G', 45, 29, 'Serbia'),
+       ('City8', '505', 'Street H', 45, 29, 'Serbia'),
+       ('City9', '606', 'Street I', 45, 29, 'Serbia'),
+       ('City10', '707', 'Street J', 45, 29, 'Serbia');
 
 -- Insert data into the account table for hosts
 INSERT INTO account (is_blocked, role, email, password, is_activated)
-VALUES (false, 'Host', 'host1@example.com', 'password1', true),
-       (false, 'Host', 'host2@example.com', 'password2', true),
-       (false, 'Host', 'host3@example.com', 'password3', true),
-       (false, 'Host', 'host4@example.com', 'password4', true),
+VALUES (false, 'Host', 'host1@example.com', '$2a$10$/UBsR5qdgZLV1WMm5FQ.h.v38vn3y0hF3gHJXKHb2dJ/.nJASvp72', true),
+       (false, 'Host', 'host2@example.com', '$2a$10$/UBsR5qdgZLV1WMm5FQ.h.v38vn3y0hF3gHJXKHb2dJ/.nJASvp72', true),
+       (false, 'Host', 'host3@example.com', '$2a$10$/UBsR5qdgZLV1WMm5FQ.h.v38vn3y0hF3gHJXKHb2dJ/.nJASvp72', true),
+       (false, 'Host', 'host4@example.com', '$2a$10$/UBsR5qdgZLV1WMm5FQ.h.v38vn3y0hF3gHJXKHb2dJ/.nJASvp72', true),
 
-       (false, 'Host', 'host5@example.com', 'password5', true);
+       (false, 'Host', 'host5@example.com', '$2a$10$/UBsR5qdgZLV1WMm5FQ.h.v38vn3y0hF3gHJXKHb2dJ/.nJASvp72', true);
 
 -- Insert data into the host table
 INSERT INTO host (address_id, id, first_name, last_name, phone)
@@ -30,12 +30,12 @@ VALUES (1, 1, 'Host', 'One', '+1234567890'),
 
 -- Insert data into the account table for guests
 INSERT INTO account (is_blocked, role, email, password, is_activated)
-VALUES (false, 'Guest', 'guest1@example.com', 'password6', true),
-       (false, 'Guest', 'guest2@example.com', 'password7', true),
-       (false, 'Guest', 'guest3@example.com', 'password8', true),
-       (false, 'Guest', 'guest4@example.com', 'password9', true),
-       (false, 'Guest', 'guest5@example.com', 'password10', true),
-       (false, 'Admin', 'admin@example.com', 'admin', true);
+VALUES (false, 'Guest', 'guest1@example.com', '$2a$10$/UBsR5qdgZLV1WMm5FQ.h.v38vn3y0hF3gHJXKHb2dJ/.nJASvp72', true),
+       (false, 'Guest', 'guest2@example.com', '$2a$10$/UBsR5qdgZLV1WMm5FQ.h.v38vn3y0hF3gHJXKHb2dJ/.nJASvp72', true),
+       (false, 'Guest', 'guest3@example.com', '$2a$10$/UBsR5qdgZLV1WMm5FQ.h.v38vn3y0hF3gHJXKHb2dJ/.nJASvp72', true),
+       (false, 'Guest', 'guest4@example.com', '$2a$10$/UBsR5qdgZLV1WMm5FQ.h.v38vn3y0hF3gHJXKHb2dJ/.nJASvp72', true),
+       (false, 'Guest', 'guest5@example.com', '$2a$10$/UBsR5qdgZLV1WMm5FQ.h.v38vn3y0hF3gHJXKHb2dJ/.nJASvp72', true),
+       (false, 'Admin', 'admin@example.com', '$2a$10$/UBsR5qdgZLV1WMm5FQ.h.v38vn3y0hF3gHJXKHb2dJ/.nJASvp72', true);
 
 -- Insert data into the guest table
 INSERT INTO guest (times_cancelled, address_id, id, first_name, last_name, phone)
@@ -101,16 +101,22 @@ VALUES (1, 1),
 
 -- Insert data into the accommodation_photos table
 INSERT INTO accommodation_photos (accommodation_id, photos)
-VALUES (1, 'apartment1_1.jpg'),
-       (1, 'apartment1_2.jpg'),
-       (2, 'room1_1.jpg'),
-       (2, 'room1_2.jpg'),
-       (3, 'hotel1_1.png'),
-       (3, 'hotel1_2.jpg'),
-       (4, 'apartment2_1.jpg'),
-       (4, 'apartment2_2.jpg'),
-       (5, 'room2_1.jpg'),
-       (5, 'room2_2.jpg');
+VALUES (1, 'ap1.jpg'),
+       (1, 'ap2.jpg'),
+       (1, 'ap3.jpg'),
+       (1, 'room1_2.jpg'),
+       (2, 'apart1.jpg'),
+       (2, 'apart2.jpg'),
+       (2, 'apart3.jpg'),
+       (3, 'hotel1.jpg'),
+       (3, 'hotel2.jpg'),
+       (3, 'hotel3.jpg'),
+       (4, 'slika1.jpg'),
+       (4, 'slika2.jpg'),
+       (4, 'slika3.jpg'),
+       (5, 'slika11.jpg'),
+       (5, 'slika21.jpg'),
+       (5, 'slika31.jpg');
 
 -- Insert data into the guest_favorites table
 INSERT INTO guest_favorites (favorites_id, favorite_to_id)

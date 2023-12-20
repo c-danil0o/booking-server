@@ -5,6 +5,7 @@ import com.komsije.booking.dto.GuestDto;
 import com.komsije.booking.dto.HostDto;
 import com.komsije.booking.dto.RegistrationDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
+import com.komsije.booking.exceptions.PendingReservationException;
 import com.komsije.booking.model.Guest;
 import com.komsije.booking.service.interfaces.crud.CrudService;
 
@@ -18,4 +19,5 @@ public interface GuestService extends CrudService<GuestDto, Long> {
     public GuestDto getByEmail(String email) throws ElementNotFoundException;
     public void increaseCancelations(Long id) throws ElementNotFoundException;
 
- }
+    boolean cancelReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException;
+}

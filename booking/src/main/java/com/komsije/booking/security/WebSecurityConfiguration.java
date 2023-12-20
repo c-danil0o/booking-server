@@ -31,9 +31,12 @@ public class WebSecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .requestMatchers("/api/login").permitAll()
-                .requestMatchers("/api/register").permitAll()
+                .requestMatchers("/api/register*").permitAll()
                 .requestMatchers("/api/logout").permitAll()
                 .requestMatchers("/api/accommodations/search").permitAll()
+                .requestMatchers("/api/accommodations/get/*").permitAll()
+                .requestMatchers("/api/reviews/acc*").permitAll()
+                .requestMatchers("/api/reviews/host*").permitAll()
                 .requestMatchers("/upload/**").permitAll()
                 .requestMatchers("/files/**").permitAll()
                 .requestMatchers("/error/**").permitAll()
@@ -55,8 +58,8 @@ public class WebSecurityConfiguration {
     @Bean
     public PasswordEncoder passwordEncoder() {
         //System.out.println(encoder.encode("admin"));
-        return NoOpPasswordEncoder.getInstance();
-        //return new BCryptPasswordEncoder();
+        //return NoOpPasswordEncoder.getInstance();
+        return new BCryptPasswordEncoder();
 
     }
 

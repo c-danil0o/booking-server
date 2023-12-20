@@ -13,12 +13,12 @@ VALUES ('City1', '123', 'Street A', 45, 45, 'Serbia'),
 
 -- Insert data into the account table for hosts
 INSERT INTO account (is_blocked, role, email, password, is_activated)
-VALUES (false, 'Host', 'host1@example.com', 'password1', true),
-       (false, 'Host', 'host2@example.com', 'password2', true),
-       (false, 'Host', 'host3@example.com', 'password3', true),
-       (false, 'Host', 'host4@example.com', 'password4', true),
+VALUES (false, 'Host', 'host1@example.com', '$2a$10$/UBsR5qdgZLV1WMm5FQ.h.v38vn3y0hF3gHJXKHb2dJ/.nJASvp72', true),
+       (false, 'Host', 'host2@example.com', '$2a$10$/UBsR5qdgZLV1WMm5FQ.h.v38vn3y0hF3gHJXKHb2dJ/.nJASvp72', true),
+       (false, 'Host', 'host3@example.com', '$2a$10$/UBsR5qdgZLV1WMm5FQ.h.v38vn3y0hF3gHJXKHb2dJ/.nJASvp72', true),
+       (false, 'Host', 'host4@example.com', '$2a$10$/UBsR5qdgZLV1WMm5FQ.h.v38vn3y0hF3gHJXKHb2dJ/.nJASvp72', true),
 
-       (false, 'Host', 'host5@example.com', 'password5', true);
+       (false, 'Host', 'host5@example.com', '$2a$10$/UBsR5qdgZLV1WMm5FQ.h.v38vn3y0hF3gHJXKHb2dJ/.nJASvp72', true);
 
 -- Insert data into the host table
 INSERT INTO host (address_id, id, first_name, last_name, phone)
@@ -30,12 +30,12 @@ VALUES (1, 1, 'Host', 'One', '+1234567890'),
 
 -- Insert data into the account table for guests
 INSERT INTO account (is_blocked, role, email, password, is_activated)
-VALUES (false, 'Guest', 'guest1@example.com', 'password6', true),
-       (false, 'Guest', 'guest2@example.com', 'password7', true),
-       (false, 'Guest', 'guest3@example.com', 'password8', true),
-       (false, 'Guest', 'guest4@example.com', 'password9', true),
-       (false, 'Guest', 'guest5@example.com', 'password10', true),
-       (false, 'Admin', 'admin@example.com', 'admin', true);
+VALUES (false, 'Guest', 'guest1@example.com', '$2a$10$/UBsR5qdgZLV1WMm5FQ.h.v38vn3y0hF3gHJXKHb2dJ/.nJASvp72', true),
+       (false, 'Guest', 'guest2@example.com', '$2a$10$/UBsR5qdgZLV1WMm5FQ.h.v38vn3y0hF3gHJXKHb2dJ/.nJASvp72', true),
+       (false, 'Guest', 'guest3@example.com', '$2a$10$/UBsR5qdgZLV1WMm5FQ.h.v38vn3y0hF3gHJXKHb2dJ/.nJASvp72', true),
+       (false, 'Guest', 'guest4@example.com', '$2a$10$/UBsR5qdgZLV1WMm5FQ.h.v38vn3y0hF3gHJXKHb2dJ/.nJASvp72', true),
+       (false, 'Guest', 'guest5@example.com', '$2a$10$/UBsR5qdgZLV1WMm5FQ.h.v38vn3y0hF3gHJXKHb2dJ/.nJASvp72', true),
+       (false, 'Admin', 'admin@example.com', '$2a$10$/UBsR5qdgZLV1WMm5FQ.h.v38vn3y0hF3gHJXKHb2dJ/.nJASvp72', true);
 
 -- Insert data into the guest table
 INSERT INTO guest (times_cancelled, address_id, id, first_name, last_name, phone)

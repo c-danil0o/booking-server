@@ -32,6 +32,7 @@ public class WebSecurityConfiguration {
         http.authorizeRequests()
                 .requestMatchers("/api/login").permitAll()
                 .requestMatchers("/api/register*").permitAll()
+                .requestMatchers("/api/register/**").permitAll()
                 .requestMatchers("/api/logout").permitAll()
                 .requestMatchers("/api/accommodations/search").permitAll()
                 .requestMatchers("/api/accommodations/get/*").permitAll()

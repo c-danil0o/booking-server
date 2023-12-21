@@ -3,7 +3,7 @@ package com.komsije.booking.service;
 import com.komsije.booking.dto.AccountDto;
 import com.komsije.booking.dto.LoginDto;
 import com.komsije.booking.dto.NewPasswordDto;
-import com.komsije.booking.exceptions.AccountNotActivateException;
+import com.komsije.booking.exceptions.AccountNotActivatedException;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.exceptions.HasActiveReservationsException;
 import com.komsije.booking.exceptions.IncorrectPasswordException;
@@ -13,17 +13,12 @@ import com.komsije.booking.model.Role;
 import com.komsije.booking.repository.AccountRepository;
 import com.komsije.booking.service.interfaces.AccountService;
 import com.komsije.booking.service.interfaces.ReservationService;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 public class AccountServiceImpl implements AccountService{
@@ -86,13 +81,13 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
-    public AccountDto checkLoginCredentials(LoginDto loginDto) throws ElementNotFoundException, AccountNotActivateException, IncorrectPasswordException {
+    public AccountDto checkLoginCredentials(LoginDto loginDto) throws ElementNotFoundException, AccountNotActivatedException, IncorrectPasswordException {
         Account account = accountRepository.getAccountByEmail(loginDto.getEmail());
         if (account == null){
             throw new ElementNotFoundException("Account with given email doesn't exist!");
         }
         if (!account.isActivated()){
-            throw new AccountNotActivateException("Account exists but it is not activated!");
+            throw new AccountNotActivatedException("Account exists but it is not activated!");
         }
         if (account.getPassword().equals(loginDto.getPassword())){
             return mapper.toDto(account);

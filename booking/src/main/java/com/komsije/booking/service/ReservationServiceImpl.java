@@ -45,6 +45,11 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
+    public void saveModel(Reservation reservation) {
+        this.reservationRepository.save(reservation);
+    }
+
+    @Override
     public List<ReservationViewDto> getByHostId(Long id) {
         List<Reservation> reservations = this.reservationRepository.findByHostId(id);
         return mapper.toViewDto(reservations);

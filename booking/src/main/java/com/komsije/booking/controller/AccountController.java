@@ -1,6 +1,7 @@
 package com.komsije.booking.controller;
 
 import com.komsije.booking.dto.*;
+import com.komsije.booking.exceptions.AccountNotActivatedException;
 import com.komsije.booking.model.Role;
 import com.komsije.booking.security.JwtTokenUtil;
 import com.komsije.booking.service.RegistrationServiceImpl;
@@ -106,6 +107,9 @@ public class AccountController {
 
     @PostMapping(value = "/login", consumes = "application/json")
     public ResponseEntity<TokenDto> login(@RequestBody LoginDto loginDto) {
+        if (!this.accountService.getByEmail(loginDto.getEmail()).isActivated()){
+            throw new AccountNotActivatedException("Account is not activated!");
+        }
         UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(loginDto.getEmail(),
                 loginDto.getPassword());
         Authentication auth = authenticationManager.authenticate(authReq);

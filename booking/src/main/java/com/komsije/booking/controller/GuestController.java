@@ -1,9 +1,6 @@
 package com.komsije.booking.controller;
 
-import com.komsije.booking.dto.AccommodationDto;
-import com.komsije.booking.dto.EmailDto;
-import com.komsije.booking.dto.GuestDto;
-import com.komsije.booking.dto.HostDto;
+import com.komsije.booking.dto.*;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.exceptions.HasActiveReservationsException;
 import com.komsije.booking.service.interfaces.GuestService;
@@ -79,6 +76,5 @@ public class GuestController {
         GuestDto guestDto = guestService.getByEmail(emailDto.getEmail());
         return new ResponseEntity<>(guestDto, HttpStatus.CREATED);
     }
-
 
 }

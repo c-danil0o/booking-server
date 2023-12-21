@@ -76,7 +76,7 @@ public class AccommodationController {
         return new ResponseEntity<>(accommodation, HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasAnyRole('Host', 'Admin')")
     @PatchMapping(value = "/{id}/approve")
     public ResponseEntity<AccommodationDto> approveAccommodation(@PathVariable("id") Long id) {
         AccommodationDto accommodationDto = accommodationService.findById(id);
@@ -85,7 +85,7 @@ public class AccommodationController {
         return new ResponseEntity<>(accommodationDto, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasAnyRole('Host', 'Admin')")
     @PatchMapping(value = "/{id}/deny")
     public ResponseEntity<AccommodationDto> denyAccommodation(@PathVariable("id") Long id) {
         AccommodationDto accommodationDto = accommodationService.findById(id);
@@ -94,7 +94,7 @@ public class AccommodationController {
         return new ResponseEntity<>(accommodationDto, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('Host')")
+    @PreAuthorize("hasAnyRole('Host', 'Admin')")
     @PatchMapping(value = "/{id}/changeApproval")
     public ResponseEntity<AccommodationDto> changeApproval(@PathVariable("id") Long id, @RequestParam boolean auto) {
         AccommodationDto accommodationDto = accommodationService.findById(id);

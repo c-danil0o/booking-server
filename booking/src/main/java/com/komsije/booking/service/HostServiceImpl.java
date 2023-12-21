@@ -110,4 +110,13 @@ public class HostServiceImpl implements HostService {
         }
         return mapper.toDto(host);
     }
+
+    @Override
+    public Host getModelByEmail(String email) throws ElementNotFoundException {
+        Host host = hostRepository.findByEmail(email);
+        if (host == null){
+            throw new ElementNotFoundException("Account with given email doesn't exit!");
+        }
+        return host;
+    }
 }

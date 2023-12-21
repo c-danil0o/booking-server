@@ -134,7 +134,7 @@ public class AccommodationServiceImpl implements AccommodationService {
     }
 
     private boolean isValid(Accommodation accommodation, SearchAccommodationsDto searchAccommodationsDto){
-        return accommodation.getAddress().getCity().equals(searchAccommodationsDto.getPlace()) && isAvailable(accommodation,searchAccommodationsDto.getStartDate(),searchAccommodationsDto.getEndDate());
+        return accommodation.getAddress().getCity().toLowerCase().equals(searchAccommodationsDto.getPlace().toLowerCase().trim()) && isAvailable(accommodation,searchAccommodationsDto.getStartDate(),searchAccommodationsDto.getEndDate());
     }
 
     private boolean isAvailable(Accommodation accommodation, LocalDateTime startDate, LocalDateTime endDate){

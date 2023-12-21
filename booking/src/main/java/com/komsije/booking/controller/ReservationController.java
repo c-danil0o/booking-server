@@ -1,10 +1,13 @@
 package com.komsije.booking.controller;
 
+import com.komsije.booking.dto.NewReservationDto;
 import com.komsije.booking.dto.ReservationDto;
 import com.komsije.booking.dto.ReservationViewDto;
+import com.komsije.booking.model.Reservation;
 import com.komsije.booking.model.ReservationStatus;
 import com.komsije.booking.service.interfaces.AccommodationService;
 import com.komsije.booking.service.interfaces.GuestService;
+import com.komsije.booking.service.interfaces.HostService;
 import com.komsije.booking.service.interfaces.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,12 +22,16 @@ import java.util.List;
 public class ReservationController {
     private final ReservationService reservationService;
     private final GuestService guestService;
+    private final AccommodationService accommodationService;
+    private final HostService hostService;
 
 
     @Autowired
-    public ReservationController(ReservationService reservationService, AccommodationService accommodationService, GuestService guestService) {
+    public ReservationController(ReservationService reservationService, AccommodationService accommodationService, GuestService guestService, AccommodationService accommodationService1, HostService hostService) {
         this.reservationService = reservationService;
         this.guestService = guestService;
+        this.accommodationService = accommodationService1;
+        this.hostService = hostService;
     }
     @PreAuthorize("hasRole('Admin')")
     @GetMapping(value = "/all")
@@ -61,10 +68,21 @@ public class ReservationController {
     }
 
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<ReservationDto> saveReservation(@RequestBody ReservationDto reservationDTO) {
+    public ResponseEntity<Void> saveReservation(@RequestBody NewReservationDto reservationDTO) {
 
-        ReservationDto reservationDto = reservationService.save(reservationDTO);
-        return new ResponseEntity<>(reservationDto, HttpStatus.CREATED);
+        Reservation reservation = new Reservation();
+        reservation.setReservationStatus(reservationDTO.getReservationStatus());
+        reservation.setId(reservationDTO.getId());
+        reservation.setGuest(this.guestService.getModelByEmail(reservationDTO.getGuestEmail()));
+        reservation.setHost(this.hostService.getModelByEmail(reservationDTO.getHostEmail()));
+        reservation.setDays(reservationDTO.getDays());
+        reservation.setPrice(reservationDTO.getPrice());
+        reservation.setStartDate(reservationDTO.getStartDate());
+        reservation.setAccommodation(accommodationService.findModelById(reservationDTO.getAccommodationId()));
+        reservation.setNumberOfGuests(reservationDTO.getNumberOfGuests());
+        reservationService.saveModel(reservation);
+        accommodationService.reserveTimeslot(reservation.getAccommodation().getId(),reservation.getStartDate(), reservation.getStartDate().plusDays(reservation.getDays()));
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/{id}")

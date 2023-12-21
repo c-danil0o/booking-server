@@ -1,6 +1,7 @@
 package com.komsije.booking.mapper;
 
 import com.komsije.booking.dto.AccommodationDto;
+import com.komsije.booking.dto.NewReservationDto;
 import com.komsije.booking.dto.ReservationDto;
 import com.komsije.booking.dto.ReservationViewDto;
 import com.komsije.booking.model.Accommodation;

@@ -12,13 +12,11 @@ import com.komsije.booking.service.interfaces.AccommodationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Time;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 
 import static java.lang.StrictMath.round;
 import static java.lang.StrictMath.tan;
@@ -131,6 +129,60 @@ public class AccommodationServiceImpl implements AccommodationService {
             properties.add(new HostPropertyDto(accommodation.getId(),   accommodation.getName(), address, status));
         }
         return properties;
+    }
+
+    @Override
+    public void reserveTimeslot(Long id, LocalDateTime startDate, LocalDateTime endDate) {
+        Accommodation accommodation = accommodationRepository.findById(id).orElseThrow(()->new ElementNotFoundException("Element with given ID doesn't exist!"));
+
+        Set<TimeSlot> slots = accommodation.getAvailability();
+        Set<TimeSlot> slotsToDelete = new HashSet<>();
+        Set<TimeSlot> slotsToAdd = new HashSet<>();
+        for (TimeSlot slot: slots){
+            if (slot.isOccupied()){
+                continue;
+            }
+            slot.setStartDate(slot.getStartDate().withHour(startDate.getHour()));
+            slot.setEndDate(slot.getEndDate().withHour(endDate.getHour()));
+            if (startDate.isEqual(slot.getStartDate()) && endDate.isEqual(slot.getEndDate())){
+                slot.setOccupied(true);
+                accommodationRepository.save(accommodation);
+                return;
+            }
+            if (startDate.isBefore(slot.getEndDate()) && endDate.isAfter(slot.getStartDate())){
+                TimeSlot slot1 = new TimeSlot(null, slot.getStartDate(), startDate, slot.getPrice(), false);
+                TimeSlot slot2 = new TimeSlot(null, endDate, slot.getEndDate(), slot.getPrice(), false);
+                TimeSlot slot3 = new TimeSlot(null, startDate, endDate,slot.getPrice(), true);
+                slotsToAdd.add(slot1);
+                slotsToAdd.add(slot2);
+                slotsToAdd.add(slot3);
+                slotsToDelete.add(slot);
+                break;
+            }
+            if (startDate.isEqual(slot.getStartDate()) && endDate.isBefore(slot.getEndDate())){
+                TimeSlot slot1 = new TimeSlot(null, slot.getStartDate(), endDate, slot.getPrice(), true);
+                TimeSlot slot2 = new TimeSlot(null, endDate, slot.getEndDate(), slot.getPrice(), false);
+                slotsToAdd.add(slot1);
+                slotsToAdd.add(slot2);
+                slotsToDelete.add(slot);
+                break;
+            }
+            if (startDate.isAfter(slot.getStartDate()) && endDate.isEqual(slot.getEndDate())){
+                TimeSlot slot1 = new TimeSlot(null, startDate, slot.getEndDate(), slot.getPrice(), true);
+                TimeSlot slot2 = new TimeSlot(null, slot.getStartDate(), startDate, slot.getPrice(), false);
+                slotsToAdd.add(slot1);
+                slotsToAdd.add(slot2);
+                slotsToDelete.add(slot);
+                break;
+            }
+        }
+        for (TimeSlot slt: slotsToDelete){
+            accommodation.getAvailability().remove(slt);
+        }
+        for (TimeSlot slt: slotsToAdd){
+            accommodation.getAvailability().add(slt);
+        }
+        this.accommodationRepository.save(accommodation);
     }
 
     private boolean isValid(Accommodation accommodation, SearchAccommodationsDto searchAccommodationsDto){

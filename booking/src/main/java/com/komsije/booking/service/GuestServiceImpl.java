@@ -1,9 +1,6 @@
 package com.komsije.booking.service;
 
-import com.komsije.booking.dto.AccommodationDto;
-import com.komsije.booking.dto.GuestDto;
-import com.komsije.booking.dto.RegistrationDto;
-import com.komsije.booking.dto.ReservationDto;
+import com.komsije.booking.dto.*;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.exceptions.EmailAlreadyExistsException;
 import com.komsije.booking.exceptions.HasActiveReservationsException;
@@ -129,6 +126,15 @@ public class GuestServiceImpl implements GuestService {
             throw new ElementNotFoundException("Account with given email doesn't exit!");
         }
         return mapper.toDto(guest);
+    }
+
+    @Override
+    public Guest getModelByEmail(String email) throws ElementNotFoundException {
+        Guest guest = guestRepository.findByEmail(email);
+        if (guest == null){
+            throw new ElementNotFoundException("Account with given email doesn't exit!");
+        }
+        return guest;
     }
 
     @Override

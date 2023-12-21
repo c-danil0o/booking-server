@@ -142,6 +142,8 @@ public class AccommodationServiceImpl implements AccommodationService {
         for (TimeSlot slot : slots) {
             slot.setStartDate(slot.getStartDate().withHour(startDate.getHour()));
             slot.setEndDate(slot.getEndDate().withHour(endDate.getHour()));
+            if (slot.isOccupied())
+                continue;
             if(slot.getEndDate().isBefore(startDate))
                 continue;
             else if (slot.getStartDate().isAfter(startDate))
@@ -159,6 +161,8 @@ public class AccommodationServiceImpl implements AccommodationService {
         }
         return false;
     }
+
+
 
     private double calculatePrice(Accommodation accommodation, LocalDateTime startDate, LocalDateTime endDate){
         double price = 0;

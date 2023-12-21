@@ -164,9 +164,7 @@ public class AccountController {
 
     @GetMapping(path = "/register/confirm")
     public ResponseEntity<String> confirm(@RequestParam("token") String token) {
-
         return new ResponseEntity<>(registrationService.confirmToken(token), HttpStatus.OK);
-
     }
 
     @PostMapping(value = "/passwordChange", consumes = "application/json")

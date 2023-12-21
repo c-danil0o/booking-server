@@ -79,7 +79,8 @@ public class RegistrationServiceImpl implements RegistrationService {
         LocalDateTime expiredAt = confirmationToken.getExpiresAt();
 
         if (expiredAt.isBefore(LocalDateTime.now())) {
-           throw new InvalidConfirmationTokenException("Confirmation token is not valid!");
+            accountService.delete(confirmationToken.getAccount().getId());
+            throw new InvalidConfirmationTokenException("Confirmation token is expired, please register again!");
         }
 
         confirmationTokenService.setConfirmedAt(token);

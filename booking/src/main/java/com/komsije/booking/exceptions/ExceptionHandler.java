@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.io.IOException;
@@ -64,6 +63,12 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
     }
     @org.springframework.web.bind.annotation.ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<ApiError> usernameNotFoundException(UsernameNotFoundException ex, HttpServletRequest request) {
+        ApiError message = new ApiError(HttpStatus.I_AM_A_TEAPOT.value(), ex.getMessage(), request.getRequestURI());
+        return new ResponseEntity<ApiError>(message, HttpStatus.I_AM_A_TEAPOT);
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(AccountNotActivatedException.class)
+    public ResponseEntity<ApiError> usernameNotFoundException(AccountNotActivatedException ex, HttpServletRequest request) {
         ApiError message = new ApiError(HttpStatus.I_AM_A_TEAPOT.value(), ex.getMessage(), request.getRequestURI());
         return new ResponseEntity<ApiError>(message, HttpStatus.I_AM_A_TEAPOT);
     }

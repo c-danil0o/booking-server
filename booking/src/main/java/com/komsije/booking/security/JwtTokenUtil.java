@@ -1,7 +1,9 @@
 package com.komsije.booking.security;
 
+import com.komsije.booking.service.interfaces.AccountService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.io.Serial;
@@ -20,6 +22,8 @@ public class JwtTokenUtil implements Serializable {
     public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
     @Value("some-secret")
     private String secret;
+    @Autowired
+    private AccountService accountService;
 
     // retrieve username from jwt token
     public String getUsernameFromToken(String token) {
@@ -61,7 +65,7 @@ public class JwtTokenUtil implements Serializable {
     // compaction of the JWT to a URL-safe string
     private String doGenerateToken(Map<String, Object> claims, UserDetails userDetails) {
         return Jwts.builder().setClaims(claims).setSubject(userDetails.getUsername()).setIssuedAt(new Date(System.currentTimeMillis()))
-                .claim("role", userDetails.getAuthorities())
+                .claim("role", userDetails.getAuthorities()).claim("id", accountService.getByEmail(userDetails.getUsername()).getId())
                 .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
                 .signWith(SignatureAlgorithm.HS512, secret).compact();
     }

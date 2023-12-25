@@ -50,7 +50,7 @@ public class AccommodationController {
         return new ResponseEntity<>(accommodations, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('Admin')")
+//    @PreAuthorize("hasRole('Admin')")
     @GetMapping(value = "/unapproved")
     public ResponseEntity<List<HostPropertyDto>> getUnapproved() {
         List<HostPropertyDto> accommodations = accommodationService.getUnapprovedAccommodations();
@@ -76,7 +76,7 @@ public class AccommodationController {
         return new ResponseEntity<>(accommodation, HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasAnyRole('Host', 'Admin')")
+//    @PreAuthorize("hasAnyRole('Host', 'Admin')")
     @PatchMapping(value = "/{id}/approve")
     public ResponseEntity<AccommodationDto> approveAccommodation(@PathVariable("id") Long id) {
         AccommodationDto accommodationDto = accommodationService.findById(id);
@@ -85,7 +85,7 @@ public class AccommodationController {
         return new ResponseEntity<>(accommodationDto, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAnyRole('Host', 'Admin')")
+//    @PreAuthorize("hasAnyRole('Host', 'Admin')")
     @PatchMapping(value = "/{id}/deny")
     public ResponseEntity<AccommodationDto> denyAccommodation(@PathVariable("id") Long id) {
         AccommodationDto accommodationDto = accommodationService.findById(id);

@@ -23,7 +23,7 @@ public class ImageController {
         this.imageService = imageService;
     }
 
-    @RequestMapping(value = "files/{id}",
+    @RequestMapping(value = "api/files/{id}",
             headers = "Accept=image/jpeg, image/jpg, image/png, image/gif",
             produces = "image/jpg",
             method = RequestMethod.GET)

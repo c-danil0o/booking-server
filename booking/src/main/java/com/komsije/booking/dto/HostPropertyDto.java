@@ -12,5 +12,5 @@ public class HostPropertyDto {
     private String name;
     private String location;
     private AccommodationStatus status;
-
+    private double averageGrade;
 }

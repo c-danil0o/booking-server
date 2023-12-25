@@ -92,7 +92,7 @@ public class AccommodationServiceImpl implements AccommodationService {
         for (Accommodation accommodation :accommodationRepository.findByHostId(id)){
             String address = accommodation.getAddress().getStreet() + ", " + accommodation.getAddress().getCity();
             AccommodationStatus status = accommodation.getStatus();
-            properties.add(new HostPropertyDto(accommodation.getId(),   accommodation.getName(), address, status));
+            properties.add(new HostPropertyDto(accommodation.getId(),   accommodation.getName(), address, status,accommodation.getAverageGrade()));
         }
         return properties;
     }
@@ -126,7 +126,8 @@ public class AccommodationServiceImpl implements AccommodationService {
         for (Accommodation accommodation :accommodationRepository.findUnapproved()){
             String address = accommodation.getAddress().getStreet() + ", " + accommodation.getAddress().getCity();
             AccommodationStatus status = accommodation.getStatus();
-            properties.add(new HostPropertyDto(accommodation.getId(),   accommodation.getName(), address, status));
+
+            properties.add(new HostPropertyDto(accommodation.getId(),   accommodation.getName(), address, status,accommodation.getAverageGrade()));
         }
         return properties;
     }
@@ -251,6 +252,14 @@ public class AccommodationServiceImpl implements AccommodationService {
             }
         }
         return price;
+    }
+
+    private String getOneImage(Accommodation accommodation){
+        Set<String> photos = accommodation.getPhotos();
+        for(String photo : photos){
+            return photo;
+        }
+        return "";
     }
 
 

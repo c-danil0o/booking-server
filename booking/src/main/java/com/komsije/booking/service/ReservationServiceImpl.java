@@ -150,7 +150,10 @@ public class ReservationServiceImpl implements ReservationService {
         return true;
     }
 
-
+    @Override
+    public void deleteInBatch(List<Long> ids) {
+        reservationRepository.deleteAllByIdInBatch(ids);
+    }
 
 
     public ReservationDto save(ReservationDto reservationDto) throws ElementNotFoundException {

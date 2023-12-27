@@ -8,7 +8,10 @@ import com.komsije.booking.exceptions.PendingReservationException;
 import com.komsije.booking.mapper.AccommodationMapper;
 import com.komsije.booking.mapper.AddressMapper;
 import com.komsije.booking.mapper.GuestMapper;
-import com.komsije.booking.model.*;
+import com.komsije.booking.model.Account;
+import com.komsije.booking.model.ConfirmationToken;
+import com.komsije.booking.model.Guest;
+import com.komsije.booking.model.ReservationStatus;
 import com.komsije.booking.repository.AccountRepository;
 import com.komsije.booking.repository.GuestRepository;
 import com.komsije.booking.service.interfaces.ConfirmationTokenService;
@@ -43,12 +46,12 @@ public class GuestServiceImpl implements GuestService {
     public GuestServiceImpl(GuestRepository guestRepository, AccountRepository accountRepository, ConfirmationTokenService confirmationTokenService, ReservationService reservationService) {
         this.guestRepository = guestRepository;
         this.accountRepository = accountRepository;
-        this.confirmationTokenService=confirmationTokenService;
+        this.confirmationTokenService = confirmationTokenService;
         this.reservationService = reservationService;
     }
 
     public GuestDto findById(Long id) throws ElementNotFoundException {
-        return mapper.toDto( guestRepository.findById(id).orElseThrow(()-> new ElementNotFoundException("Element with given ID doesn't exist!")));
+        return mapper.toDto(guestRepository.findById(id).orElseThrow(() -> new ElementNotFoundException("Element with given ID doesn't exist!")));
     }
 
     public List<GuestDto> findAll() {
@@ -62,34 +65,43 @@ public class GuestServiceImpl implements GuestService {
 
     @Override
     public GuestDto update(GuestDto guestDto) throws ElementNotFoundException {
-        Guest guest = guestRepository.findById(guestDto.getId()).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
+        Guest guest = guestRepository.findById(guestDto.getId()).orElseThrow(() -> new ElementNotFoundException("Element with given ID doesn't exist!"));
         mapper.update(guest, guestDto);
         guestRepository.save(guest);
         return guestDto;
     }
 
+    public void deleteGuestReservations(Long id) {
+        if (guestRepository.existsById(id)) {
+            reservationService.deleteInBatch(this.reservationService.getByGuestId(id).stream().map(ReservationViewDto::getId).toList());
+        }
+    }
+
+    @Override
     public void delete(Long id) throws ElementNotFoundException {
-        if (guestRepository.existsById(id)){
-            if (!reservationService.hasActiveReservations(id)){
+        if (guestRepository.existsById(id)) {
+            if (!reservationService.hasActiveReservations(id)) {
+                deleteGuestReservations(id);
                 guestRepository.deleteById(id);
-            }else{
+
+            } else {
                 throw new HasActiveReservationsException("Account has active reservations and can't be deleted!");
             }
-        }else{
-            throw new  ElementNotFoundException("Element with given ID doesn't exist!");
+        } else {
+            throw new ElementNotFoundException("Element with given ID doesn't exist!");
         }
 
     }
 
     @Override
     public List<AccommodationDto> getFavoritesByGuestId(Long id) throws ElementNotFoundException {
-        Guest guest = guestRepository.findById(id).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
+        Guest guest = guestRepository.findById(id).orElseThrow(() -> new ElementNotFoundException("Element with given ID doesn't exist!"));
         return accommodationMapper.toDto(guest.getFavorites().stream().toList());
     }
 
     @Override
     public List<AccommodationDto> addToFavorites(Long id, AccommodationDto accommodationDto) throws ElementNotFoundException {
-        Guest guest = guestRepository.findById(id).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
+        Guest guest = guestRepository.findById(id).orElseThrow(() -> new ElementNotFoundException("Element with given ID doesn't exist!"));
         guest.getFavorites().add(accommodationMapper.fromDto(accommodationDto));
         guestRepository.save(guest);
         return accommodationMapper.toDto(guest.getFavorites().stream().toList());
@@ -99,20 +111,19 @@ public class GuestServiceImpl implements GuestService {
     public String singUpUser(RegistrationDto registrationDto) {
         Account account = accountRepository.getAccountByEmail(registrationDto.getEmail());
         Long id;
-        if (account==null){
+        if (account == null) {
             String encodedPassword = passwordEncoder.encode(registrationDto.getPassword());
             registrationDto.setPassword(encodedPassword);
             Guest guest = mapper.fromRegistrationDto(registrationDto);
             guestRepository.save(guest);
             id = guest.getId();
-        }
-        else if (account.isActivated() || account.isBlocked()){
+        } else if (account.isActivated() || account.isBlocked()) {
             throw new EmailAlreadyExistsException("Email already exists!");
-        }else
+        } else
             id = account.getId();
 
         String token = UUID.randomUUID().toString();
-        ConfirmationToken confirmationToken = new ConfirmationToken(token,LocalDateTime.now(),LocalDateTime.now().plusHours(24),accountRepository.findById(id).orElseGet(null));
+        ConfirmationToken confirmationToken = new ConfirmationToken(token, LocalDateTime.now(), LocalDateTime.now().plusHours(24), accountRepository.findById(id).orElseGet(null));
 
         confirmationTokenService.saveConfirmationToken(confirmationToken);
 
@@ -122,7 +133,7 @@ public class GuestServiceImpl implements GuestService {
     @Override
     public GuestDto getByEmail(String email) throws ElementNotFoundException {
         Guest guest = guestRepository.findByEmail(email);
-        if (guest == null){
+        if (guest == null) {
             throw new ElementNotFoundException("Account with given email doesn't exit!");
         }
         return mapper.toDto(guest);
@@ -131,7 +142,7 @@ public class GuestServiceImpl implements GuestService {
     @Override
     public Guest getModelByEmail(String email) throws ElementNotFoundException {
         Guest guest = guestRepository.findByEmail(email);
-        if (guest == null){
+        if (guest == null) {
             throw new ElementNotFoundException("Account with given email doesn't exit!");
         }
         return guest;
@@ -139,19 +150,19 @@ public class GuestServiceImpl implements GuestService {
 
     @Override
     public void increaseCancelations(Long id) throws ElementNotFoundException {
-        Guest guest = guestRepository.findById(id).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
-        int timesCancelled =  guest.getTimesCancelled();
-        guest.setTimesCancelled(timesCancelled+1);
+        Guest guest = guestRepository.findById(id).orElseThrow(() -> new ElementNotFoundException("Element with given ID doesn't exist!"));
+        int timesCancelled = guest.getTimesCancelled();
+        guest.setTimesCancelled(timesCancelled + 1);
         guestRepository.save(guest);
     }
 
     @Override
     public boolean cancelReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException {
         ReservationDto reservation = reservationService.findById(id);
-        if(reservation.getReservationStatus().equals(ReservationStatus.Pending) || reservation.getReservationStatus().equals(ReservationStatus.Approved)){
+        if (reservation.getReservationStatus().equals(ReservationStatus.Pending) || reservation.getReservationStatus().equals(ReservationStatus.Approved)) {
             reservation.setReservationStatus(ReservationStatus.Cancelled);
-            reservationService.updateStatus(reservation.getId(),ReservationStatus.Cancelled );
-        }else{
+            reservationService.updateStatus(reservation.getId(), ReservationStatus.Cancelled);
+        } else {
             throw new PendingReservationException("Reservation is not in pending or approved state!");
         }
 //        todo: update accommodations if reservation was approved

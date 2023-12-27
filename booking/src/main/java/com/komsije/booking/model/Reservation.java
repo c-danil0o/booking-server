@@ -19,6 +19,8 @@ public class Reservation {
     @Column(nullable = false)
     private LocalDate startDate;
     @Column(nullable = false)
+    private LocalDate dateCreated;
+    @Column(nullable = false)
     private int days;
     @Column
     private Integer numberOfGuests;

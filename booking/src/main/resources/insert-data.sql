@@ -172,12 +172,12 @@ VALUES (1, 1),
        (5, 5);
 
 -- Insert data into the reservation table
-INSERT INTO reservation (days, price, accommodation_id, guest_id, host_id, start_date, reservation_status, number_of_guests)
-VALUES (2, 200.0, 1, 6, 1, '2023-01-01', 'Approved', 2),
-       (7, 560.0, 2, 7, 2, '2023-02-01', 'Pending', 1),
-       (10, 1500.0, 3, 8, 3, '2023-03-01', 'Active', 3),
-       (14, 1680.0, 4, 9, 4, '2023-04-01', 'Pending', 4),
-       (5, 450.0, 5, 10, 5, '2023-05-01', 'Approved', 3);
+INSERT INTO reservation (days, price, accommodation_id, guest_id, host_id, start_date, reservation_status, number_of_guests, date_created)
+VALUES (2, 200.0, 1, 6, 1, '2023-01-05', 'Approved', 2, '2023-01-01'),
+       (7, 560.0, 2, 7, 2, '2023-02-06', 'Pending', 1, '2023-01-01'),
+       (10, 1500.0, 3, 8, 3, '2023-03-07', 'Active', 3, '2023-01-01'),
+       (14, 1680.0, 4, 9, 4, '2023-04-08', 'Pending', 4, '2023-01-01'),
+       (5, 450.0, 5, 10, 5, '2023-05-01', 'Approved', 3, '2023-01-01');
 
 -- Insert data into the report table
 INSERT INTO report (author_id, date, reported_user_id, reason)

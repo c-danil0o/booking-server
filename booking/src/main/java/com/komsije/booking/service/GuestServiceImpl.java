@@ -1,10 +1,7 @@
 package com.komsije.booking.service;
 
 import com.komsije.booking.dto.*;
-import com.komsije.booking.exceptions.ElementNotFoundException;
-import com.komsije.booking.exceptions.EmailAlreadyExistsException;
-import com.komsije.booking.exceptions.HasActiveReservationsException;
-import com.komsije.booking.exceptions.PendingReservationException;
+import com.komsije.booking.exceptions.*;
 import com.komsije.booking.mapper.AccommodationMapper;
 import com.komsije.booking.mapper.AddressMapper;
 import com.komsije.booking.mapper.GuestMapper;
@@ -22,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -157,9 +155,17 @@ public class GuestServiceImpl implements GuestService {
     }
 
     @Override
-    public boolean cancelReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException {
+    public boolean cancelReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException, CancellationDeadlineExpiredException {
         ReservationDto reservation = reservationService.findById(id);
-        if (reservation.getReservationStatus().equals(ReservationStatus.Pending) || reservation.getReservationStatus().equals(ReservationStatus.Approved)) {
+        if (reservation.getReservationStatus().equals(ReservationStatus.Approved)){
+            if (reservation.getDateCreated().plusDays(reservationService.getCancellationDeadline(id)).isBefore(LocalDate.now())){
+                throw new CancellationDeadlineExpiredException("Cancellation deadline is expired!");
+            }else{
+                reservation.setReservationStatus(ReservationStatus.Cancelled);
+                reservationService.updateStatus(reservation.getId(), ReservationStatus.Cancelled);
+            }
+        }
+        if (reservation.getReservationStatus().equals(ReservationStatus.Pending)) {
             reservation.setReservationStatus(ReservationStatus.Cancelled);
             reservationService.updateStatus(reservation.getId(), ReservationStatus.Cancelled);
         } else {

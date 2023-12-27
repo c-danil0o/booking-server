@@ -24,6 +24,8 @@ public interface ReservationService extends CrudService<ReservationDto, Long> {
 
     public boolean hasActiveReservations(Long accountId);
 
+    Integer getCancellationDeadline(Long reservationId);
+
     boolean hasHostActiveReservations(Long accountId);
 
     public boolean overlappingActiveReservationsExist(LocalDate startDate, LocalDate endDate) throws InvalidTimeSlotException;

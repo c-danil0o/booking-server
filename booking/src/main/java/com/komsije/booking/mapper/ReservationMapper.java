@@ -29,6 +29,7 @@ public abstract class ReservationMapper {
         reservationDto.setAccommodationId(reservation.getAccommodation().getId());
         reservationDto.setGuestId(reservation.getGuestId());
         reservationDto.setHostId(reservation.getHostId());
+        reservationDto.setDateCreated(reservation.getDateCreated());
 
         return reservationDto;
     }

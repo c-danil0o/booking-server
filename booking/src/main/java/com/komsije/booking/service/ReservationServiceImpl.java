@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -73,6 +72,11 @@ public class ReservationServiceImpl implements ReservationService {
             }
         }
         return false;
+    }
+    @Override
+    public Integer getCancellationDeadline(Long reservationId){
+        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
+        return reservation.getAccommodation().getCancellationDeadline();
     }
     @Override
     public boolean hasHostActiveReservations(Long accountId) {
@@ -170,6 +174,7 @@ public class ReservationServiceImpl implements ReservationService {
         Reservation reservation = mapper.fromNewDto(reservationDto);
         Accommodation accommodation = accommodationService.findModelById(reservationDto.getAccommodationId());
         reservation.setAccommodation(accommodation);
+        reservation.setDateCreated(LocalDate.now());
         reservationRepository.save(reservation);
         if (reservation.getReservationStatus().equals(ReservationStatus.Approved)){
             accommodationService.reserveTimeslot(reservation.getAccommodation().getId(),reservation.getStartDate(), reservation.getStartDate().plusDays(reservation.getDays()));
@@ -193,4 +198,5 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
     }
+
 }

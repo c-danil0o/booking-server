@@ -13,8 +13,8 @@ import java.util.Date;
 @Data
 public class TimeSlotDto {
     private Long id;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
     private double price;
     private boolean isOccupied;
 

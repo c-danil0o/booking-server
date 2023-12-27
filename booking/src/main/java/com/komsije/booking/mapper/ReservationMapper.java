@@ -23,13 +23,13 @@ public abstract class ReservationMapper {
     public ReservationDto toDto(Reservation reservation){
         ReservationDto reservationDto = new ReservationDto();
         reservationDto.setId(reservation.getId());
-        reservationDto.setStartDate(reservation.getStartDate());
+        reservationDto.setStartDate(reservation.getStartDate().atStartOfDay());
         reservationDto.setDays(reservation.getDays());
         reservationDto.setReservationStatus(reservation.getReservationStatus());
         reservationDto.setAccommodationId(reservation.getAccommodation().getId());
         reservationDto.setGuestId(reservation.getGuestId());
         reservationDto.setHostId(reservation.getHostId());
-        reservationDto.setDateCreated(reservation.getDateCreated());
+        reservationDto.setDateCreated(reservation.getDateCreated().atStartOfDay());
 
         return reservationDto;
     }
@@ -47,8 +47,8 @@ public abstract class ReservationMapper {
     public ReservationViewDto toViewDto(Reservation reservation){
         ReservationViewDto reservationDto = new ReservationViewDto();
         reservationDto.setId(reservation.getId());
-        reservationDto.setStartDate(reservation.getStartDate());
-        reservationDto.setEndDate(reservation.getStartDate().plusDays(reservation.getDays()));
+        reservationDto.setStartDate(reservation.getStartDate().atStartOfDay());
+        reservationDto.setEndDate(reservation.getStartDate().plusDays(reservation.getDays()).atStartOfDay());
         reservationDto.setPrice(reservation.getPrice());
         Accommodation accommodation = reservation.getAccommodation();
         reservationDto.setAccommodationName(accommodation.getName()+" , "+ accommodation.getAddress().getCity());

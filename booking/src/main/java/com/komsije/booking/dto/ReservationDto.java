@@ -10,8 +10,8 @@ import java.util.Date;
 @Data
 public class ReservationDto {
     private Long id;
-    private LocalDate startDate;
-    private LocalDate dateCreated;
+    private LocalDateTime startDate;
+    private LocalDateTime dateCreated;
     private int days;
     private double price;
     private ReservationStatus reservationStatus;

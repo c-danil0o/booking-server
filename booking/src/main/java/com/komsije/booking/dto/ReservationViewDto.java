@@ -9,8 +9,8 @@ import java.time.LocalDateTime;
 @Data
 public class ReservationViewDto {
     private Long id;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
     private double price;
     private String accommodationName;
     private String guestEmail;

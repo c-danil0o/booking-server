@@ -110,7 +110,7 @@ public class AccommodationServiceImpl implements AccommodationService {
         for (Accommodation accommodation: accommodations) {
             if(isValid(accommodation,searchAccommodationsDto)){
                 SearchedAccommodationDto accommodationDto = mapper.toSearchedDto(accommodation);
-                double price = calculatePrice(accommodation, searchAccommodationsDto.getStartDate(), searchAccommodationsDto.getEndDate());
+                double price = calculatePrice(accommodation, searchAccommodationsDto.getStartDate().toLocalDate(), searchAccommodationsDto.getEndDate().toLocalDate());
                 accommodationDto.setPrice(price);
                 int days = (int) ChronoUnit.DAYS.between(searchAccommodationsDto.getStartDate(), searchAccommodationsDto.getEndDate());
                 DecimalFormat df = new DecimalFormat("#.##");
@@ -185,7 +185,7 @@ public class AccommodationServiceImpl implements AccommodationService {
     }
 
     private boolean isValid(Accommodation accommodation, SearchAccommodationsDto searchAccommodationsDto){
-        return accommodation.getAddress().getCity().toLowerCase().equals(searchAccommodationsDto.getPlace().toLowerCase().trim()) && isAvailable(accommodation,searchAccommodationsDto.getStartDate(),searchAccommodationsDto.getEndDate());
+        return accommodation.getAddress().getCity().toLowerCase().equals(searchAccommodationsDto.getPlace().toLowerCase().trim()) && isAvailable(accommodation,searchAccommodationsDto.getStartDate().toLocalDate(),searchAccommodationsDto.getEndDate().toLocalDate());
     }
 
     private boolean isAvailable(Accommodation accommodation, LocalDate startDate, LocalDate endDate){

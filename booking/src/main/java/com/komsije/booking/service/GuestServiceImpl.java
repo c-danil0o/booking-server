@@ -158,7 +158,7 @@ public class GuestServiceImpl implements GuestService {
     public boolean cancelReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException, CancellationDeadlineExpiredException {
         ReservationDto reservation = reservationService.findById(id);
         if (reservation.getReservationStatus().equals(ReservationStatus.Approved)){
-            if (reservation.getDateCreated().plusDays(reservationService.getCancellationDeadline(id)).isBefore(LocalDate.now())){
+            if (reservation.getDateCreated().plusDays(reservationService.getCancellationDeadline(id)).isBefore(LocalDateTime.now())){
                 throw new CancellationDeadlineExpiredException("Cancellation deadline is expired!");
             }else{
                 reservation.setReservationStatus(ReservationStatus.Cancelled);

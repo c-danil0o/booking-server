@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Time;
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -75,7 +76,7 @@ public class AccommodationServiceImpl implements AccommodationService {
         return mapper.toDto(accommodation);
     }
 
-    public List<AccommodationDto> getByLocationNumOfGuestsAndDate(String location, Integer numOfGuests, LocalDateTime startDate, LocalDateTime endDate) {
+    public List<AccommodationDto> getByLocationNumOfGuestsAndDate(String location, Integer numOfGuests, LocalDate startDate, LocalDate endDate) {
         return mapper.toDto(accommodationRepository.getAccommodationsByLocationNumOfGuestsAndDate(location, numOfGuests, startDate, endDate));
     }
 
@@ -132,7 +133,7 @@ public class AccommodationServiceImpl implements AccommodationService {
     }
 
     @Override
-    public void reserveTimeslot(Long id, LocalDateTime startDate, LocalDateTime endDate) {
+    public void reserveTimeslot(Long id, LocalDate startDate, LocalDate endDate) {
         Accommodation accommodation = accommodationRepository.findById(id).orElseThrow(()->new ElementNotFoundException("Element with given ID doesn't exist!"));
 
         Set<TimeSlot> slots = accommodation.getAvailability();
@@ -142,8 +143,6 @@ public class AccommodationServiceImpl implements AccommodationService {
             if (slot.isOccupied()){
                 continue;
             }
-            slot.setStartDate(slot.getStartDate().withHour(startDate.getHour()));
-            slot.setEndDate(slot.getEndDate().withHour(endDate.getHour()));
             if (startDate.isEqual(slot.getStartDate()) && endDate.isEqual(slot.getEndDate())){
                 slot.setOccupied(true);
                 accommodationRepository.save(accommodation);
@@ -189,11 +188,9 @@ public class AccommodationServiceImpl implements AccommodationService {
         return accommodation.getAddress().getCity().toLowerCase().equals(searchAccommodationsDto.getPlace().toLowerCase().trim()) && isAvailable(accommodation,searchAccommodationsDto.getStartDate(),searchAccommodationsDto.getEndDate());
     }
 
-    private boolean isAvailable(Accommodation accommodation, LocalDateTime startDate, LocalDateTime endDate){
+    private boolean isAvailable(Accommodation accommodation, LocalDate startDate, LocalDate endDate){
         Set<TimeSlot> slots = accommodation.getAvailability();
         for (TimeSlot slot : slots) {
-            slot.setStartDate(slot.getStartDate().withHour(startDate.getHour()));
-            slot.setEndDate(slot.getEndDate().withHour(endDate.getHour()));
             if (slot.isOccupied())
                 continue;
             if(slot.getEndDate().isBefore(startDate))
@@ -216,12 +213,10 @@ public class AccommodationServiceImpl implements AccommodationService {
 
 
 
-    private double calculatePrice(Accommodation accommodation, LocalDateTime startDate, LocalDateTime endDate){
+    private double calculatePrice(Accommodation accommodation, LocalDate startDate, LocalDate endDate){
         double price = 0;
         Set<TimeSlot> slots = accommodation.getAvailability();
         for (TimeSlot slot : slots) {
-            slot.setStartDate(slot.getStartDate().withHour(startDate.getHour()));
-            slot.setEndDate(slot.getEndDate().withHour(endDate.getHour()));
             if(slot.getEndDate().isBefore(startDate))
                 continue;
             else if (slot.getStartDate().isAfter(startDate))

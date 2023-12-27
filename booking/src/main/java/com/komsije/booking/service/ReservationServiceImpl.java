@@ -16,6 +16,7 @@ import com.komsije.booking.service.interfaces.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -84,7 +85,7 @@ public class ReservationServiceImpl implements ReservationService {
         return false;
     }
     @Override
-    public boolean overlappingActiveReservationsExist(LocalDateTime startDate, LocalDateTime endDate) throws InvalidTimeSlotException {
+    public boolean overlappingActiveReservationsExist(LocalDate startDate, LocalDate endDate) throws InvalidTimeSlotException {
         if (startDate.isAfter(endDate)){
             throw new InvalidTimeSlotException("Start date is after end date");
         }
@@ -125,8 +126,8 @@ public class ReservationServiceImpl implements ReservationService {
         }else{
             throw new PendingReservationException("Reservation is not in pending or denied state!");
         }
-        LocalDateTime startDate = reservation.getStartDate();
-        LocalDateTime endDate = reservation.getStartDate().plusDays(reservation.getDays());
+        LocalDate startDate = reservation.getStartDate();
+        LocalDate endDate = reservation.getStartDate().plusDays(reservation.getDays());
         List<Reservation> reservations = reservationRepository.findReservationsByReservationStatus(ReservationStatus.Pending);
         for(Reservation res: reservations){
             if (startDate.isBefore(reservation.getStartDate().plusDays(reservation.getDays()))&& reservation.getStartDate().isBefore(endDate)){

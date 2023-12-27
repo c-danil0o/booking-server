@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,8 +32,8 @@ public interface AccommodationRepository extends JpaRepository<Accommodation, Lo
             "AND (cast(:endDate as date) is null or timeSlot.startDate <= :endDate) " +
             "AND (cast(:startDate as date) is null or timeSlot.endDate >= :startDate) ")
     List<Accommodation> getAccommodationsByLocationNumOfGuestsAndDate(String location, Integer numOfGuests,
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate);
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate);
 
     //    @Query("select a from Accommodation a " +
 //            "where ?1 in a.amenities")

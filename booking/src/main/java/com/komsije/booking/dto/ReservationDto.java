@@ -3,13 +3,14 @@ package com.komsije.booking.dto;
 import com.komsije.booking.model.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
 public class ReservationDto {
     private Long id;
-    private LocalDateTime startDate;
+    private LocalDate startDate;
     private int days;
     private double price;
     private ReservationStatus reservationStatus;

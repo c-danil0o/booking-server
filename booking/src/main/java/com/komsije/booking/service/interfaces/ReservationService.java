@@ -10,6 +10,7 @@ import com.komsije.booking.model.Reservation;
 import com.komsije.booking.model.ReservationStatus;
 import com.komsije.booking.service.interfaces.crud.CrudService;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -25,7 +26,7 @@ public interface ReservationService extends CrudService<ReservationDto, Long> {
 
     boolean hasHostActiveReservations(Long accountId);
 
-    public boolean overlappingActiveReservationsExist(LocalDateTime startDate, LocalDateTime endDate) throws InvalidTimeSlotException;
+    public boolean overlappingActiveReservationsExist(LocalDate startDate, LocalDate endDate) throws InvalidTimeSlotException;
     public boolean deleteRequest(Long id) throws ElementNotFoundException, PendingReservationException;
     public ReservationDto updateStatus(Long id, ReservationStatus status) throws ElementNotFoundException;
     public boolean acceptReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException;

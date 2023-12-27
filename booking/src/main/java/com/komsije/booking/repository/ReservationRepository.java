@@ -11,9 +11,9 @@ import java.util.List;
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
     List<Reservation> findReservationsByReservationStatus(ReservationStatus reservationStatus);
 
-    @Query("select r from Reservation r where r.host.id=:id")
+    @Query("select r from Reservation r where r.hostId=:id")
     List<Reservation> findByHostId(@Param("id") Long id);
 
-    @Query("select r from Reservation r where r.guest.id=:id")
+    @Query("select r from Reservation r where r.guestId=:id")
     List<Reservation> findByGuestId(@Param("id") Long id);
 }

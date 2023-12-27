@@ -23,10 +23,10 @@ public class Reservation {
     private Integer numberOfGuests;
     @Column(nullable = false)
     private double price;
-    @ManyToOne()
-    private Host host;
-    @ManyToOne
-    private Guest guest;
+    @Column(nullable = false)
+    private Long hostId;
+    @Column(nullable = false)
+    private Long guestId;
     @ManyToOne
     private Accommodation accommodation;
     @Column(nullable = false)

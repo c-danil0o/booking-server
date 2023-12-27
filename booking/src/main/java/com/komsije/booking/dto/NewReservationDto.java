@@ -14,7 +14,7 @@ public class NewReservationDto {
     private double price;
     private ReservationStatus reservationStatus;
     private Long accommodationId;
-    private String guestEmail;
-    private String hostEmail;
+    private Long guestId;
+    private Long hostId;
     private Integer numberOfGuests;
 }

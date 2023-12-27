@@ -23,14 +23,12 @@ import java.util.Objects;
 @Service
 public class AccountServiceImpl implements AccountService{
     private final AccountRepository accountRepository;
-    private final ReservationService reservationService;
     @Autowired
     private AccountMapper mapper;
 
     @Autowired
-    public AccountServiceImpl(AccountRepository accountRepository, ReservationService reservationService) {
+    public AccountServiceImpl(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
-        this.reservationService = reservationService;
     }
 
     public AccountDto findById(Long id) throws ElementNotFoundException {
@@ -54,13 +52,9 @@ public class AccountServiceImpl implements AccountService{
         return accountDto;
     }
 
-    public void delete(Long id) throws NoSuchElementException, HasActiveReservationsException {
+    public void delete(Long id) throws NoSuchElementException{
         Account account = accountRepository.findById(id).orElseThrow();
-        if (!reservationService.hasActiveReservations(id)){
-            accountRepository.deleteById(id);
-        }else{
-            throw new HasActiveReservationsException("Account has active reservations and can't be deleted!");
-        }
+        accountRepository.deleteById(id); // warning: deleting from account service doesn't check for active reservations
     }
 
     public List<AccountDto> getByAccountType(Role type) {
@@ -78,6 +72,11 @@ public class AccountServiceImpl implements AccountService{
             throw new ElementNotFoundException("Account with given email doesn't exit!");
         }
         return mapper.toDto(account);
+    }
+    @Override
+    public String getEmail(Long id){
+        Account account = accountRepository.findById(id).orElseThrow();
+        return account.getEmail();
     }
 
     @Override

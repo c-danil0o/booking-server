@@ -156,7 +156,7 @@ public class GuestServiceImpl implements GuestService {
         }
 //        todo: update accommodations if reservation was approved
 
-        this.increaseCancelations(reservation.getGuest().getId());
+        this.increaseCancelations(reservation.getGuestId());
         return true;
     }
 }

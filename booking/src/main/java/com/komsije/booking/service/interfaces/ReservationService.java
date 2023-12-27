@@ -1,5 +1,6 @@
 package com.komsije.booking.service.interfaces;
 
+import com.komsije.booking.dto.NewReservationDto;
 import com.komsije.booking.dto.ReservationDto;
 import com.komsije.booking.dto.ReservationViewDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
@@ -29,7 +30,9 @@ public interface ReservationService extends CrudService<ReservationDto, Long> {
     public ReservationDto updateStatus(Long id, ReservationStatus status) throws ElementNotFoundException;
     public boolean acceptReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException;
     public boolean denyReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException;
-   // public boolean cancelReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException;
+
+    ReservationDto saveNewReservation(NewReservationDto reservationDto) throws ElementNotFoundException;
+    // public boolean cancelReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException;
 
 
 

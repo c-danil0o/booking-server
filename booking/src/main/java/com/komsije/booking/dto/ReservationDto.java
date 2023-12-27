@@ -14,8 +14,8 @@ public class ReservationDto {
     private double price;
     private ReservationStatus reservationStatus;
     private Long accommodationId;
-    private GuestDto guest;
-    private HostDto host;
+    private Long guestId;
+    private Long hostId;
     private Integer numberOfGuests;
 
 

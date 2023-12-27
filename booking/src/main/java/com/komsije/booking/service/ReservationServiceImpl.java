@@ -1,5 +1,6 @@
 package com.komsije.booking.service;
 
+import com.komsije.booking.dto.NewReservationDto;
 import com.komsije.booking.dto.ReservationDto;
 import com.komsije.booking.dto.ReservationViewDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
@@ -11,7 +12,6 @@ import com.komsije.booking.model.Reservation;
 import com.komsije.booking.model.ReservationStatus;
 import com.komsije.booking.repository.ReservationRepository;
 import com.komsije.booking.service.interfaces.AccommodationService;
-import com.komsije.booking.service.interfaces.GuestService;
 import com.komsije.booking.service.interfaces.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -67,7 +67,7 @@ public class ReservationServiceImpl implements ReservationService {
     public boolean hasActiveReservations(Long accountId) {
         List<Reservation> reservations = reservationRepository.findAll();
         for (Reservation reservation: reservations){
-            if (reservation.getGuest().getId().equals(accountId) && reservation.getReservationStatus().equals(ReservationStatus.Active)){
+            if (reservation.getGuestId().equals(accountId) && reservation.getReservationStatus().equals(ReservationStatus.Active)){
                 return true;
             }
         }
@@ -77,7 +77,7 @@ public class ReservationServiceImpl implements ReservationService {
     public boolean hasHostActiveReservations(Long accountId) {
         List<Reservation> reservations = reservationRepository.findAll();
         for (Reservation reservation: reservations){
-            if (reservation.getHost().getId().equals(accountId) && reservation.getReservationStatus().equals(ReservationStatus.Active)){
+            if (reservation.getHostId().equals(accountId) && reservation.getReservationStatus().equals(ReservationStatus.Active)){
                 return true;
             }
         }
@@ -159,6 +159,18 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setAccommodation(accommodation);
         reservationRepository.save(reservation);
         return reservationDto;
+    }
+
+    @Override
+    public ReservationDto saveNewReservation(NewReservationDto reservationDto) throws ElementNotFoundException {
+        Reservation reservation = mapper.fromNewDto(reservationDto);
+        Accommodation accommodation = accommodationService.findModelById(reservationDto.getAccommodationId());
+        reservation.setAccommodation(accommodation);
+        reservationRepository.save(reservation);
+        if (reservation.getReservationStatus().equals(ReservationStatus.Approved)){
+            accommodationService.reserveTimeslot(reservation.getAccommodation().getId(),reservation.getStartDate(), reservation.getStartDate().plusDays(reservation.getDays()));
+        }
+        return mapper.toDto(reservation);
     }
 
     @Override

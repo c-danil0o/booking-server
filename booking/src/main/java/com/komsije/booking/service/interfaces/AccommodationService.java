@@ -8,7 +8,6 @@ import com.komsije.booking.model.Reservation;
 import com.komsije.booking.service.interfaces.crud.CrudService;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface AccommodationService extends CrudService<AccommodationDto, Long> {
@@ -21,6 +20,7 @@ public interface AccommodationService extends CrudService<AccommodationDto, Long
     public List<SearchedAccommodationDto> getSearchedAccommodations(SearchAccommodationsDto searchAccommodationsDto);
     public List<HostPropertyDto> getUnapprovedAccommodations();
     public void reserveTimeslot(Long id, LocalDate startDate, LocalDate endDate);
+    public GottenAvailabilityPrice getAvailabilityPrice(GetAvailabilityPrice getAvailabilityPrice);
 
     void restoreTimeslot(Reservation reservation);
 }

@@ -137,34 +137,34 @@ public class AccommodationServiceImpl implements AccommodationService {
             if (slot.isOccupied()){
                 continue;
             }
-            if (startDate.isEqual(slot.getStartDate()) && endDate.isEqual(slot.getEndDate())){
+            else if (startDate.isEqual(slot.getStartDate()) && endDate.isEqual(slot.getEndDate())){
                 slot.setOccupied(true);
                 accommodationRepository.save(accommodation);
                 return;
             }
-            if (startDate.isBefore(slot.getEndDate()) && endDate.isAfter(slot.getStartDate())){
-                TimeSlot slot1 = new TimeSlot(null, slot.getStartDate(), startDate.minusDays(1), slot.getPrice(), false);
-                TimeSlot slot2 = new TimeSlot(null, endDate.plusDays(1), slot.getEndDate(), slot.getPrice(), false);
+            else if (startDate.isEqual(slot.getStartDate()) && endDate.isBefore(slot.getEndDate())){
+                TimeSlot slot1 = new TimeSlot(null, startDate, endDate, slot.getPrice(), true);
+                TimeSlot slot2 = new TimeSlot(null, endDate, slot.getEndDate(), slot.getPrice(), false);
+                slotsToAdd.add(slot1);
+                slotsToAdd.add(slot2);
+                slotsToDelete.add(slot);
+                break;
+            }
+            else if (startDate.isAfter(slot.getStartDate()) && endDate.isEqual(slot.getEndDate())){
+                TimeSlot slot1 = new TimeSlot(null, startDate, endDate, slot.getPrice(), true);
+                TimeSlot slot2 = new TimeSlot(null, slot.getStartDate(), startDate, slot.getPrice(), false);
+                slotsToAdd.add(slot1);
+                slotsToAdd.add(slot2);
+                slotsToDelete.add(slot);
+                break;
+            }
+            else if (startDate.isAfter(slot.getStartDate()) && endDate.isBefore(slot.getEndDate())){
+                TimeSlot slot1 = new TimeSlot(null, slot.getStartDate(), startDate, slot.getPrice(), false);
+                TimeSlot slot2 = new TimeSlot(null, endDate, slot.getEndDate(), slot.getPrice(), false);
                 TimeSlot slot3 = new TimeSlot(null, startDate, endDate,slot.getPrice(), true);
                 slotsToAdd.add(slot1);
                 slotsToAdd.add(slot2);
                 slotsToAdd.add(slot3);
-                slotsToDelete.add(slot);
-                break;
-            }
-            if (startDate.isEqual(slot.getStartDate()) && endDate.isBefore(slot.getEndDate())){
-                TimeSlot slot1 = new TimeSlot(null, startDate, endDate, slot.getPrice(), true);
-                TimeSlot slot2 = new TimeSlot(null, endDate.plusDays(1), slot.getEndDate(), slot.getPrice(), false);
-                slotsToAdd.add(slot1);
-                slotsToAdd.add(slot2);
-                slotsToDelete.add(slot);
-                break;
-            }
-            if (startDate.isAfter(slot.getStartDate()) && endDate.isEqual(slot.getEndDate())){
-                TimeSlot slot1 = new TimeSlot(null, startDate, endDate, slot.getPrice(), true);
-                TimeSlot slot2 = new TimeSlot(null, slot.getStartDate(), startDate.minusDays(1), slot.getPrice(), false);
-                slotsToAdd.add(slot1);
-                slotsToAdd.add(slot2);
                 slotsToDelete.add(slot);
                 break;
             }
@@ -192,7 +192,7 @@ public class AccommodationServiceImpl implements AccommodationService {
             if (timeSlots.get(i).getStartDate().isEqual(resStart) && timeSlots.get(i).getEndDate().isEqual(resEnd)){
                 timeSlots.get(i).setOccupied(false);
             }
-            if (timeSlots.get(i).getEndDate().plusDays(1).isEqual(timeSlots.get(i+1).getStartDate())){
+            if (timeSlots.get(i).getEndDate().isEqual(timeSlots.get(i+1).getStartDate())){
                 timeSlots.get(i+1).setStartDate(timeSlots.get(i).getStartDate());
                 forRemoval.add(timeSlots.get(i));
             }

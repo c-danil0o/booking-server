@@ -89,6 +89,11 @@ public class ReservationServiceImpl implements ReservationService {
         return false;
     }
     @Override
+    public void restoreTimeslots(Long reservationId) throws ElementNotFoundException{
+        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
+        accommodationService.restoreTimeslot(reservation);
+    }
+    @Override
     public boolean overlappingActiveReservationsExist(LocalDate startDate, LocalDate endDate) throws InvalidTimeSlotException {
         if (startDate.isAfter(endDate)){
             throw new InvalidTimeSlotException("Start date is after end date");
@@ -126,6 +131,8 @@ public class ReservationServiceImpl implements ReservationService {
         Reservation reservation = reservationRepository.findById(id).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
         if(reservation.getReservationStatus().equals(ReservationStatus.Pending) || reservation.getReservationStatus().equals(ReservationStatus.Denied)){
             reservation.setReservationStatus(ReservationStatus.Approved);
+            accommodationService.reserveTimeslot(reservation.getAccommodation().getId(),reservation.getStartDate(), reservation.getStartDate().plusDays(reservation.getDays()));
+
             reservationRepository.save(reservation);
         }else{
             throw new PendingReservationException("Reservation is not in pending or denied state!");

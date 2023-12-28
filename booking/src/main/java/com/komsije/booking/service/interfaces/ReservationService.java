@@ -28,6 +28,8 @@ public interface ReservationService extends CrudService<ReservationDto, Long> {
 
     boolean hasHostActiveReservations(Long accountId);
 
+    void restoreTimeslots(Long reservationId);
+
     public boolean overlappingActiveReservationsExist(LocalDate startDate, LocalDate endDate) throws InvalidTimeSlotException;
     public boolean deleteRequest(Long id) throws ElementNotFoundException, PendingReservationException;
     public ReservationDto updateStatus(Long id, ReservationStatus status) throws ElementNotFoundException;

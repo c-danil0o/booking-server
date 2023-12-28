@@ -4,6 +4,7 @@ import com.komsije.booking.dto.*;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.model.Accommodation;
 import com.komsije.booking.model.AccommodationType;
+import com.komsije.booking.model.Reservation;
 import com.komsije.booking.service.interfaces.crud.CrudService;
 
 import java.time.LocalDate;
@@ -21,4 +22,5 @@ public interface AccommodationService extends CrudService<AccommodationDto, Long
     public List<HostPropertyDto> getUnapprovedAccommodations();
     public void reserveTimeslot(Long id, LocalDate startDate, LocalDate endDate);
 
+    void restoreTimeslot(Reservation reservation);
 }

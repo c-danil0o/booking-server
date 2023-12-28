@@ -163,8 +163,9 @@ public class GuestServiceImpl implements GuestService {
             }else{
                 reservation.setReservationStatus(ReservationStatus.Cancelled);
                 reservationService.updateStatus(reservation.getId(), ReservationStatus.Cancelled);
+                reservationService.restoreTimeslots(reservation.getId());
             }
-        }
+        }else
         if (reservation.getReservationStatus().equals(ReservationStatus.Pending)) {
             reservation.setReservationStatus(ReservationStatus.Cancelled);
             reservationService.updateStatus(reservation.getId(), ReservationStatus.Cancelled);

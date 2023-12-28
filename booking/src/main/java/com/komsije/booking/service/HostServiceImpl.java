@@ -2,6 +2,7 @@ package com.komsije.booking.service;
 
 import com.komsije.booking.dto.HostDto;
 import com.komsije.booking.dto.RegistrationDto;
+import com.komsije.booking.dto.ReservationViewDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.exceptions.EmailAlreadyExistsException;
 import com.komsije.booking.exceptions.HasActiveReservationsException;
@@ -45,7 +46,7 @@ public class HostServiceImpl implements HostService {
     }
 
     public HostDto findById(Long id) throws ElementNotFoundException {
-        return mapper.toDto(hostRepository.findById(id).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!")));
+        return mapper.toDto(hostRepository.findById(id).orElseThrow(() -> new ElementNotFoundException("Element with given ID doesn't exist!")));
     }
 
     public List<HostDto> findAll() {
@@ -59,20 +60,29 @@ public class HostServiceImpl implements HostService {
 
     @Override
     public HostDto update(HostDto hostDto) throws ElementNotFoundException {
-        Host host = hostRepository.findById(hostDto.getId()).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
+        Host host = hostRepository.findById(hostDto.getId()).orElseThrow(() -> new ElementNotFoundException("Element with given ID doesn't exist!"));
         mapper.update(host, hostDto);
         hostRepository.save(host);
         return hostDto;
     }
+
+    public void deleteHostReservations(Long id) {
+        if (hostRepository.existsById(id)) {
+            reservationService.deleteInBatch(this.reservationService.getByHostId(id).stream().map(ReservationViewDto::getId).toList());
+        }
+    }
+
     public void delete(Long id) throws ElementNotFoundException {
-        if (hostRepository.existsById(id)){
-            if (!reservationService.hasHostActiveReservations(id)){
+        if (hostRepository.existsById(id)) {
+            if (!reservationService.hasHostActiveReservations(id)) {
+
+                deleteHostReservations(id);
                 hostRepository.deleteById(id);
-            }else{
+            } else {
                 throw new HasActiveReservationsException("Account has active reservations and can't be deleted!");
             }
-        }else{
-            throw new  ElementNotFoundException("Element with given ID doesn't exist!");
+        } else {
+            throw new ElementNotFoundException("Element with given ID doesn't exist!");
         }
 
     }
@@ -82,20 +92,19 @@ public class HostServiceImpl implements HostService {
     public String singUpUser(RegistrationDto registrationDto) {
         Account account = accountRepository.getAccountByEmail(registrationDto.getEmail());
         Long id;
-        if (account==null){
+        if (account == null) {
             String encodedPassword = passwordEncoder.encode(registrationDto.getPassword());
             registrationDto.setPassword(encodedPassword);
             Host host = mapper.fromRegistrationDto(registrationDto);
             hostRepository.save(host);
             id = host.getId();
-        }
-        else if (account.isActivated() || account.isBlocked()){
+        } else if (account.isActivated() || account.isBlocked()) {
             throw new EmailAlreadyExistsException("Email already exists!");
-        }else
+        } else
             id = account.getId();
 
         String token = UUID.randomUUID().toString();
-        ConfirmationToken confirmationToken = new ConfirmationToken(token,LocalDateTime.now(),LocalDateTime.now().plusHours(24),accountRepository.findById(id).orElseGet(null));
+        ConfirmationToken confirmationToken = new ConfirmationToken(token, LocalDateTime.now(), LocalDateTime.now().plusHours(24), accountRepository.findById(id).orElseGet(null));
 
         confirmationTokenService.saveConfirmationToken(confirmationToken);
 
@@ -105,7 +114,7 @@ public class HostServiceImpl implements HostService {
     @Override
     public HostDto getByEmail(String email) throws ElementNotFoundException {
         Host host = hostRepository.findByEmail(email);
-        if (host == null){
+        if (host == null) {
             throw new ElementNotFoundException("Account with given email doesn't exit!");
         }
         return mapper.toDto(host);
@@ -114,7 +123,7 @@ public class HostServiceImpl implements HostService {
     @Override
     public Host getModelByEmail(String email) throws ElementNotFoundException {
         Host host = hostRepository.findByEmail(email);
-        if (host == null){
+        if (host == null) {
             throw new ElementNotFoundException("Account with given email doesn't exit!");
         }
         return host;

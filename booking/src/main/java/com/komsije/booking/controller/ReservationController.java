@@ -69,21 +69,7 @@ public class ReservationController {
 
     @PostMapping(consumes = "application/json")
     public ResponseEntity<Void> saveReservation(@RequestBody NewReservationDto reservationDTO) {
-        Reservation reservation = new Reservation();
-        reservation.setReservationStatus(reservationDTO.getReservationStatus());
-        reservation.setId(reservationDTO.getId());
-        reservation.setGuest(this.guestService.getModelByEmail(reservationDTO.getGuestEmail()));
-        reservation.setHost(this.hostService.getModelByEmail(reservationDTO.getHostEmail()));
-        reservation.setDays(reservationDTO.getDays());
-        reservation.setPrice(reservationDTO.getPrice());
-        reservation.setStartDate(reservationDTO.getStartDate());
-        reservation.setAccommodation(accommodationService.findModelById(reservationDTO.getAccommodationId()));
-        reservation.setNumberOfGuests(reservationDTO.getNumberOfGuests());
-        reservationService.saveModel(reservation);
-        if (reservation.getReservationStatus().equals(ReservationStatus.Approved)){
-            accommodationService.reserveTimeslot(reservation.getAccommodation().getId(),reservation.getStartDate(), reservation.getStartDate().plusDays(reservation.getDays()));
-
-        }
+        reservationService.saveNewReservation(reservationDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

@@ -140,7 +140,7 @@ public abstract class AccommodationMapper {
         if (availabilityDto.getCancellationDeadline() != null)
             accommodation.setCancellationDeadline(availabilityDto.getCancellationDeadline());
         for (TimeSlotDto timeSlotDto : availabilityDto.getAvailability()) {
-            accommodation.getAvailability().add(new TimeSlot(null, timeSlotDto.getStartDate(), timeSlotDto.getEndDate(), timeSlotDto.getPrice(), timeSlotDto.isOccupied()));
+            accommodation.getAvailability().add(new TimeSlot(null, timeSlotDto.getStartDate().toLocalDate(), timeSlotDto.getEndDate().toLocalDate(), timeSlotDto.getPrice(), timeSlotDto.isOccupied()));
         }
     }
 }

@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 @Getter
@@ -16,17 +17,19 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false)
-    private LocalDateTime startDate;
+    private LocalDate startDate;
+    @Column(nullable = false)
+    private LocalDate dateCreated;
     @Column(nullable = false)
     private int days;
     @Column
     private Integer numberOfGuests;
     @Column(nullable = false)
     private double price;
-    @ManyToOne()
-    private Host host;
-    @ManyToOne
-    private Guest guest;
+    @Column(nullable = false)
+    private Long hostId;
+    @Column(nullable = false)
+    private Long guestId;
     @ManyToOne
     private Accommodation accommodation;
     @Column(nullable = false)

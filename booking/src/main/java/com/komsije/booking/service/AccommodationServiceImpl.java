@@ -269,5 +269,23 @@ public class AccommodationServiceImpl implements AccommodationService {
         return price;
     }
 
+    public GottenAvailabilityPrice getAvailabilityPrice(GetAvailabilityPrice getAvailabilityPrice) {
+        Accommodation accommodation = accommodationRepository.findById(getAvailabilityPrice.getAccommodationId()).orElseThrow(() -> new ElementNotFoundException("Accommodation not found"));
 
+        boolean isAvailable = isAvailable(accommodation, getAvailabilityPrice.getStartDate(), getAvailabilityPrice.getEndDate());
+        if(!isAvailable) {
+            return new GottenAvailabilityPrice(false, 0, 0);
+        }
+        GottenAvailabilityPrice gottenAvailabilityPrice = new GottenAvailabilityPrice();
+        gottenAvailabilityPrice.setAvailable(true);
+
+        double price = calculatePrice(accommodation, getAvailabilityPrice.getStartDate(), getAvailabilityPrice.getEndDate());
+        gottenAvailabilityPrice.setTotalPrice(price);
+
+        int days = (int) ChronoUnit.DAYS.between(getAvailabilityPrice.getStartDate(), getAvailabilityPrice.getEndDate());
+        DecimalFormat df = new DecimalFormat("#.##");
+        gottenAvailabilityPrice.setPricePerNight(Double.parseDouble(df.format(price/days)));
+
+        return gottenAvailabilityPrice;
+    }
 }

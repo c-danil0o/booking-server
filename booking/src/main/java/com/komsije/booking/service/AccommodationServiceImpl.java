@@ -87,10 +87,22 @@ public class AccommodationServiceImpl implements AccommodationService {
         for (Accommodation accommodation :accommodationRepository.findByHostId(id)){
             String address = accommodation.getAddress().getStreet() + ", " + accommodation.getAddress().getCity();
             AccommodationStatus status = accommodation.getStatus();
-            properties.add(new HostPropertyDto(accommodation.getId(),   accommodation.getName(), address, status));
+            properties.add(new HostPropertyDto(accommodation.getId(),   accommodation.getName(), address, accommodation.getHost().getFirstName() + accommodation.getHost().getLastName(), status, accommodation.getDescription(), accommodation.getPhotos()));
         }
         return properties;
+
+
     }
+
+    @Override
+    public List<AccommodationShortDto> getAllShort(){
+        List<AccommodationShortDto> properties = new ArrayList<>();
+        for (Accommodation accommodation :accommodationRepository.findAll()){
+            String address = accommodation.getAddress().getStreet() + ", " + accommodation.getAddress().getCity();
+            properties.add(new AccommodationShortDto(accommodation.getId(),   accommodation.getName(), address, accommodation.getDescription(), accommodation.getAverageGrade(), accommodation.getPhotos()));
+        }
+        return properties;}
+
 
     @Override
     public List<SearchedAccommodationDto> getSearchedAccommodations(SearchAccommodationsDto searchAccommodationsDto) {
@@ -121,7 +133,7 @@ public class AccommodationServiceImpl implements AccommodationService {
         for (Accommodation accommodation :accommodationRepository.findUnapproved()){
             String address = accommodation.getAddress().getStreet() + ", " + accommodation.getAddress().getCity();
             AccommodationStatus status = accommodation.getStatus();
-            properties.add(new HostPropertyDto(accommodation.getId(),   accommodation.getName(), address, status));
+            properties.add(new HostPropertyDto(accommodation.getId(),   accommodation.getName(), address, accommodation.getHost().getFirstName() + accommodation.getHost().getLastName(), status, accommodation.getDescription(), accommodation.getPhotos()));
         }
         return properties;
     }

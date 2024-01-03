@@ -17,6 +17,9 @@ public interface AccommodationService extends CrudService<AccommodationDto, Long
     public List<AccommodationDto> getByAmenities(List<String> amenities);
     public Accommodation findModelById(Long id) throws ElementNotFoundException;
     public List<HostPropertyDto> findByHostId(Long id);
+
+    List<AccommodationShortDto> getAllShort();
+
     public List<SearchedAccommodationDto> getSearchedAccommodations(SearchAccommodationsDto searchAccommodationsDto);
     public List<HostPropertyDto> getUnapprovedAccommodations();
     public void reserveTimeslot(Long id, LocalDate startDate, LocalDate endDate);

@@ -6,6 +6,7 @@ import com.komsije.booking.dto.ReservationDto;
 import com.komsije.booking.dto.ReservationViewDto;
 import com.komsije.booking.model.Accommodation;
 import com.komsije.booking.model.Reservation;
+import com.komsije.booking.service.interfaces.AccountService;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValueCheckStrategy;
@@ -18,15 +19,17 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses={GuestMapper.class} , nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public abstract class ReservationMapper {
     @Autowired
-    private GuestMapper guestMapper;
+    private AccountService accountService;
     public ReservationDto toDto(Reservation reservation){
         ReservationDto reservationDto = new ReservationDto();
         reservationDto.setId(reservation.getId());
-        reservationDto.setStartDate(reservation.getStartDate());
+        reservationDto.setStartDate(reservation.getStartDate().atStartOfDay());
         reservationDto.setDays(reservation.getDays());
         reservationDto.setReservationStatus(reservation.getReservationStatus());
         reservationDto.setAccommodationId(reservation.getAccommodation().getId());
-        reservationDto.setGuest(guestMapper.toDto(reservation.getGuest()));
+        reservationDto.setGuestId(reservation.getGuestId());
+        reservationDto.setHostId(reservation.getHostId());
+        reservationDto.setDateCreated(reservation.getDateCreated().atStartOfDay());
 
         return reservationDto;
     }
@@ -44,13 +47,13 @@ public abstract class ReservationMapper {
     public ReservationViewDto toViewDto(Reservation reservation){
         ReservationViewDto reservationDto = new ReservationViewDto();
         reservationDto.setId(reservation.getId());
-        reservationDto.setStartDate(reservation.getStartDate());
-        reservationDto.setEndDate(reservation.getStartDate().plusDays(reservation.getDays()));
+        reservationDto.setStartDate(reservation.getStartDate().atStartOfDay());
+        reservationDto.setEndDate(reservation.getStartDate().plusDays(reservation.getDays()).atStartOfDay());
         reservationDto.setPrice(reservation.getPrice());
         Accommodation accommodation = reservation.getAccommodation();
         reservationDto.setAccommodationName(accommodation.getName()+" , "+ accommodation.getAddress().getCity());
-        reservationDto.setGuestEmail(reservation.getGuest().getEmail());
-        reservationDto.setHostEmail(reservation.getHost().getEmail());
+        reservationDto.setGuestEmail(accountService.getEmail(reservation.getGuestId()));
+        reservationDto.setHostEmail(accountService.getEmail(reservation.getHostId()));
         reservationDto.setReservationStatus(reservation.getReservationStatus());
         reservationDto.setNumberOfGuests(reservation.getNumberOfGuests());
         return reservationDto;
@@ -62,5 +65,18 @@ public abstract class ReservationMapper {
             reservationDtos.add(toViewDto(reservation));
         }
         return reservationDtos;
+    }
+
+    public Reservation fromNewDto(NewReservationDto reservationDto){
+        Reservation reservation = new Reservation();
+        reservation.setId(reservationDto.getId());
+        reservation.setReservationStatus(reservationDto.getReservationStatus());
+        reservation.setHostId(reservationDto.getHostId());
+        reservation.setGuestId(reservationDto.getGuestId());
+        reservation.setDays(reservationDto.getDays());
+        reservation.setStartDate(reservationDto.getStartDate());
+        reservation.setPrice(reservationDto.getPrice());
+        reservation.setNumberOfGuests(reservationDto.getNumberOfGuests());
+        return reservation;
     }
 }

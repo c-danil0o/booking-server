@@ -1,19 +1,16 @@
 package com.komsije.booking.controller;
 
 import com.komsije.booking.dto.*;
-import com.komsije.booking.exceptions.ElementNotFoundException;
-import com.komsije.booking.exceptions.HasActiveReservationsException;
 import com.komsije.booking.model.AccommodationStatus;
 import com.komsije.booking.model.AccommodationType;
 import com.komsije.booking.service.interfaces.AccommodationService;
-import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -50,6 +47,12 @@ public class AccommodationController {
         return new ResponseEntity<>(accommodations, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/all/short")
+    public ResponseEntity<List<AccommodationShortDto>> getAllDisplay() {
+        List<AccommodationShortDto> accommodations = accommodationService.getAllShort();
+        return new ResponseEntity<>(accommodations, HttpStatus.OK);
+    }
+
     @PreAuthorize("hasRole('Admin')")
     @GetMapping(value = "/unapproved")
     public ResponseEntity<List<HostPropertyDto>> getUnapproved() {
@@ -58,7 +61,7 @@ public class AccommodationController {
     }
 
     @GetMapping(value = "/search")
-    public ResponseEntity<List<AccommodationDto>> getByLocationGuestNumberAndDate(@RequestParam(required = false) String location, @RequestParam(required = false) Integer guests, @RequestParam(required = false) LocalDateTime startDate, @RequestParam(required = false) LocalDateTime endDate) {
+    public ResponseEntity<List<AccommodationDto>> getByLocationGuestNumberAndDate(@RequestParam(required = false) String location, @RequestParam(required = false) Integer guests, @RequestParam(required = false) LocalDate startDate, @RequestParam(required = false) LocalDate endDate) {
         List<AccommodationDto> accommodations = accommodationService.getByLocationNumOfGuestsAndDate(location, guests, startDate, endDate);
         return new ResponseEntity<>(accommodations, HttpStatus.OK);
     }
@@ -130,5 +133,9 @@ public class AccommodationController {
         return new ResponseEntity<>(accommodations, HttpStatus.OK);
     }
 
-
+    @PostMapping(value="/get-availability-price", consumes = "application/json")
+    public ResponseEntity<GottenAvailabilityPrice> getAvailabilityPrice(@RequestBody GetAvailabilityPrice getAvailabilityPrice) {
+        GottenAvailabilityPrice gottenAvailabilityPrice = accommodationService.getAvailabilityPrice(getAvailabilityPrice);
+        return new ResponseEntity<>(gottenAvailabilityPrice, HttpStatus.OK);
+    }
 }

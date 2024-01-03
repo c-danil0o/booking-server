@@ -3,6 +3,7 @@ package com.komsije.booking.dto;
 import com.komsije.booking.model.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -10,12 +11,13 @@ import java.util.Date;
 public class ReservationDto {
     private Long id;
     private LocalDateTime startDate;
+    private LocalDateTime dateCreated;
     private int days;
     private double price;
     private ReservationStatus reservationStatus;
     private Long accommodationId;
-    private GuestDto guest;
-    private HostDto host;
+    private Long guestId;
+    private Long hostId;
     private Integer numberOfGuests;
 
 

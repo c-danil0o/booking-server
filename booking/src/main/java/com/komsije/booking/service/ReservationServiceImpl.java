@@ -1,5 +1,6 @@
 package com.komsije.booking.service;
 
+import com.komsije.booking.dto.NewReservationDto;
 import com.komsije.booking.dto.ReservationDto;
 import com.komsije.booking.dto.ReservationViewDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
@@ -11,12 +12,11 @@ import com.komsije.booking.model.Reservation;
 import com.komsije.booking.model.ReservationStatus;
 import com.komsije.booking.repository.ReservationRepository;
 import com.komsije.booking.service.interfaces.AccommodationService;
-import com.komsije.booking.service.interfaces.GuestService;
 import com.komsije.booking.service.interfaces.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -67,24 +67,34 @@ public class ReservationServiceImpl implements ReservationService {
     public boolean hasActiveReservations(Long accountId) {
         List<Reservation> reservations = reservationRepository.findAll();
         for (Reservation reservation: reservations){
-            if (reservation.getGuest().getId().equals(accountId) && reservation.getReservationStatus().equals(ReservationStatus.Active)){
+            if (reservation.getGuestId().equals(accountId) && reservation.getReservationStatus().equals(ReservationStatus.Active)){
                 return true;
             }
         }
         return false;
+    }
+    @Override
+    public Integer getCancellationDeadline(Long reservationId){
+        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
+        return reservation.getAccommodation().getCancellationDeadline();
     }
     @Override
     public boolean hasHostActiveReservations(Long accountId) {
         List<Reservation> reservations = reservationRepository.findAll();
         for (Reservation reservation: reservations){
-            if (reservation.getHost().getId().equals(accountId) && reservation.getReservationStatus().equals(ReservationStatus.Active)){
+            if (reservation.getHostId().equals(accountId) && reservation.getReservationStatus().equals(ReservationStatus.Active)){
                 return true;
             }
         }
         return false;
     }
     @Override
-    public boolean overlappingActiveReservationsExist(LocalDateTime startDate, LocalDateTime endDate) throws InvalidTimeSlotException {
+    public void restoreTimeslots(Long reservationId) throws ElementNotFoundException{
+        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
+        accommodationService.restoreTimeslot(reservation);
+    }
+    @Override
+    public boolean overlappingActiveReservationsExist(LocalDate startDate, LocalDate endDate) throws InvalidTimeSlotException {
         if (startDate.isAfter(endDate)){
             throw new InvalidTimeSlotException("Start date is after end date");
         }
@@ -121,12 +131,14 @@ public class ReservationServiceImpl implements ReservationService {
         Reservation reservation = reservationRepository.findById(id).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
         if(reservation.getReservationStatus().equals(ReservationStatus.Pending) || reservation.getReservationStatus().equals(ReservationStatus.Denied)){
             reservation.setReservationStatus(ReservationStatus.Approved);
+            accommodationService.reserveTimeslot(reservation.getAccommodation().getId(),reservation.getStartDate(), reservation.getStartDate().plusDays(reservation.getDays()));
+
             reservationRepository.save(reservation);
         }else{
             throw new PendingReservationException("Reservation is not in pending or denied state!");
         }
-        LocalDateTime startDate = reservation.getStartDate();
-        LocalDateTime endDate = reservation.getStartDate().plusDays(reservation.getDays());
+        LocalDate startDate = reservation.getStartDate();
+        LocalDate endDate = reservation.getStartDate().plusDays(reservation.getDays());
         List<Reservation> reservations = reservationRepository.findReservationsByReservationStatus(ReservationStatus.Pending);
         for(Reservation res: reservations){
             if (startDate.isBefore(reservation.getStartDate().plusDays(reservation.getDays()))&& reservation.getStartDate().isBefore(endDate)){
@@ -150,7 +162,10 @@ public class ReservationServiceImpl implements ReservationService {
         return true;
     }
 
-
+    @Override
+    public void deleteInBatch(List<Long> ids) {
+        reservationRepository.deleteAllByIdInBatch(ids);
+    }
 
 
     public ReservationDto save(ReservationDto reservationDto) throws ElementNotFoundException {
@@ -159,6 +174,19 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setAccommodation(accommodation);
         reservationRepository.save(reservation);
         return reservationDto;
+    }
+
+    @Override
+    public ReservationDto saveNewReservation(NewReservationDto reservationDto) throws ElementNotFoundException {
+        Reservation reservation = mapper.fromNewDto(reservationDto);
+        Accommodation accommodation = accommodationService.findModelById(reservationDto.getAccommodationId());
+        reservation.setAccommodation(accommodation);
+        reservation.setDateCreated(LocalDate.now());
+        reservationRepository.save(reservation);
+        if (reservation.getReservationStatus().equals(ReservationStatus.Approved)){
+            accommodationService.reserveTimeslot(reservation.getAccommodation().getId(),reservation.getStartDate(), reservation.getStartDate().plusDays(reservation.getDays()));
+        }
+        return mapper.toDto(reservation);
     }
 
     @Override
@@ -177,4 +205,5 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
     }
+
 }

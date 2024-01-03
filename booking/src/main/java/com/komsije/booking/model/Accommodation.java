@@ -6,7 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -30,8 +32,8 @@ public class Accommodation {
     @ElementCollection
     private Set<String> amenities = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<TimeSlot> availability = new HashSet<>();
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TimeSlot> availability = new ArrayList<>();
     @Column(nullable = false)
     private int maxGuests;
     @ManyToOne(fetch = FetchType.LAZY)

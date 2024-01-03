@@ -47,6 +47,12 @@ public class AccommodationController {
         return new ResponseEntity<>(accommodations, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/all/short")
+    public ResponseEntity<List<AccommodationShortDto>> getAllDisplay() {
+        List<AccommodationShortDto> accommodations = accommodationService.getAllShort();
+        return new ResponseEntity<>(accommodations, HttpStatus.OK);
+    }
+
     @PreAuthorize("hasRole('Admin')")
     @GetMapping(value = "/unapproved")
     public ResponseEntity<List<HostPropertyDto>> getUnapproved() {

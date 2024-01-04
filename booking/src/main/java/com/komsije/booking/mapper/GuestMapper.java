@@ -6,6 +6,8 @@ import com.komsije.booking.model.Address;
 import com.komsije.booking.model.Guest;
 import com.komsije.booking.model.Host;
 import com.komsije.booking.model.Role;
+import com.komsije.booking.repository.GuestRepository;
+import com.komsije.booking.repository.HostRepository;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
@@ -14,19 +16,24 @@ import java.util.List;
 
 @Mapper(componentModel = "spring", uses = {AddressMapper.class, AccommodationMapper.class}, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE )
 public abstract class GuestMapper {
+    private GuestRepository guestRepository;
     public abstract GuestDto toDto(Guest guest);
     public Guest fromDto(GuestDto guestDto){
-        Guest guest = new Guest();
-        guest.setRole(Role.Guest);
-        guest.setEmail(guestDto.getEmail());
-        guest.setPassword(guestDto.getPassword());
-        guest.setBlocked(guestDto.isBlocked());
-        guest.setAddress(new Address(null, guestDto.getAddress().getStreet(), guestDto.getAddress().getCity(), guestDto.getAddress().getNumber(),guestDto.getAddress().getCountry(), guestDto.getAddress().getLatitude(), guestDto.getAddress().getLongitude()));
-        guest.setFirstName(guestDto.getFirstName());
-        guest.setLastName(guestDto.getLastName());
-        guest.setPhone(guestDto.getPhone());
-        guest.setTimesCancelled(guestDto.getTimesCancelled());
-        return guest;
+        if (!guestRepository.existsById(guestDto.getId())){
+            Guest guest = new Guest();
+            guest.setRole(Role.Guest);
+            guest.setEmail(guestDto.getEmail());
+            guest.setBlocked(guestDto.isBlocked());
+            guest.setAddress(new Address(null, guestDto.getAddress().getStreet(), guestDto.getAddress().getCity(), guestDto.getAddress().getNumber(),guestDto.getAddress().getCountry(), guestDto.getAddress().getLatitude(), guestDto.getAddress().getLongitude()));
+            guest.setFirstName(guestDto.getFirstName());
+            guest.setLastName(guestDto.getLastName());
+            guest.setPhone(guestDto.getPhone());
+            guest.setTimesCancelled(guestDto.getTimesCancelled());
+            return guest;
+        }else{
+            return guestRepository.findById(guestDto.getId()).orElse(null);
+        }
+
     }
     public abstract List<GuestDto> toDto(List<Guest> guestsList);
     public abstract void update(@MappingTarget Guest guest, GuestDto guestDto);

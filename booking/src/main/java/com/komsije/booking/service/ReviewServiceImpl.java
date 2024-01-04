@@ -2,6 +2,7 @@ package com.komsije.booking.service;
 
 import com.komsije.booking.dto.ReviewDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
+import com.komsije.booking.exceptions.ReviewAlreadyExistsException;
 import com.komsije.booking.mapper.ReviewMapper;
 import com.komsije.booking.model.Review;
 import com.komsije.booking.repository.ReviewRepository;
@@ -34,6 +35,27 @@ public class ReviewServiceImpl implements ReviewService {
         reviewRepository.save(mapper.fromDto(reviewDto));
         return reviewDto;
     }
+    @Override
+    public ReviewDto saveNewReview(ReviewDto reviewDto) {
+        List<Review> reviews = reviewRepository.findByAuthorId(reviewDto.getAuthor().getAccountId());
+        if (reviewDto.getAccommodationId() != null){
+            for (Review review: reviews){
+                if (review.getAccommodation()!= null && review.getAccommodation().getId().equals(reviewDto.getAccommodationId())){
+                    throw new ReviewAlreadyExistsException("User has already reviewed this accommodation!");
+                }
+            }
+        }
+        if (reviewDto.getHostId() != null){
+            for (Review review: reviews){
+                if (review.getHost()!= null && review.getHost().getId().equals(reviewDto.getHostId())){
+                    throw new ReviewAlreadyExistsException("User has already reviewed this host!");
+                }
+            }
+        }
+        reviewRepository.save(mapper.fromDto(reviewDto));
+        return reviewDto;
+    }
+
 
     @Override
     public ReviewDto update(ReviewDto reviewDto) throws ElementNotFoundException {

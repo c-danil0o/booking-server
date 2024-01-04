@@ -8,6 +8,8 @@ import com.komsije.booking.service.interfaces.crud.CrudService;
 import java.util.List;
 
 public interface ReviewService extends CrudService<ReviewDto, Long> {
+    ReviewDto saveNewReview(ReviewDto reviewDto);
+
     public List<ReviewDto> getApprovedReviews();
     public void setApproved(Long id) throws ElementNotFoundException;
     public List<ReviewDto> findByAccommodationId(Long id) throws ElementNotFoundException;

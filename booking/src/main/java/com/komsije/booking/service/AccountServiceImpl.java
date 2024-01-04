@@ -5,14 +5,12 @@ import com.komsije.booking.dto.LoginDto;
 import com.komsije.booking.dto.NewPasswordDto;
 import com.komsije.booking.exceptions.AccountNotActivatedException;
 import com.komsije.booking.exceptions.ElementNotFoundException;
-import com.komsije.booking.exceptions.HasActiveReservationsException;
 import com.komsije.booking.exceptions.IncorrectPasswordException;
 import com.komsije.booking.mapper.AccountMapper;
 import com.komsije.booking.model.Account;
 import com.komsije.booking.model.Role;
 import com.komsije.booking.repository.AccountRepository;
 import com.komsije.booking.service.interfaces.AccountService;
-import com.komsije.booking.service.interfaces.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +31,11 @@ public class AccountServiceImpl implements AccountService{
 
     public AccountDto findById(Long id) throws ElementNotFoundException {
             return mapper.toDto(accountRepository.findById(id).orElseThrow(()->new ElementNotFoundException("Element with given ID doesn't exist!")));
+    }
+
+    @Override
+    public Account findModelById(Long id) throws ElementNotFoundException {
+        return accountRepository.findById(id).orElseThrow(()->new ElementNotFoundException("Element with given ID doesn't exist!"));
     }
 
     public List<AccountDto> findAll() {
@@ -72,6 +75,14 @@ public class AccountServiceImpl implements AccountService{
             throw new ElementNotFoundException("Account with given email doesn't exit!");
         }
         return mapper.toDto(account);
+    }
+    @Override
+    public Account getModelByEmail(String email) throws ElementNotFoundException {
+        Account account = accountRepository.getAccountByEmail(email);
+        if (account == null){
+            throw new ElementNotFoundException("Account with given email doesn't exit!");
+        }
+        return account;
     }
     @Override
     public String getEmail(Long id){

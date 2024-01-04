@@ -26,7 +26,6 @@ public abstract class HostMapper {
         Host host = new Host();
         host.setRole(Role.Host);
         host.setEmail(hostDto.getEmail());
-        host.setPassword(hostDto.getPassword());
         host.setBlocked(hostDto.isBlocked());
         host.setAddress(new Address(null, hostDto.getAddress().getStreet(), hostDto.getAddress().getCity(), hostDto.getAddress().getNumber(),hostDto.getAddress().getCountry(), hostDto.getAddress().getLatitude(), hostDto.getAddress().getLongitude()));
         host.setFirstName(hostDto.getFirstName());

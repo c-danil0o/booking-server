@@ -11,11 +11,9 @@ import java.util.Set;
 public class HostDto {
     private Long id;
     private String email;
-    private String password;
     private boolean isBlocked;
     private AddressDto address;
     private String firstName;
     private String lastName;
     private String phone;
-    private int timesCancelled;
 }

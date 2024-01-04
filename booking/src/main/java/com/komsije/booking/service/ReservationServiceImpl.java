@@ -13,20 +13,36 @@ import com.komsije.booking.model.ReservationStatus;
 import com.komsije.booking.repository.ReservationRepository;
 import com.komsije.booking.service.interfaces.AccommodationService;
 import com.komsije.booking.service.interfaces.ReservationService;
+import jakarta.annotation.PostConstruct;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.Trigger;
+import org.springframework.scheduling.TriggerContext;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDate;
+
+import java.time.ZoneOffset;
+
 import java.util.ArrayList;
+
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
     @Autowired
     private ReservationMapper mapper;
+    @Autowired
+    private TaskScheduler taskScheduler;
     private final ReservationRepository reservationRepository;
     private final AccommodationService accommodationService;
+    private static final Logger LOG = Logger.getAnonymousLogger();
 
     @Autowired
     public ReservationServiceImpl(ReservationRepository reservationRepository, AccommodationService accommodationService) {
@@ -182,8 +198,18 @@ public class ReservationServiceImpl implements ReservationService {
         if(reservation.getReservationStatus().equals(ReservationStatus.Pending) || reservation.getReservationStatus().equals(ReservationStatus.Denied)){
             reservation.setReservationStatus(ReservationStatus.Approved);
             accommodationService.reserveTimeslot(reservation.getAccommodation().getId(),reservation.getStartDate(), reservation.getStartDate().plusDays(reservation.getDays()));
-
             reservationRepository.save(reservation);
+            Runnable task1 = () -> setStatusToActive(reservation);
+            Runnable task2 = () -> setStatusToDone(reservation);
+            Instant endDate = reservation.getStartDate().plusDays(reservation.getDays()).atStartOfDay().toInstant(ZoneOffset.UTC);
+            Instant startDate = reservation.getStartDate().atStartOfDay().toInstant(ZoneOffset.UTC);
+            LOG.log(Level.INFO, "Scheduled task to set reservation "+ reservation.getId() + " to active on " + startDate);
+            LOG.log(Level.INFO, "Scheduled task to set reservation "+ reservation.getId() + " to done on " + endDate);
+            taskScheduler.schedule(task1, startDate);
+            taskScheduler.schedule(task2,endDate);
+
+
+
         }else{
             throw new PendingReservationException("Reservation is not in pending or denied state!");
         }
@@ -197,6 +223,36 @@ public class ReservationServiceImpl implements ReservationService {
             }
         }
         return true;
+    }
+
+    @SneakyThrows
+    private void setStatusToActive(Reservation reservation){
+
+        if(reservation.getReservationStatus().equals(ReservationStatus.Approved)){
+            if (reservation.getStartDate().plusDays(reservation.getDays()).isBefore(LocalDate.now())){
+                LOG.log(Level.INFO, "Setting status to DONE for reservation:"+ reservation.getId());
+                updateStatus(reservation.getId(), ReservationStatus.Done);
+                return;
+            }
+            LOG.log(Level.INFO, "Setting status to ACTIVE for reservation:"+ reservation.getId());
+
+
+            updateStatus(reservation.getId(), ReservationStatus.Active);
+
+        }
+    }
+    @SneakyThrows
+    private void setStatusToDone(Reservation reservation){
+        if (reservation.getReservationStatus().equals(ReservationStatus.Active)){
+            LOG.log(Level.INFO, "Setting status to DONE for reservation:"+ reservation.getId());
+            updateStatus(reservation.getId(), ReservationStatus.Done);
+        }
+    }
+    private void checkIfNotApproved(Reservation reservation){
+        if (reservation.getReservationStatus().equals(ReservationStatus.Pending)){
+            LOG.log(Level.INFO, "Setting status to DENIED for reservation:"+ reservation.getId());
+            updateStatus(reservation.getId(), ReservationStatus.Denied);
+        }
     }
 
     @Override
@@ -235,6 +291,19 @@ public class ReservationServiceImpl implements ReservationService {
         reservationRepository.save(reservation);
         if (reservation.getReservationStatus().equals(ReservationStatus.Approved)){
             accommodationService.reserveTimeslot(reservation.getAccommodation().getId(),reservation.getStartDate(), reservation.getStartDate().plusDays(reservation.getDays()));
+            Runnable task1 = () -> setStatusToActive(reservation);
+            Runnable task2 = () -> setStatusToDone(reservation);
+            Instant endDate = reservation.getStartDate().plusDays(reservation.getDays()).atStartOfDay().toInstant(ZoneOffset.UTC);
+            Instant startDate = reservation.getStartDate().atStartOfDay().toInstant(ZoneOffset.UTC);
+            LOG.log(Level.INFO, "Scheduled task to set reservation "+ reservation.getId() + " to active on " + startDate);
+            LOG.log(Level.INFO, "Scheduled task to set reservation "+ reservation.getId() + " to done on " + endDate);
+            taskScheduler.schedule(task1, startDate);
+            taskScheduler.schedule(task2,endDate);
+        }else{
+            Runnable task = () -> checkIfNotApproved(reservation);
+            LOG.log(Level.INFO, "Scheduled task to set reservation "+ reservation.getId() + " to DENIED if not approved until " + reservation.getStartDate());
+
+            taskScheduler.schedule(task, reservation.getStartDate().atStartOfDay().toInstant(ZoneOffset.UTC));
         }
         return mapper.toDto(reservation);
     }
@@ -256,4 +325,17 @@ public class ReservationServiceImpl implements ReservationService {
 
     }
 
+    @PostConstruct
+    public void checkOnStartup(){
+        List<Reservation> reservations = reservationRepository.findAll();
+        for (Reservation reservation: reservations){
+            if (reservation.getStartDate().plusDays(reservation.getDays()).isBefore(LocalDate.now())){
+                setStatusToDone(reservation);
+            }
+            if (reservation.getStartDate().isBefore(LocalDate.now())){
+                setStatusToActive(reservation);
+                checkIfNotApproved(reservation);
+            }
+        }
+    }
 }

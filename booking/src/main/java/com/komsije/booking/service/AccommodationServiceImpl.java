@@ -204,7 +204,7 @@ public class AccommodationServiceImpl implements AccommodationService {
             if (timeSlots.get(i).getStartDate().isEqual(resStart) && timeSlots.get(i).getEndDate().isEqual(resEnd)){
                 timeSlots.get(i).setOccupied(false);
             }
-            if (timeSlots.get(i).getEndDate().isEqual(timeSlots.get(i+1).getStartDate())){
+            if (timeSlots.get(i).getEndDate().isEqual(timeSlots.get(i+1).getStartDate()) && timeSlots.get(i).getPrice() == timeSlots.get(i+1).getPrice()){
                 timeSlots.get(i+1).setStartDate(timeSlots.get(i).getStartDate());
                 forRemoval.add(timeSlots.get(i));
             }

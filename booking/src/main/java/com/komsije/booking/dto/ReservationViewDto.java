@@ -13,6 +13,9 @@ public class ReservationViewDto {
     private LocalDateTime endDate;
     private double price;
     private String accommodationName;
+    private Long accommodationId;
+    private Long guestId;
+    private Long hostId;
     private String guestEmail;
     private String hostEmail;
     private ReservationStatus reservationStatus;

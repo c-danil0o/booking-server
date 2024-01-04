@@ -11,7 +11,6 @@ import java.util.Set;
 public class GuestDto {
     private Long id;
     private String email;
-    private String password;
     private boolean isBlocked;
     private AddressDto address;
     private String firstName;

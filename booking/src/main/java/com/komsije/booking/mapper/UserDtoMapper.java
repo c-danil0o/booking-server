@@ -42,5 +42,8 @@ public abstract class UserDtoMapper {
     public AccountDto fromDto(UserDto userDto) throws ElementNotFoundException {
         return accountService.getByEmail(userDto.getEmail());
     }
+    public Account fromDtoModel(UserDto userDto) throws ElementNotFoundException{
+        return accountService.findModelById(userDto.getAccountId());
+    }
 
 }

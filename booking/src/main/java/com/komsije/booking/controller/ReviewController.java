@@ -54,7 +54,7 @@ public class ReviewController {
     @PostMapping(consumes = "application/json")
     public ResponseEntity<ReviewDto> saveReview(@RequestBody ReviewDto reviewDTO) {
         ReviewDto reviewDto = null;
-        reviewDto = reviewService.save(reviewDTO);
+        reviewDto = reviewService.saveNewReview(reviewDTO);
         return new ResponseEntity<>(reviewDto, HttpStatus.CREATED);
     }
     @PreAuthorize("hasRole('Admin')")

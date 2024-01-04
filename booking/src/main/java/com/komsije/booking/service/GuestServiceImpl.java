@@ -164,6 +164,7 @@ public class GuestServiceImpl implements GuestService {
                 reservation.setReservationStatus(ReservationStatus.Cancelled);
                 reservationService.updateStatus(reservation.getId(), ReservationStatus.Cancelled);
                 reservationService.restoreTimeslots(reservation.getId());
+                this.increaseCancelations(reservation.getGuestId());
             }
         }else
         if (reservation.getReservationStatus().equals(ReservationStatus.Pending)) {
@@ -174,7 +175,6 @@ public class GuestServiceImpl implements GuestService {
         }
 //        todo: update accommodations if reservation was approved
 
-        this.increaseCancelations(reservation.getGuestId());
         return true;
     }
 }

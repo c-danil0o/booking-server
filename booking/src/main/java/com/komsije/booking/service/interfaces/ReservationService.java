@@ -20,6 +20,13 @@ public interface ReservationService extends CrudService<ReservationDto, Long> {
     public void saveModel(Reservation reservation);
     public List<ReservationViewDto> getByHostId(Long id);
     public List<ReservationViewDto> getByGuestId(Long id);
+    public List<ReservationViewDto> getRequestsByHostId(Long id);
+    public List<ReservationViewDto> getRequestsByGuestId(Long id);
+
+    public List<ReservationViewDto> getDecidedByHostId(Long id);
+    public List<ReservationViewDto> getDecidedByGuestId(Long id);
+
+
     public List<ReservationDto> getByReservationStatus(ReservationStatus reservationStatus);
 
     public boolean hasActiveReservations(Long accountId);

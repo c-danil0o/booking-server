@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.komsije.booking.model.Review;
 import lombok.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Data
 public class ReviewDto {
     private Long id;
@@ -11,7 +14,8 @@ public class ReviewDto {
     private String comment;
     private UserDto author;
     private boolean isApproved;
-    private HostDto host;
-    private AccommodationDto accommodation;
+    private Long hostId;
+    private Long accommodationId;
+    private LocalDateTime date;
 
 }

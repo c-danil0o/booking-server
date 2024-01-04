@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,7 +19,8 @@ public class Review {
     private int grade;
     @Column(nullable = true)
     private String comment;
-
+    @Column(nullable = false)
+    private LocalDateTime date;
     @ManyToOne(fetch = FetchType.LAZY)
     private Account author;
     @Column(nullable = false)

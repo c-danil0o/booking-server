@@ -6,7 +6,9 @@ import com.komsije.booking.dto.ReservationDto;
 import com.komsije.booking.dto.ReservationViewDto;
 import com.komsije.booking.model.Accommodation;
 import com.komsije.booking.model.Reservation;
+import com.komsije.booking.repository.GuestRepository;
 import com.komsije.booking.service.interfaces.AccountService;
+import com.komsije.booking.service.interfaces.GuestService;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValueCheckStrategy;
@@ -20,6 +22,8 @@ import java.util.List;
 public abstract class ReservationMapper {
     @Autowired
     private AccountService accountService;
+    @Autowired
+    private GuestRepository guestRepository;
     public ReservationDto toDto(Reservation reservation){
         ReservationDto reservationDto = new ReservationDto();
         reservationDto.setId(reservation.getId());
@@ -59,6 +63,7 @@ public abstract class ReservationMapper {
         reservationDto.setGuestId(reservation.getGuestId());
         reservationDto.setReservationStatus(reservation.getReservationStatus());
         reservationDto.setNumberOfGuests(reservation.getNumberOfGuests());
+        reservationDto.setGuestTimesCancelled(guestRepository.getReferenceById(reservation.getGuestId()).getTimesCancelled());
         return reservationDto;
     }
     public List<ReservationViewDto> toViewDto(List<Reservation> reservationList){

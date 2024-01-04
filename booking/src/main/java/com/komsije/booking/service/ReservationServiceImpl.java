@@ -20,11 +20,16 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.TriggerContext;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDate;
+
 import java.time.ZoneOffset;
+
+import java.util.ArrayList;
+
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -72,6 +77,54 @@ public class ReservationServiceImpl implements ReservationService {
     public List<ReservationViewDto> getByGuestId(Long id) {
         List<Reservation> reservations = this.reservationRepository.findByGuestId(id);
         return mapper.toViewDto(reservations);
+    }
+
+    @Override
+    public List<ReservationViewDto> getRequestsByHostId(Long id) {
+        List<ReservationViewDto> reservations = getByHostId(id);
+        List<ReservationViewDto> requests = new ArrayList<>();
+        for (ReservationViewDto reservation: reservations) {
+            ReservationStatus status = reservation.getReservationStatus();
+            if (status.equals(ReservationStatus.Pending))
+                requests.add(reservation);
+        }
+        return requests;
+    }
+
+    @Override
+    public List<ReservationViewDto> getRequestsByGuestId(Long id) {
+        List<ReservationViewDto> reservations = getByGuestId(id);
+        List<ReservationViewDto> requests = new ArrayList<>();
+        for (ReservationViewDto reservation: reservations) {
+            ReservationStatus status = reservation.getReservationStatus();
+            if (status.equals(ReservationStatus.Pending) || status.equals(ReservationStatus.Approved))
+                requests.add(reservation);
+        }
+        return requests;
+    }
+
+    @Override
+    public List<ReservationViewDto> getDecidedByHostId(Long id) {
+        List<ReservationViewDto> reservations = getByHostId(id);
+        List<ReservationViewDto> requests = new ArrayList<>();
+        for (ReservationViewDto reservation: reservations) {
+            ReservationStatus status = reservation.getReservationStatus();
+            if (!(status.equals(ReservationStatus.Pending) || status.equals(ReservationStatus.Cancelled) || status.equals(ReservationStatus.Denied)))
+                requests.add(reservation);
+        }
+        return requests;
+    }
+
+    @Override
+    public List<ReservationViewDto> getDecidedByGuestId(Long id) {
+        List<ReservationViewDto> reservations = getByGuestId(id);
+        List<ReservationViewDto> requests = new ArrayList<>();
+        for (ReservationViewDto reservation: reservations) {
+            ReservationStatus status = reservation.getReservationStatus();
+            if (!status.equals(ReservationStatus.Pending))
+                requests.add(reservation);
+        }
+        return requests;
     }
 
     public List<ReservationDto> getByReservationStatus(ReservationStatus reservationStatus){return mapper.toDto(reservationRepository.findReservationsByReservationStatus(reservationStatus));}

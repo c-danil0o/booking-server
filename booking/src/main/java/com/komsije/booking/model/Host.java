@@ -16,10 +16,8 @@ import java.util.Set;
 @PrimaryKeyJoinColumn(name = "id")
 public class Host extends Account implements Persistable<Long> {
     @Column(nullable = false)
-
     private String firstName;
     @Column(nullable = false)
-
     private String lastName;
     @Column(nullable = false)
     private String phone;

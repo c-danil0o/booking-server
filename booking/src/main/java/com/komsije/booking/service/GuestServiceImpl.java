@@ -173,9 +173,6 @@ public class GuestServiceImpl implements GuestService {
         } else {
             throw new PendingReservationException("Reservation is not in pending or approved state!");
         }
-//        todo: update accommodations if reservation was approved
-
-
         return true;
     }
 }

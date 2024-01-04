@@ -20,5 +20,6 @@ public class ReservationViewDto {
     private String hostEmail;
     private ReservationStatus reservationStatus;
     private Integer numberOfGuests;
+    private Integer guestTimesCancelled;
 
 }

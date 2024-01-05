@@ -11,6 +11,9 @@ public interface ReviewService extends CrudService<ReviewDto, Long> {
     ReviewDto saveNewReview(ReviewDto reviewDto);
 
     public List<ReviewDto> getApprovedReviews();
+
+    List<ReviewDto> getUnapprovedReviews();
+
     public void setApproved(Long id) throws ElementNotFoundException;
     public List<ReviewDto> findByAccommodationId(Long id) throws ElementNotFoundException;
     public List<ReviewDto> findByHostId(Long id) throws ElementNotFoundException;

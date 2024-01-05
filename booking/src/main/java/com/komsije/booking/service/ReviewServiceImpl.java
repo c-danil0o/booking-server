@@ -77,6 +77,10 @@ public class ReviewServiceImpl implements ReviewService {
     public List<ReviewDto> getApprovedReviews() {
         return mapper.toDto(reviewRepository.getReviewsByIsApprovedIsTrue());
     }
+    @Override
+    public List<ReviewDto> getUnapprovedReviews() {
+        return mapper.toDto(reviewRepository.getReviewsByIsApprovedIsFalse());
+    }
 
     public void setApproved(Long id) throws ElementNotFoundException {
         Review review = reviewRepository.findById(id).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));

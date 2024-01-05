@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<Review> getReviewsByIsApprovedIsTrue();
+    List<Review> getReviewsByIsApprovedIsFalse();
     @Query("select r from Review r where r.accommodation.id=:id and r.isApproved")
     List<Review> findByAccommodationId(Long id);
     @Query("select r from Review r where r.host.id=:id and r.isApproved")

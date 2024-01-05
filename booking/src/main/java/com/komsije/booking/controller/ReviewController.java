@@ -51,6 +51,12 @@ public class ReviewController {
         return new ResponseEntity<>(reviewDtos, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/unapproved")
+    public ResponseEntity<List<ReviewDto>> getUnapprovedReviews(){
+        List<ReviewDto> reviewDtos = reviewService.getUnapprovedReviews();
+        return new ResponseEntity<>(reviewDtos, HttpStatus.OK);
+    }
+
     @PostMapping(consumes = "application/json")
     public ResponseEntity<ReviewDto> saveReview(@RequestBody ReviewDto reviewDTO) {
         ReviewDto reviewDto = null;

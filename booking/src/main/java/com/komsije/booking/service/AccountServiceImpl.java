@@ -7,13 +7,17 @@ import com.komsije.booking.exceptions.AccountNotActivatedException;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.exceptions.IncorrectPasswordException;
 import com.komsije.booking.mapper.AccountMapper;
-import com.komsije.booking.model.Account;
-import com.komsije.booking.model.Role;
+import com.komsije.booking.model.*;
 import com.komsije.booking.repository.AccountRepository;
+import com.komsije.booking.repository.ReportRepository;
+import com.komsije.booking.repository.ReservationRepository;
 import com.komsije.booking.service.interfaces.AccountService;
+import com.komsije.booking.service.interfaces.ReportService;
+import com.komsije.booking.service.interfaces.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -21,12 +25,16 @@ import java.util.Objects;
 @Service
 public class AccountServiceImpl implements AccountService{
     private final AccountRepository accountRepository;
+    private final ReportRepository reportRepository;
+    private final ReservationRepository reservationRepository;
     @Autowired
     private AccountMapper mapper;
 
     @Autowired
-    public AccountServiceImpl(AccountRepository accountRepository) {
+    public AccountServiceImpl(AccountRepository accountRepository, ReportRepository reportRepository, ReservationRepository reservationRepository) {
         this.accountRepository = accountRepository;
+        this.reportRepository = reportRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public AccountDto findById(Long id) throws ElementNotFoundException {
@@ -124,6 +132,46 @@ public class AccountServiceImpl implements AccountService{
         account.setPassword(newPasswordDto.getNewPassword());
         accountRepository.save(account);
 
+
+    }
+
+    @Override
+    public void blockAccount(Long id) {
+        Account account = accountRepository.getReferenceById(id);
+        account.setBlocked(true);
+        accountRepository.save(account);
+        deleteReports(id);
+        deleteReservations(id);
+    }
+
+    private void deleteReports(Long userId){
+        List<Report> reports = reportRepository.findAll();
+        List<Report> forRemoval = new ArrayList<>();
+        for (Report r: reports) {
+            if(r.getReportedUser().getId()==userId)
+                forRemoval.add(r);
+        }
+        reportRepository.deleteAll(forRemoval);
+    }
+
+    private void deleteReservations(Long userId){
+        List<Reservation> reservations = reservationRepository.findByGuestId(userId);
+        for (Reservation r : reservations) {
+            ReservationStatus status = r.getReservationStatus();
+            if (status.equals(ReservationStatus.Pending) || status.equals(ReservationStatus.Approved)){
+                r.setReservationStatus(ReservationStatus.Denied);
+                reservationRepository.save(r);
+            }
+        }
+        //NE PISE U SPEC ALI IMA SMISLA - BRISANJE HOST REZERVACIJA
+//        reservations = reservationRepository.findByHostId(userId);
+//        for (Reservation r : reservations) {
+//            ReservationStatus status = r.getReservationStatus();
+//            if (status.equals(ReservationStatus.Pending) || status.equals(ReservationStatus.Approved)){
+//                r.setReservationStatus(ReservationStatus.Denied);
+//                reservationRepository.save(r);
+//            }
+//        }
 
     }
 

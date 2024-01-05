@@ -2,6 +2,7 @@ package com.komsije.booking.controller;
 
 import com.komsije.booking.dto.AccountDto;
 import com.komsije.booking.dto.ReportDto;
+import com.komsije.booking.dto.ReportViewDto;
 import com.komsije.booking.model.Report;
 import com.komsije.booking.service.interfaces.AccountService;
 import com.komsije.booking.service.interfaces.ReportService;
@@ -27,8 +28,8 @@ public class ReportController {
 
     @PreAuthorize("hasRole('Admin')")
     @GetMapping(value = "/all")
-    public ResponseEntity<List<ReportDto>> getAllReports() {
-        List<ReportDto> reports = reportService.findAll();
+    public ResponseEntity<List<ReportViewDto>> getAllReports() {
+        List<ReportViewDto> reports = reportService.getAll();
         return new ResponseEntity<>(reports, HttpStatus.OK);
     }
 
@@ -37,5 +38,12 @@ public class ReportController {
         ReportDto reportDTO = null;
         reportDTO = reportService.save(reportDto);
         return new ResponseEntity<>(reportDTO, HttpStatus.CREATED);
+    }
+
+    @PreAuthorize("hasRole('Admin')")
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
+        reportService.delete(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

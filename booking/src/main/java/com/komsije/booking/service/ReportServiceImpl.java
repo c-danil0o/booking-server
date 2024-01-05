@@ -1,6 +1,7 @@
 package com.komsije.booking.service;
 
 import com.komsije.booking.dto.ReportDto;
+import com.komsije.booking.dto.ReportViewDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.mapper.ReportMapper;
 import com.komsije.booking.model.Report;
@@ -52,5 +53,10 @@ public class ReportServiceImpl implements ReportService {
             throw new ElementNotFoundException("Element with given ID doesn't exist!");
         }
 
+    }
+
+    @Override
+    public List<ReportViewDto> getAll() {
+        return mapper.toViewDto(reportRepository.findAll());
     }
 }

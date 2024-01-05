@@ -1,6 +1,7 @@
 package com.komsije.booking.mapper;
 
 import com.komsije.booking.dto.ReportDto;
+import com.komsije.booking.dto.ReportViewDto;
 import com.komsije.booking.model.Report;
 import com.komsije.booking.repository.AccountRepository;
 import org.mapstruct.Mapper;
@@ -38,6 +39,25 @@ public abstract class ReportMapper {
         List<ReportDto> reports = new ArrayList<>();
         for (Report r: reportList) {
             reports.add(this.toDto(r));
+        }
+        return reports;
+    }
+
+    public ReportViewDto toViewDto(Report report){
+        ReportViewDto reportViewDto = new ReportViewDto();
+        reportViewDto.setId(report.getId());
+        reportViewDto.setReason(report.getReason());
+        reportViewDto.setReportedUserEmail(report.getReportedUser().getEmail());
+        reportViewDto.setReportedUserId(report.getReportedUser().getId());
+        reportViewDto.setAuthorEmail(report.getAuthor().getEmail());
+        reportViewDto.setDate(report.getDate());
+        return reportViewDto;
+    }
+
+    public List<ReportViewDto> toViewDto(List<Report> reportList){
+        List<ReportViewDto> reports = new ArrayList<>();
+        for (Report r: reportList) {
+            reports.add(this.toViewDto(r));
         }
         return reports;
     }

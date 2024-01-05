@@ -26,5 +26,6 @@ public interface AccountService extends CrudService<AccountDto, Long> {
     public AccountDto checkLoginCredentials(LoginDto loginDto) throws ElementNotFoundException, AccountNotActivatedException, IncorrectPasswordException;
     public void activateAccount(String email);
     public void changePassword(NewPasswordDto newPasswordDto) throws ElementNotFoundException, IncorrectPasswordException;
+    public void blockAccount(Long id);
 
 }

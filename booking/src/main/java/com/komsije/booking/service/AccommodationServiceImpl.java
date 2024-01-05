@@ -67,7 +67,7 @@ public class AccommodationServiceImpl implements AccommodationService {
         double averageGrade = 0;
         int count = 0;
         for (Review review : accommodation.getReviews()){
-            if (review.isApproved()){
+            if (review.getStatus()!=ReviewStatus.Pending){
                 averageGrade += review.getGrade();
                 count++;
             }
@@ -84,7 +84,7 @@ public class AccommodationServiceImpl implements AccommodationService {
             double averageGrade = 0;
             int count = 0;
             for (Review review : accommodation.getReviews()){
-                if (review.isApproved()){
+                if (review.getStatus()!= ReviewStatus.Pending){
                     averageGrade += review.getGrade();
                     count++;
                 }

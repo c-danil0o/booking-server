@@ -2,6 +2,7 @@ package com.komsije.booking.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.komsije.booking.model.Review;
+import com.komsije.booking.model.ReviewStatus;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -13,7 +14,7 @@ public class ReviewDto {
     private int grade;
     private String comment;
     private UserDto author;
-    private boolean isApproved;
+    private ReviewStatus status;
     private Long hostId;
     private Long accommodationId;
     private LocalDateTime date;

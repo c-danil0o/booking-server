@@ -28,7 +28,7 @@ public abstract class ReviewMapper {
         reviewDto.setDate(review.getDate());
         reviewDto.setAuthor(userDtoMapper.toDto(review.getAuthor()));
         reviewDto.setComment(review.getComment());
-        reviewDto.setApproved(review.isApproved());
+        reviewDto.setStatus(review.getStatus());
         if (review.getHost() != null)
             reviewDto.setHostId(review.getHost().getId());
         if (review.getAccommodation() != null)
@@ -42,7 +42,7 @@ public abstract class ReviewMapper {
         review.setDate(reviewDto.getDate());
         review.setAuthor(userDtoMapper.fromDtoModel(reviewDto.getAuthor()));
         review.setComment(reviewDto.getComment());
-        review.setApproved(reviewDto.isApproved());
+        review.setStatus(reviewDto.getStatus());
         if (reviewDto.getHostId() != null){
             HostDto hostDto = new HostDto();
             hostDto.setId(reviewDto.getHostId());

@@ -24,7 +24,8 @@ public class Review {
     @ManyToOne(fetch = FetchType.LAZY)
     private Account author;
     @Column(nullable = false)
-    private boolean isApproved;
+    @Enumerated(EnumType.STRING)
+    private ReviewStatus status;
     @ManyToOne(optional = true, fetch = FetchType.LAZY)
     private Host host;
     @ManyToOne(optional = true, fetch = FetchType.LAZY)

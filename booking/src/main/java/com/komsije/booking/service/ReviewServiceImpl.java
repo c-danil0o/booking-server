@@ -3,9 +3,11 @@ package com.komsije.booking.service;
 import com.komsije.booking.dto.ReviewDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.exceptions.ReviewAlreadyExistsException;
+import com.komsije.booking.exceptions.ReviewAlreadyReportedException;
 import com.komsije.booking.exceptions.ReviewNotFoundException;
 import com.komsije.booking.mapper.ReviewMapper;
 import com.komsije.booking.model.Review;
+import com.komsije.booking.model.ReviewStatus;
 import com.komsije.booking.repository.ReviewRepository;
 import com.komsije.booking.service.interfaces.AccommodationService;
 import com.komsije.booking.service.interfaces.ReviewService;
@@ -103,16 +105,26 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     public List<ReviewDto> getApprovedReviews() {
-        return mapper.toDto(reviewRepository.getReviewsByIsApprovedIsTrue());
+        return mapper.toDto(reviewRepository.getReviewsByStatusIs(ReviewStatus.Approved));
     }
     @Override
     public List<ReviewDto> getUnapprovedReviews() {
-        return mapper.toDto(reviewRepository.getReviewsByIsApprovedIsFalse());
+        return mapper.toDto(reviewRepository.getReviewsByStatusIs(ReviewStatus.Pending));
+    }
+
+    @Override
+    public void reportReview(Long id){
+        Review review = reviewRepository.findById(id).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
+        if (review.getStatus().equals(ReviewStatus.Reported)){
+            throw new ReviewAlreadyReportedException("This review is already reported!");
+        }
+        review.setStatus(ReviewStatus.Reported);
+        reviewRepository.save(review);
     }
 
     public void setApproved(Long id) throws ElementNotFoundException {
         Review review = reviewRepository.findById(id).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
-        review.setApproved(true);
+        review.setStatus(ReviewStatus.Approved);
         if (review.getAccommodation()!= null){
             this.accommodationService.updateAverageGrade(review.getAccommodation().getId());
         }

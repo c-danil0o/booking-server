@@ -71,6 +71,15 @@ public class ReviewController {
         reviewDto = reviewService.findById(id);
         return new ResponseEntity<>(reviewDto, HttpStatus.OK);
     }
+
+    @PreAuthorize("hasRole('Host')")
+    @PatchMapping(value = "/{id}/report")
+    public ResponseEntity<ReviewDto> reportReview(@PathVariable("id") Long id) {
+        ReviewDto reviewDto = null;
+        reviewService.reportReview(id);
+        reviewDto = reviewService.findById(id);
+        return new ResponseEntity<>(reviewDto, HttpStatus.OK);
+    }
     @PreAuthorize("hasRole('Admin')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteReview(@PathVariable Long id) {

@@ -113,6 +113,11 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
         ApiError message = new ApiError(HttpStatus.I_AM_A_TEAPOT.value(), ex.getMessage(), request.getRequestURI());
         return new ResponseEntity<ApiError>(message, HttpStatus.I_AM_A_TEAPOT);
     }
+    @org.springframework.web.bind.annotation.ExceptionHandler(ReviewNotFoundException.class)
+    public ResponseEntity<ApiError> reviewException2(ReviewNotFoundException ex, HttpServletRequest request) {
+        ApiError message = new ApiError(HttpStatus.I_AM_A_TEAPOT.value(), ex.getMessage(), request.getRequestURI());
+        return new ResponseEntity<ApiError>(message, HttpStatus.I_AM_A_TEAPOT);
+    }
 
 
 

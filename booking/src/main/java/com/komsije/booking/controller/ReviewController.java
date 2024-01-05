@@ -78,6 +78,20 @@ public class ReviewController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('Admin', 'Guest')")
+    @DeleteMapping(value = "/deletehost/{hostId}/{userId}")
+    public ResponseEntity<Void> deleteHostReview(@PathVariable Long hostId, @PathVariable Long userId) {
+        reviewService.deleteHostReview(hostId, userId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAnyRole('Admin', 'Guest')")
+    @DeleteMapping(value = "/deleteacc/{accommodationId}/{userId}")
+    public ResponseEntity<Void> deleteAccommodationReview(@PathVariable Long accommodationId, @PathVariable Long userId) {
+        reviewService.deleteAccommodationReview(accommodationId, userId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @GetMapping(value = "/acc")
     public ResponseEntity<List<ReviewDto>> getByAccommodationId(@RequestParam Long accommodationId ) {
         List<ReviewDto> reviewDtos = reviewService.findByAccommodationId(accommodationId);

@@ -61,6 +61,40 @@ public class AccommodationServiceImpl implements AccommodationService {
     public List<AccommodationDto> getByAccommodationType(AccommodationType type) {
         return mapper.toDto(accommodationRepository.getAccommodationByAccommodationType(type));
     }
+    @Override
+    public void updateAverageGrade(Long id){
+        Accommodation accommodation = accommodationRepository.findById(id).orElseThrow(()->new ElementNotFoundException("Element with given ID doesn't exist!"));
+        double averageGrade = 0;
+        int count = 0;
+        for (Review review : accommodation.getReviews()){
+            if (review.isApproved()){
+                averageGrade += review.getGrade();
+                count++;
+            }
+        }
+        averageGrade = averageGrade / count;
+        accommodation.setAverageGrade(averageGrade);
+        accommodationRepository.save(accommodation);
+
+    }
+    @Override
+    public void calculateAverageGrades(){
+        List<Accommodation> accommodations = accommodationRepository.findAll();
+        for (Accommodation accommodation: accommodations){
+            double averageGrade = 0;
+            int count = 0;
+            for (Review review : accommodation.getReviews()){
+                if (review.isApproved()){
+                    averageGrade += review.getGrade();
+                    count++;
+                }
+            }
+            averageGrade = averageGrade / count;
+            accommodation.setAverageGrade(averageGrade);
+            accommodationRepository.save(accommodation);
+        }
+        System.out.println("Updated average grades!");
+    }
 
     @Override
     public AccommodationDto updateAvailability(Long accommodationId, AvailabilityDto availabilityDto) throws ElementNotFoundException {

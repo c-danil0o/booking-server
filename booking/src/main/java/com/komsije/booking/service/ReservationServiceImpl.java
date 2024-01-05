@@ -208,8 +208,6 @@ public class ReservationServiceImpl implements ReservationService {
             taskScheduler.schedule(task1, startDate);
             taskScheduler.schedule(task2,endDate);
 
-
-
         }else{
             throw new PendingReservationException("Reservation is not in pending or denied state!");
         }
@@ -258,13 +256,17 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public boolean denyReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException {
         Reservation reservation = reservationRepository.findById(id).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
-        if(reservation.getReservationStatus().equals(ReservationStatus.Pending) || reservation.getReservationStatus().equals(ReservationStatus.Approved)){
+        ReservationStatus status = reservation.getReservationStatus();
+        if(status.equals(ReservationStatus.Pending) || status.equals(ReservationStatus.Approved)){
+            if (status.equals(ReservationStatus.Approved)){
+                accommodationService.restoreTimeslot(reservation);          //returned availability
+            }
             reservation.setReservationStatus(ReservationStatus.Denied);
             reservationRepository.save(reservation);
+
         }else{
             throw new PendingReservationException("Reservation is not in pending or approved state!");
         }
-//        todo: update accommodations if reservation was approved
         return true;
     }
 

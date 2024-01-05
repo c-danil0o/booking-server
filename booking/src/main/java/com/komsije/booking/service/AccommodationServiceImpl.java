@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
@@ -116,7 +117,7 @@ public class AccommodationServiceImpl implements AccommodationService {
         for (Accommodation accommodation: accommodations) {
             if(isValid(accommodation,searchAccommodationsDto)){
                 SearchedAccommodationDto accommodationDto = mapper.toSearchedDto(accommodation);
-                double price = calculatePrice(accommodation, searchAccommodationsDto.getStartDate().toLocalDate(), searchAccommodationsDto.getEndDate().toLocalDate());
+                double price = calculatePrice(accommodation, searchAccommodationsDto.getStartDate().toLocalDate(), searchAccommodationsDto.getEndDate().toLocalDate(), searchAccommodationsDto.getGuests());
                 accommodationDto.setPrice(price);
                 int days = (int) ChronoUnit.DAYS.between(searchAccommodationsDto.getStartDate(), searchAccommodationsDto.getEndDate());
                 DecimalFormat df = new DecimalFormat("#.##");
@@ -245,10 +246,16 @@ public class AccommodationServiceImpl implements AccommodationService {
     }
 
 
-
-    private double calculatePrice(Accommodation accommodation, LocalDate startDate, LocalDate endDate){
+    private double calculatePrice(Accommodation accommodation, LocalDate startDate, LocalDate endDate, int numberOfGuests){
         double price = 0;
         List<TimeSlot> slots = accommodation.getAvailability();
+        int guestNumber = 1;
+        if(accommodation.isPricePerGuest()){
+            if(numberOfGuests==0)
+                guestNumber=accommodation.getMaxGuests();
+            else
+                guestNumber=numberOfGuests;
+        }
         for (TimeSlot slot : slots) {
             if(slot.getEndDate().isBefore(startDate))
                 continue;
@@ -257,7 +264,7 @@ public class AccommodationServiceImpl implements AccommodationService {
                     continue;
                 else{
                     int days = (int) ChronoUnit.DAYS.between(slot.getStartDate(), endDate) + 1;
-                    price = price + slot.getPrice()*days;
+                    price = price + slot.getPrice()*days*guestNumber;
                     endDate = slot.getStartDate().minusDays(1);
                     if (startDate.isAfter(endDate) || startDate.isEqual(endDate))
                         break;
@@ -265,12 +272,12 @@ public class AccommodationServiceImpl implements AccommodationService {
             else if(slot.getEndDate().isAfter(endDate) || slot.getEndDate().isEqual(endDate))
             {
                 int days = (int) ChronoUnit.DAYS.between(startDate,endDate);
-                price = price+slot.getPrice()*days;
+                price = price+slot.getPrice()*days*guestNumber;
                 return price;
             }
             else{   //equals
                 int days = (int) ChronoUnit.DAYS.between(startDate, slot.getEndDate()) + 1;
-                price = price + slot.getPrice()*days;
+                price = price + slot.getPrice()*days*guestNumber;
 
                 startDate=slot.getEndDate().plusDays(1);
                 if (startDate.isAfter(endDate) || startDate.isEqual(endDate))
@@ -291,7 +298,8 @@ public class AccommodationServiceImpl implements AccommodationService {
         GottenAvailabilityPrice gottenAvailabilityPrice = new GottenAvailabilityPrice();
         gottenAvailabilityPrice.setAvailable(true);
 
-        double price = calculatePrice(accommodation, getAvailabilityPrice.getStartDate(), getAvailabilityPrice.getEndDate());
+        //promenjena je calculatePrice funkcija
+        double price = calculatePrice(accommodation, getAvailabilityPrice.getStartDate(), getAvailabilityPrice.getEndDate(),0);
         gottenAvailabilityPrice.setTotalPrice(price);
 
         int days = (int) ChronoUnit.DAYS.between(getAvailabilityPrice.getStartDate(), getAvailabilityPrice.getEndDate());

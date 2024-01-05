@@ -9,8 +9,7 @@ import java.util.Date;
 public class ReportDto {
     private Long id;
     private String reason;
-    private UserDto author;
-    private UserDto reportedUser;
+    private Long authorId;
+    private Long reportedUserId;
     private LocalDateTime date;
-
 }

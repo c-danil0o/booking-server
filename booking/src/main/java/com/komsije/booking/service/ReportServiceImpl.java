@@ -14,11 +14,12 @@ import java.util.List;
 @Service
 public class ReportServiceImpl implements ReportService {
     private final ReportRepository reportRepository;
-    private ReportMapper mapper;
+    private final ReportMapper mapper;
 
     @Autowired
-    public ReportServiceImpl(ReportRepository reportRepository) {
+    public ReportServiceImpl(ReportRepository reportRepository, ReportMapper mapper) {
         this.reportRepository = reportRepository;
+        this.mapper = mapper;
     }
 
     public ReportDto findById(Long id) throws ElementNotFoundException {
@@ -31,15 +32,16 @@ public class ReportServiceImpl implements ReportService {
     }
 
     public ReportDto save(ReportDto reportDto) {
-        reportRepository.save(mapper.fromDto(reportDto));
+        Report report = mapper.fromDto(reportDto);
+        reportRepository.save(report);
         return reportDto;
     }
 
     @Override
     public ReportDto update(ReportDto reportDto) throws ElementNotFoundException {
-        Report report = reportRepository.findById(reportDto.getId()).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
-        mapper.update(report, reportDto);
-        reportRepository.save(report);
+//        Report report = reportRepository.findById(reportDto.getId()).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
+//        mapper.update(report, reportDto);
+//        reportRepository.save(report);
         return reportDto;
     }
 

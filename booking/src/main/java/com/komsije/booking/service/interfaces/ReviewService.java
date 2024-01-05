@@ -10,6 +10,10 @@ import java.util.List;
 public interface ReviewService extends CrudService<ReviewDto, Long> {
     ReviewDto saveNewReview(ReviewDto reviewDto);
 
+    void deleteHostReview(Long hostId, Long authorId);
+
+    void deleteAccommodationReview(Long accommodationId, Long authorId);
+
     public List<ReviewDto> getApprovedReviews();
 
     List<ReviewDto> getUnapprovedReviews();

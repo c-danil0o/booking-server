@@ -3,9 +3,11 @@ package com.komsije.booking.service;
 import com.komsije.booking.dto.ReviewDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.exceptions.ReviewAlreadyExistsException;
+import com.komsije.booking.exceptions.ReviewNotFoundException;
 import com.komsije.booking.mapper.ReviewMapper;
 import com.komsije.booking.model.Review;
 import com.komsije.booking.repository.ReviewRepository;
+import com.komsije.booking.service.interfaces.AccommodationService;
 import com.komsije.booking.service.interfaces.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,8 @@ import java.util.List;
 public class ReviewServiceImpl implements ReviewService {
     @Autowired
     private ReviewMapper mapper;
+    @Autowired
+    private AccommodationService accommodationService;
     private final ReviewRepository reviewRepository;
 
     @Autowired
@@ -73,6 +77,30 @@ public class ReviewServiceImpl implements ReviewService {
         }
 
     }
+    @Override
+    public void deleteHostReview(Long hostId, Long authorId){
+        List<Review> reviews = reviewRepository.findByAuthorId(authorId);
+        for (Review review: reviews){
+            if (review.getHost() != null && review.getHost().getId().equals(hostId)){
+                reviewRepository.delete(review);
+                return;
+            }
+        }
+        throw new ReviewNotFoundException("Review doesn't exist!");
+    }
+
+    @Override
+    public void deleteAccommodationReview(Long accommodationId, Long authorId){
+        List<Review> reviews = reviewRepository.findByAuthorId(authorId);
+        for (Review review: reviews){
+            if (review.getAccommodation() != null && review.getAccommodation().getId().equals(accommodationId)){
+                this.accommodationService.updateAverageGrade(review.getAccommodation().getId());
+                reviewRepository.delete(review);
+                return;
+            }
+        }
+        throw new ReviewNotFoundException("Review doesn't exist!");
+    }
 
     public List<ReviewDto> getApprovedReviews() {
         return mapper.toDto(reviewRepository.getReviewsByIsApprovedIsTrue());
@@ -85,6 +113,9 @@ public class ReviewServiceImpl implements ReviewService {
     public void setApproved(Long id) throws ElementNotFoundException {
         Review review = reviewRepository.findById(id).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
         review.setApproved(true);
+        if (review.getAccommodation()!= null){
+            this.accommodationService.updateAverageGrade(review.getAccommodation().getId());
+        }
         reviewRepository.save(review);
     }
 

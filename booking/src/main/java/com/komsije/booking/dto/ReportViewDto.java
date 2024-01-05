@@ -3,13 +3,13 @@ package com.komsije.booking.dto;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Data
-public class ReportDto {
+public class ReportViewDto {
     private Long id;
     private String reason;
-    private Long authorId;
+    private String authorEmail;
+    private String reportedUserEmail;
     private Long reportedUserId;
     private LocalDateTime date;
 }

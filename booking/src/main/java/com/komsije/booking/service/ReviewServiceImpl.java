@@ -72,10 +72,12 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     public void delete(Long id) throws ElementNotFoundException {
-        if (reviewRepository.existsById(id)){
+        Review review = reviewRepository.findById(id).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
+        if (review.getAccommodation() != null){
             reviewRepository.deleteById(id);
+            this.accommodationService.updateAverageGrade(review.getAccommodation().getId());
         }else{
-            throw new ElementNotFoundException("Element with given ID doesn't exist!");
+            reviewRepository.deleteById(id);
         }
 
     }

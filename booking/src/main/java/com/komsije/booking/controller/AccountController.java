@@ -90,12 +90,9 @@ public class AccountController {
     //blokirati u servisu
     @PreAuthorize("hasRole('Admin')")
     @PatchMapping(value = "/accounts/{id}/block")
-    public ResponseEntity<AccountDto> blockAccount(@PathVariable("id") Long id) {
-        AccountDto accountDto = null;
-        accountDto = accountService.findById(id);
-        accountDto.setBlocked(true);
-        accountDto = accountService.update(accountDto);
-        return new ResponseEntity<>(accountDto, HttpStatus.OK);
+    public ResponseEntity<Void> blockAccount(@PathVariable("id") Long id) {
+        this.accountService.blockAccount(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/accounts/{id}")

@@ -142,4 +142,25 @@ public class ReviewServiceImpl implements ReviewService {
     public List<ReviewDto> findByHostId(Long id) throws ElementNotFoundException {
         return mapper.toDto(reviewRepository.findByHostId(id));
     }
+
+    @Override
+    public ReviewDto findHostReview(Long hostId, Long authorId) {
+        List<Review> reviews = reviewRepository.findByHostId(hostId);
+        for (Review review: reviews){
+            if (review.getAuthor().getId().equals(authorId)){
+                return mapper.toDto(review);
+            }
+        }
+        throw new ReviewNotFoundException("Review not found!");
+    }
+    @Override
+    public ReviewDto findAccommodationReview(Long accommodationId, Long authorId){
+        List<Review> reviews = reviewRepository.findAllByAccommodationId(accommodationId);
+        for (Review review: reviews){
+            if (review.getAuthor().getId().equals(authorId)){
+                return mapper.toDto(review);
+            }
+        }
+        throw new ReviewNotFoundException("Review not found!");
+    }
 }

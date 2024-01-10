@@ -80,7 +80,7 @@ public class ReviewController {
         reviewDto = reviewService.findById(id);
         return new ResponseEntity<>(reviewDto, HttpStatus.OK);
     }
-    @PreAuthorize("hasRole('Admin')")
+    @PreAuthorize("hasAnyRole('Admin', 'Guest')")
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
         reviewService.delete(id);
@@ -112,4 +112,18 @@ public class ReviewController {
         List<ReviewDto> reviewDtos = reviewService.findByHostId(hostId);
         return new ResponseEntity<>(reviewDtos, HttpStatus.OK);
     }
+
+    @GetMapping(value = "/findhost/{hostId}/{authorId}")
+    public ResponseEntity<ReviewDto> findHostReview(@PathVariable Long hostId, @PathVariable Long authorId) {
+        ReviewDto reviewDto = reviewService.findHostReview(hostId, authorId);
+        return new ResponseEntity<>(reviewDto, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/findacc/{accId}/{authorId}")
+    public ResponseEntity<ReviewDto> findAccommodationReview(@PathVariable Long accId, @PathVariable Long authorId) {
+        ReviewDto reviewDto = reviewService.findAccommodationReview(accId, authorId);
+        return new ResponseEntity<>(reviewDto, HttpStatus.OK);
+    }
+
+
 }

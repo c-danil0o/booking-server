@@ -11,7 +11,10 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     List<Review> getReviewsByStatusIs(ReviewStatus status);
     @Query("select r from Review r where r.accommodation.id=:id and r.status!='Pending'")
     List<Review> findByAccommodationId(Long id);
-    @Query("select r from Review r where r.host.id=:id and r.status!=''")
+
+    @Query("select r from Review r where r.accommodation.id=:id")
+    List<Review> findAllByAccommodationId(Long id);
+    @Query("select r from Review r where r.host.id=:id")
     List<Review> findByHostId(Long id);
     List<Review> findByAuthorId(Long id);
 }

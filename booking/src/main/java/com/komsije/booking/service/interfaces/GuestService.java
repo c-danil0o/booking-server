@@ -21,4 +21,10 @@ public interface GuestService extends CrudService<GuestDto, Long> {
     public void increaseCancelations(Long id) throws ElementNotFoundException;
 
     boolean cancelReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException;
+
+    void addFavorite(Long guestId, Long accommodationId);
+
+    void removeFavorite(Long guestId, Long accommodationId);
+
+    boolean checkIfInFavorites(Long guestId, Long accommodationId);
 }

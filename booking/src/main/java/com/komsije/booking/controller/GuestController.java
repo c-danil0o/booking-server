@@ -76,5 +76,22 @@ public class GuestController {
         GuestDto guestDto = guestService.getByEmail(emailDto.getEmail());
         return new ResponseEntity<>(guestDto, HttpStatus.CREATED);
     }
+    @GetMapping(value = "/add-favorite")
+    public ResponseEntity<Void> addFavorite(@RequestParam Long guestId, @RequestParam Long accommodationId){
+        guestService.addFavorite(guestId, accommodationId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/remove-favorite")
+    public ResponseEntity<Void> removeFavorite(@RequestParam Long guestId, @RequestParam Long accommodationId){
+        guestService.removeFavorite(guestId, accommodationId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    @GetMapping(value = "/check-favorite")
+    public ResponseEntity<Boolean> checkFavorite(@RequestParam Long guestId, @RequestParam Long accommodationId){
+
+        return new ResponseEntity<>(guestService.checkIfInFavorites(guestId, accommodationId),HttpStatus.OK);
+    }
+
 
 }

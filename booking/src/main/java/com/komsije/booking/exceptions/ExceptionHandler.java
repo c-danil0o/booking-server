@@ -124,6 +124,11 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
         ApiError message = new ApiError(HttpStatus.I_AM_A_TEAPOT.value(), ex.getMessage(), request.getRequestURI());
         return new ResponseEntity<ApiError>(message, HttpStatus.I_AM_A_TEAPOT);
     }
+    @org.springframework.web.bind.annotation.ExceptionHandler(FavoriteAlreadyExistsException.class)
+    public ResponseEntity<ApiError> favoriteException3(FavoriteAlreadyExistsException ex, HttpServletRequest request) {
+        ApiError message = new ApiError(HttpStatus.I_AM_A_TEAPOT.value(), ex.getMessage(), request.getRequestURI());
+        return new ResponseEntity<ApiError>(message, HttpStatus.I_AM_A_TEAPOT);
+    }
 
 
 

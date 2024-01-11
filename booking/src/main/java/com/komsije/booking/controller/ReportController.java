@@ -42,7 +42,7 @@ public class ReportController {
 
     @PreAuthorize("hasRole('Admin')")
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteReport(@PathVariable Long id) {
         reportService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

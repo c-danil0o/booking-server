@@ -135,8 +135,8 @@ public class AccommodationController {
     }
 
     @PostMapping(value="/get-availability-price", consumes = "application/json")
-    public ResponseEntity<GottenAvailabilityPrice> getAvailabilityPrice(@RequestBody GetAvailabilityPrice getAvailabilityPrice) {
-        GottenAvailabilityPrice gottenAvailabilityPrice = accommodationService.getAvailabilityPrice(getAvailabilityPrice);
-        return new ResponseEntity<>(gottenAvailabilityPrice, HttpStatus.OK);
+    public ResponseEntity<PriceResponse> getAvailabilityPrice(@RequestBody PriceRequest priceRequest) {
+        PriceResponse priceResponse = accommodationService.getAvailabilityPrice(priceRequest);
+        return new ResponseEntity<>(priceResponse, HttpStatus.OK);
     }
 }

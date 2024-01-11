@@ -5,10 +5,7 @@ import com.komsije.booking.exceptions.*;
 import com.komsije.booking.mapper.AccommodationMapper;
 import com.komsije.booking.mapper.AddressMapper;
 import com.komsije.booking.mapper.GuestMapper;
-import com.komsije.booking.model.Account;
-import com.komsije.booking.model.ConfirmationToken;
-import com.komsije.booking.model.Guest;
-import com.komsije.booking.model.ReservationStatus;
+import com.komsije.booking.model.*;
 import com.komsije.booking.repository.AccountRepository;
 import com.komsije.booking.repository.GuestRepository;
 import com.komsije.booking.service.interfaces.ConfirmationTokenService;
@@ -19,9 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -174,5 +171,48 @@ public class GuestServiceImpl implements GuestService {
             throw new PendingReservationException("Reservation is not in pending or approved state!");
         }
         return true;
+    }
+    @Override
+    public void addFavorite(Long guestId, Long accommodationId){
+        Guest guest = guestRepository.findById(guestId).orElseThrow(() -> new ElementNotFoundException("Element with given ID doesn't exist!"));
+        Set<Accommodation> favorites = guest.getFavorites();
+        for (Accommodation acc: favorites){
+            if (acc.getId().equals(accommodationId)){
+                throw new FavoriteAlreadyExistsException("This accommodation is already in this guests favorites!");
+            }
+        }
+        AccommodationDto dto = new AccommodationDto();
+        dto.setId(accommodationId);
+        favorites.add(accommodationMapper.fromDto(dto));
+        guest.setFavorites(favorites);
+        guestRepository.save(guest);
+    }
+    @Override
+    public void removeFavorite(Long guestId, Long accommodationId){
+        Guest guest = guestRepository.findById(guestId).orElseThrow(() -> new ElementNotFoundException("Element with given ID doesn't exist!"));
+        Accommodation forRemoval = null;
+        Set<Accommodation> favorites = guest.getFavorites();
+
+        for (Accommodation acc : favorites){
+            if (acc.getId().equals(accommodationId)){
+                forRemoval = acc;
+            }
+        }
+        if (forRemoval == null){
+            throw new ElementNotFoundException("Favorite accommodation not found!");
+        }
+        favorites.remove(forRemoval);
+        guest.setFavorites(favorites);
+        guestRepository.save(guest);
+    }
+    @Override
+    public boolean checkIfInFavorites(Long guestId, Long accommodationId){
+        Guest guest = guestRepository.findById(guestId).orElseThrow(() -> new ElementNotFoundException("Element with given ID doesn't exist!"));
+        for (Accommodation acc : guest.getFavorites()){
+            if (acc.getId().equals(accommodationId)){
+                return true;
+            }
+        }
+        return false;
     }
 }

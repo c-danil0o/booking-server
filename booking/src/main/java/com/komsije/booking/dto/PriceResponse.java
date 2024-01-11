@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GottenAvailabilityPrice {
+public class PriceResponse {
     private boolean isAvailable;
     private double pricePerNight;
     private double totalPrice;

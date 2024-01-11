@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
@@ -322,24 +321,24 @@ public class AccommodationServiceImpl implements AccommodationService {
         return price;
     }
 
-    public GottenAvailabilityPrice getAvailabilityPrice(GetAvailabilityPrice getAvailabilityPrice) {
-        Accommodation accommodation = accommodationRepository.findById(getAvailabilityPrice.getAccommodationId()).orElseThrow(() -> new ElementNotFoundException("Accommodation not found"));
+    public PriceResponse getAvailabilityPrice(PriceRequest priceRequest) {
+        Accommodation accommodation = accommodationRepository.findById(priceRequest.getAccommodationId()).orElseThrow(() -> new ElementNotFoundException("Accommodation not found"));
 
-        boolean isAvailable = isAvailable(accommodation, getAvailabilityPrice.getStartDate(), getAvailabilityPrice.getEndDate());
+        boolean isAvailable = isAvailable(accommodation, priceRequest.getStartDate(), priceRequest.getEndDate());
         if(!isAvailable) {
-            return new GottenAvailabilityPrice(false, 0, 0);
+            return new PriceResponse(false, 0, 0);
         }
-        GottenAvailabilityPrice gottenAvailabilityPrice = new GottenAvailabilityPrice();
-        gottenAvailabilityPrice.setAvailable(true);
+        PriceResponse priceResponse = new PriceResponse();
+        priceResponse.setAvailable(true);
 
         //promenjena je calculatePrice funkcija
-        double price = calculatePrice(accommodation, getAvailabilityPrice.getStartDate(), getAvailabilityPrice.getEndDate(),0);
-        gottenAvailabilityPrice.setTotalPrice(price);
+        double price = calculatePrice(accommodation, priceRequest.getStartDate(), priceRequest.getEndDate(),0);
+        priceResponse.setTotalPrice(price);
 
-        int days = (int) ChronoUnit.DAYS.between(getAvailabilityPrice.getStartDate(), getAvailabilityPrice.getEndDate());
+        int days = (int) ChronoUnit.DAYS.between(priceRequest.getStartDate(), priceRequest.getEndDate());
         DecimalFormat df = new DecimalFormat("#.##");
-        gottenAvailabilityPrice.setPricePerNight(Double.parseDouble(df.format(price/days)));
+        priceResponse.setPricePerNight(Double.parseDouble(df.format(price/days)));
 
-        return gottenAvailabilityPrice;
+        return priceResponse;
     }
 }

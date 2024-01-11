@@ -87,7 +87,6 @@ public class AccountController {
         return new ResponseEntity<>(account, HttpStatus.CREATED);
     }*/
 
-    //blokirati u servisu
     @PreAuthorize("hasRole('Admin')")
     @PatchMapping(value = "/accounts/{id}/block")
     public ResponseEntity<Void> blockAccount(@PathVariable("id") Long id) {

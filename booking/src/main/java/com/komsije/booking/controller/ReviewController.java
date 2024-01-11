@@ -40,6 +40,7 @@ public class ReviewController {
         return new ResponseEntity<>(reviewDtos, HttpStatus.OK);
     }
 
+
     @GetMapping(value = "/{id}")
     public ResponseEntity<ReviewDto> getReview(@PathVariable Long id) {
         ReviewDto reviewDto = reviewService.findById(id);

@@ -20,6 +20,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -175,7 +176,6 @@ public class AccountController {
     public ResponseEntity<Void> changePassword(@RequestBody NewPasswordDto newPasswordDto) {
         accountService.changePassword(newPasswordDto);
         return new ResponseEntity<>(HttpStatus.OK);
-
 
     }
 

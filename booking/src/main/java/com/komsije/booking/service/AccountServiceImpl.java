@@ -15,6 +15,8 @@ import com.komsije.booking.service.interfaces.AccountService;
 import com.komsije.booking.service.interfaces.ReportService;
 import com.komsije.booking.service.interfaces.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -29,6 +31,7 @@ public class AccountServiceImpl implements AccountService{
     private final ReservationRepository reservationRepository;
     @Autowired
     private AccountMapper mapper;
+
 
     @Autowired
     public AccountServiceImpl(AccountRepository accountRepository, ReportRepository reportRepository, ReservationRepository reservationRepository) {
@@ -127,12 +130,11 @@ public class AccountServiceImpl implements AccountService{
         Account account = accountRepository.getAccountByEmail(newPasswordDto.getEmail());
         if (account==null)
             throw new ElementNotFoundException("Account with given email doesn't exist!");
-        if (!Objects.equals(account.getPassword(), newPasswordDto.getOldPassword()))
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        if (!passwordEncoder.matches(newPasswordDto.getOldPassword(), account.getPassword()))
             throw new IncorrectPasswordException("Old password is incorrect");
-        account.setPassword(newPasswordDto.getNewPassword());
+        account.setPassword(passwordEncoder.encode(newPasswordDto.getNewPassword()));
         accountRepository.save(account);
-
-
     }
 
     @Override

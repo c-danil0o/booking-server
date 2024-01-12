@@ -1,6 +1,7 @@
 package com.komsije.booking.controller;
 
 import com.komsije.booking.dto.*;
+import com.komsije.booking.exceptions.AccountBlockedException;
 import com.komsije.booking.exceptions.AccountNotActivatedException;
 import com.komsije.booking.model.Role;
 import com.komsije.booking.security.JwtTokenUtil;
@@ -105,6 +106,9 @@ public class AccountController {
     public ResponseEntity<TokenDto> login(@RequestBody LoginDto loginDto) {
         if (!this.accountService.getByEmail(loginDto.getEmail()).isActivated()){
             throw new AccountNotActivatedException("Account is not activated!");
+        }
+        if (this.accountService.getByEmail(loginDto.getEmail()).isBlocked()){
+            throw new AccountBlockedException("Your account is blocked!");
         }
         UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(loginDto.getEmail(),
                 loginDto.getPassword());

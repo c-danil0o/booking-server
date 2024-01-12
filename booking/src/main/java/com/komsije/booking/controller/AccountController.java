@@ -1,6 +1,7 @@
 package com.komsije.booking.controller;
 
 import com.komsije.booking.dto.*;
+import com.komsije.booking.exceptions.AccountBlockedException;
 import com.komsije.booking.exceptions.AccountNotActivatedException;
 import com.komsije.booking.model.Role;
 import com.komsije.booking.security.JwtTokenUtil;
@@ -19,6 +20,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -87,7 +89,6 @@ public class AccountController {
         return new ResponseEntity<>(account, HttpStatus.CREATED);
     }*/
 
-    //blokirati u servisu
     @PreAuthorize("hasRole('Admin')")
     @PatchMapping(value = "/accounts/{id}/block")
     public ResponseEntity<Void> blockAccount(@PathVariable("id") Long id) {
@@ -106,6 +107,9 @@ public class AccountController {
     public ResponseEntity<TokenDto> login(@RequestBody LoginDto loginDto) {
         if (!this.accountService.getByEmail(loginDto.getEmail()).isActivated()){
             throw new AccountNotActivatedException("Account is not activated!");
+        }
+        if (this.accountService.getByEmail(loginDto.getEmail()).isBlocked()){
+            throw new AccountBlockedException("Your account is blocked!");
         }
         UsernamePasswordAuthenticationToken authReq = new UsernamePasswordAuthenticationToken(loginDto.getEmail(),
                 loginDto.getPassword());
@@ -172,7 +176,6 @@ public class AccountController {
     public ResponseEntity<Void> changePassword(@RequestBody NewPasswordDto newPasswordDto) {
         accountService.changePassword(newPasswordDto);
         return new ResponseEntity<>(HttpStatus.OK);
-
 
     }
 

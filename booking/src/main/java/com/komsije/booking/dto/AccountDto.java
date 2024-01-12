@@ -8,7 +8,7 @@ import lombok.*;
 public class AccountDto {
     private Long id;
     private String email;
-    private String password;
+//    private String password;
     private boolean isBlocked;
     private Role role;
     private boolean isActivated;

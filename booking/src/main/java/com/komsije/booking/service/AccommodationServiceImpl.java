@@ -5,13 +5,13 @@ import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.mapper.AccommodationMapper;
 import com.komsije.booking.model.*;
 import com.komsije.booking.repository.AccommodationRepository;
+import com.komsije.booking.repository.ReservationRepository;
 import com.komsije.booking.service.interfaces.AccommodationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
@@ -22,10 +22,12 @@ public class AccommodationServiceImpl implements AccommodationService {
     @Autowired
     private AccommodationMapper mapper;
     private final AccommodationRepository accommodationRepository;
+    private final ReservationRepository reservationRepository;
 
     @Autowired
-    public AccommodationServiceImpl(AccommodationRepository accommodationRepository) {
+    public AccommodationServiceImpl(AccommodationRepository accommodationRepository, ReservationRepository reservationRepository) {
         this.accommodationRepository = accommodationRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public AccommodationDto findById(Long id) throws ElementNotFoundException {
@@ -47,6 +49,7 @@ public class AccommodationServiceImpl implements AccommodationService {
         Accommodation accommodation = accommodationRepository.findById(accommodationDto.getId()).orElseThrow(()->new ElementNotFoundException("Element with given ID doesn't exist!"));
         mapper.update(accommodation, accommodationDto);
         accommodationRepository.save(accommodation);
+        denyHarmedReservations(accommodation);
         return accommodationDto;
     }
 
@@ -103,6 +106,18 @@ public class AccommodationServiceImpl implements AccommodationService {
         mapper.update(accommodation, availabilityDto);
         accommodationRepository.save(accommodation);
         return mapper.toDto(accommodation);
+    }
+
+    private void denyHarmedReservations(Accommodation accommodation){
+        List<Reservation> reservations = reservationRepository.findPendingByAccommodationId(accommodation.getId());
+        for (Reservation reservation : reservations) {
+            LocalDate startDate = reservation.getStartDate();
+            LocalDate endDate = startDate.plusDays(reservation.getDays());
+            if (!isAvailable(accommodation, startDate, endDate)){
+                reservation.setReservationStatus(ReservationStatus.Denied);
+                reservationRepository.save(reservation);
+            }
+        }
     }
 
     public List<AccommodationDto> getByLocationNumOfGuestsAndDate(String location, Integer numOfGuests, LocalDate startDate, LocalDate endDate) {

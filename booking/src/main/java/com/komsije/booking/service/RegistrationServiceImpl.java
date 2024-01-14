@@ -34,9 +34,7 @@ public class RegistrationServiceImpl implements RegistrationService {
             } else if (registrationDto.getRole() == Role.Host) {
                 token = hostService.singUpUser(registrationDto);
             }
-            //String link = "http://localhost:8080/api/register/confirm?token=" + token;
             String link = "http://localhost:4200/registration-confirmation?token=" + token;
-//            String link = "http://localhost:8080/api/accommodations/all";
             emailSenderService.send(
                     registrationDto.getEmail(),
                     buildEmail(registrationDto.getFirstName(), link));
@@ -53,8 +51,6 @@ public class RegistrationServiceImpl implements RegistrationService {
             token = hostService.singUpUser(registrationDto);
         }
         String link = "http://localhost:8080/api/register/confirm?token=" + token;
-        //String link = "http://localhost:4200/registration-confirmation?token=" + token;
-//            String link = "http://localhost:8080/api/accommodations/all";
         emailSenderService.send(
                 registrationDto.getEmail(),
                 buildEmail(registrationDto.getFirstName(), link));
@@ -79,7 +75,7 @@ public class RegistrationServiceImpl implements RegistrationService {
         LocalDateTime expiredAt = confirmationToken.getExpiresAt();
 
         if (expiredAt.isBefore(LocalDateTime.now())) {
-            accountService.delete(confirmationToken.getAccount().getId());
+           /// accountService.delete(confirmationToken.getAccount().getId());
             throw new InvalidConfirmationTokenException("Confirmation token is expired, please register again!");
         }
 

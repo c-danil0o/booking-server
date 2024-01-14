@@ -65,27 +65,27 @@ public abstract class AccommodationMapper {
     public abstract List<AccommodationDto> toDto(List<Accommodation> accommodationList);
     public abstract void update(@MappingTarget Accommodation accommodation, AccommodationDto accommodationDto);
 
-    public SearchedAccommodationDto toSearchedDto(Accommodation accommodation){
-        SearchedAccommodationDto searchedAccommodationDto = new SearchedAccommodationDto();
-        searchedAccommodationDto.setId(accommodation.getId());
-        searchedAccommodationDto.setName(accommodation.getName());
-        searchedAccommodationDto.setDescription(accommodation.getDescription());
+    public SearchResponseDto toSearchedDto(Accommodation accommodation){
+        SearchResponseDto searchResponseDto = new SearchResponseDto();
+        searchResponseDto.setId(accommodation.getId());
+        searchResponseDto.setName(accommodation.getName());
+        searchResponseDto.setDescription(accommodation.getDescription());
         AddressDto addressDto = new AddressDto();
         Address address = accommodation.getAddress();
         addressDto.setCity(address.getCity());
         addressDto.setStreet(address.getStreet());
         addressDto.setNumber(address.getNumber());
         addressDto.setId(address.getId());
-        searchedAccommodationDto.setAddress(addressDto);
-        searchedAccommodationDto.setAccommodationType(accommodation.getAccommodationType());
-        searchedAccommodationDto.setAmenities(accommodation.getAmenities());
-        searchedAccommodationDto.setMaxGuests(accommodation.getMaxGuests());
-        searchedAccommodationDto.setMinGuests(accommodation.getMinGuests());
-        searchedAccommodationDto.setPhotos(accommodation.getPhotos());
-        searchedAccommodationDto.setCancellationDeadline(accommodation.getCancellationDeadline());
+        searchResponseDto.setAddress(addressDto);
+        searchResponseDto.setAccommodationType(accommodation.getAccommodationType());
+        searchResponseDto.setAmenities(accommodation.getAmenities());
+        searchResponseDto.setMaxGuests(accommodation.getMaxGuests());
+        searchResponseDto.setMinGuests(accommodation.getMinGuests());
+        searchResponseDto.setPhotos(accommodation.getPhotos());
+        searchResponseDto.setCancellationDeadline(accommodation.getCancellationDeadline());
         DecimalFormat df = new DecimalFormat("#.##");
-        searchedAccommodationDto.setAverageGrade(Double.parseDouble(df.format(accommodation.getAverageGrade())));
-        return searchedAccommodationDto;
+        searchResponseDto.setAverageGrade(Double.parseDouble(df.format(accommodation.getAverageGrade())));
+        return searchResponseDto;
     }
 
     protected List<TimeSlot> timeSlotDtoSetToTimeSlotList(Set<TimeSlotDto> set) {

@@ -25,7 +25,7 @@ public interface AccommodationService extends CrudService<AccommodationDto, Long
 
     List<AccommodationShortDto> getAllShort();
 
-    public List<SearchedAccommodationDto> getSearchedAccommodations(SearchAccommodationsDto searchAccommodationsDto);
+    public List<SearchResponseDto> getSearchedAccommodations(SearchRequestDto searchRequestDto);
     public List<HostPropertyDto> getUnapprovedAccommodations();
     public void reserveTimeslot(Long id, LocalDate startDate, LocalDate endDate);
     public PriceResponse getAvailabilityPrice(PriceRequest priceRequest);

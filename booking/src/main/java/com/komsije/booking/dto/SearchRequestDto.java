@@ -2,11 +2,10 @@ package com.komsije.booking.dto;
 
 import lombok.Data;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
-public class SearchAccommodationsDto {
+public class SearchRequestDto {
     private String place;
     private LocalDateTime startDate;
     private LocalDateTime endDate;

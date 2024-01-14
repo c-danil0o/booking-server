@@ -8,19 +8,22 @@ import com.komsije.booking.exceptions.EmailAlreadyExistsException;
 import com.komsije.booking.exceptions.HasActiveReservationsException;
 import com.komsije.booking.mapper.AddressMapper;
 import com.komsije.booking.mapper.HostMapper;
-import com.komsije.booking.model.*;
+import com.komsije.booking.model.Account;
+import com.komsije.booking.model.ConfirmationToken;
+import com.komsije.booking.model.Host;
 import com.komsije.booking.repository.AccountRepository;
 import com.komsije.booking.repository.HostRepository;
 import com.komsije.booking.service.interfaces.ConfirmationTokenService;
 import com.komsije.booking.service.interfaces.HostService;
 import com.komsije.booking.service.interfaces.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
@@ -35,14 +38,16 @@ public class HostServiceImpl implements HostService {
     private final AccountRepository accountRepository;
     private final ConfirmationTokenService confirmationTokenService;
     private final ReservationService reservationService;
+    private final TaskScheduler taskScheduler;
 
 
     @Autowired
-    public HostServiceImpl(HostRepository hostRepository, AccountRepository accountRepository, ConfirmationTokenService confirmationTokenService, ReservationService reservationService) {
+    public HostServiceImpl(HostRepository hostRepository, AccountRepository accountRepository, ConfirmationTokenService confirmationTokenService, ReservationService reservationService, TaskScheduler taskScheduler) {
         this.hostRepository = hostRepository;
         this.accountRepository = accountRepository;
         this.confirmationTokenService = confirmationTokenService;
         this.reservationService = reservationService;
+        this.taskScheduler = taskScheduler;
     }
 
     public HostDto findById(Long id) throws ElementNotFoundException {
@@ -104,11 +109,20 @@ public class HostServiceImpl implements HostService {
             id = account.getId();
 
         String token = UUID.randomUUID().toString();
-        ConfirmationToken confirmationToken = new ConfirmationToken(token, LocalDateTime.now(), LocalDateTime.now().plusHours(24), accountRepository.findById(id).orElseGet(null));
+        LocalDateTime expiration = LocalDateTime.now().plusHours(24);
+        ConfirmationToken confirmationToken = new ConfirmationToken(token, LocalDateTime.now(), expiration, accountRepository.findById(id).orElseGet(null));
 
         confirmationTokenService.saveConfirmationToken(confirmationToken);
-
+        Runnable task1 = () -> deleteIfNotActivated(id);
+        this.taskScheduler.schedule(task1, expiration.toInstant(ZoneOffset.UTC));
         return token;
+    }
+
+    private void deleteIfNotActivated(Long accountId) {
+        Account account = accountRepository.findById(accountId).orElse(null);
+        if (!account.isActivated()) {
+            accountRepository.delete(account);
+        }
     }
 
     @Override

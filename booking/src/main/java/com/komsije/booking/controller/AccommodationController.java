@@ -129,8 +129,8 @@ public class AccommodationController {
     }
 
     @PostMapping(value = "/search" , consumes = "application/json")
-    public ResponseEntity<List<SearchedAccommodationDto>> searchAccommodations(@RequestBody SearchAccommodationsDto searchAccommodationsDto) {
-        List<SearchedAccommodationDto> accommodations = accommodationService.getSearchedAccommodations(searchAccommodationsDto);
+    public ResponseEntity<List<SearchResponseDto>> searchAccommodations(@RequestBody SearchRequestDto searchRequestDto) {
+        List<SearchResponseDto> accommodations = accommodationService.getSearchedAccommodations(searchRequestDto);
         return new ResponseEntity<>(accommodations, HttpStatus.OK);
     }
 

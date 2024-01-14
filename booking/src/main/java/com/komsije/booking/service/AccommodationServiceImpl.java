@@ -139,20 +139,20 @@ public class AccommodationServiceImpl implements AccommodationService {
 
 
     @Override
-    public List<SearchedAccommodationDto> getSearchedAccommodations(SearchAccommodationsDto searchAccommodationsDto) {
-        List<SearchedAccommodationDto> filteredAccommodations = new ArrayList<>();
+    public List<SearchResponseDto> getSearchedAccommodations(SearchRequestDto searchRequestDto) {
+        List<SearchResponseDto> filteredAccommodations = new ArrayList<>();
         List<Accommodation> accommodations = new ArrayList<>();
-        if (searchAccommodationsDto.getGuests()==0)
+        if (searchRequestDto.getGuests()==0)
             accommodations = this.accommodationRepository.getActive();
         else
-            accommodations = this.accommodationRepository.getAccommodationsByNumberOfGuests(searchAccommodationsDto.getGuests());
+            accommodations = this.accommodationRepository.getAccommodationsByNumberOfGuests(searchRequestDto.getGuests());
 
         for (Accommodation accommodation: accommodations) {
-            if(isValid(accommodation,searchAccommodationsDto)){
-                SearchedAccommodationDto accommodationDto = mapper.toSearchedDto(accommodation);
-                double price = calculatePrice(accommodation, searchAccommodationsDto.getStartDate().toLocalDate(), searchAccommodationsDto.getEndDate().toLocalDate(), searchAccommodationsDto.getGuests());
+            if(isValid(accommodation, searchRequestDto)){
+                SearchResponseDto accommodationDto = mapper.toSearchedDto(accommodation);
+                double price = calculatePrice(accommodation, searchRequestDto.getStartDate().toLocalDate(), searchRequestDto.getEndDate().toLocalDate(), searchRequestDto.getGuests());
                 accommodationDto.setPrice(price);
-                int days = (int) ChronoUnit.DAYS.between(searchAccommodationsDto.getStartDate(), searchAccommodationsDto.getEndDate());
+                int days = (int) ChronoUnit.DAYS.between(searchRequestDto.getStartDate(), searchRequestDto.getEndDate());
                 DecimalFormat df = new DecimalFormat("#.##");
                 accommodationDto.setPricePerNight(Double.parseDouble(df.format(price/days)));
                 filteredAccommodations.add(accommodationDto);
@@ -251,8 +251,8 @@ public class AccommodationServiceImpl implements AccommodationService {
 
     }
 
-    private boolean isValid(Accommodation accommodation, SearchAccommodationsDto searchAccommodationsDto){
-        return accommodation.getAddress().getCity().toLowerCase().equals(searchAccommodationsDto.getPlace().toLowerCase().trim()) && isAvailable(accommodation,searchAccommodationsDto.getStartDate().toLocalDate(),searchAccommodationsDto.getEndDate().toLocalDate());
+    private boolean isValid(Accommodation accommodation, SearchRequestDto searchRequestDto){
+        return accommodation.getAddress().getCity().toLowerCase().equals(searchRequestDto.getPlace().toLowerCase().trim()) && isAvailable(accommodation, searchRequestDto.getStartDate().toLocalDate(), searchRequestDto.getEndDate().toLocalDate());
     }
 
     private boolean isAvailable(Accommodation accommodation, LocalDate startDate, LocalDate endDate){

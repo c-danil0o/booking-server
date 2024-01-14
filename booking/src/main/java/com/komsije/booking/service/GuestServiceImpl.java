@@ -13,10 +13,12 @@ import com.komsije.booking.service.interfaces.GuestService;
 import com.komsije.booking.service.interfaces.ReservationService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -36,13 +38,15 @@ public class GuestServiceImpl implements GuestService {
     private final AccountRepository accountRepository;
     private final ConfirmationTokenService confirmationTokenService;
     private final ReservationService reservationService;
+    private final TaskScheduler taskScheduler;
 
     @Autowired
-    public GuestServiceImpl(GuestRepository guestRepository, AccountRepository accountRepository, ConfirmationTokenService confirmationTokenService, ReservationService reservationService) {
+    public GuestServiceImpl(GuestRepository guestRepository, AccountRepository accountRepository, ConfirmationTokenService confirmationTokenService, ReservationService reservationService, TaskScheduler taskScheduler) {
         this.guestRepository = guestRepository;
         this.accountRepository = accountRepository;
         this.confirmationTokenService = confirmationTokenService;
         this.reservationService = reservationService;
+        this.taskScheduler = taskScheduler;
     }
 
     public GuestDto findById(Long id) throws ElementNotFoundException {
@@ -118,11 +122,19 @@ public class GuestServiceImpl implements GuestService {
             id = account.getId();
 
         String token = UUID.randomUUID().toString();
-        ConfirmationToken confirmationToken = new ConfirmationToken(token, LocalDateTime.now(), LocalDateTime.now().plusHours(24), accountRepository.findById(id).orElseGet(null));
-
+        LocalDateTime expiration = LocalDateTime.now().plusHours(24);
+        ConfirmationToken confirmationToken = new ConfirmationToken(token, LocalDateTime.now(), expiration, accountRepository.findById(id).orElseGet(null));
         confirmationTokenService.saveConfirmationToken(confirmationToken);
-
+        Runnable task1 = () -> deleteIfNotActivated(id);
+        this.taskScheduler.schedule(task1, expiration.toInstant(ZoneOffset.UTC));
         return token;
+    }
+
+    private void deleteIfNotActivated(Long accountId){
+        Account account = accountRepository.findById(accountId).orElse(null);
+        if (!account.isActivated()){
+            accountRepository.delete(account);
+        }
     }
 
     @Override

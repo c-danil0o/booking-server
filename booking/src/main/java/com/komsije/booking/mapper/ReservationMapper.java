@@ -6,6 +6,7 @@ import com.komsije.booking.dto.ReservationDto;
 import com.komsije.booking.dto.ReservationViewDto;
 import com.komsije.booking.model.Accommodation;
 import com.komsije.booking.model.Reservation;
+import com.komsije.booking.model.ReservationStatus;
 import com.komsije.booking.repository.GuestRepository;
 import com.komsije.booking.service.interfaces.AccountService;
 import com.komsije.booking.service.interfaces.GuestService;
@@ -85,6 +86,7 @@ public abstract class ReservationMapper {
         reservation.setStartDate(reservationDto.getStartDate());
         reservation.setPrice(reservationDto.getPrice());
         reservation.setNumberOfGuests(reservationDto.getNumberOfGuests());
+        reservation.setReservationStatus(ReservationStatus.Pending);
         return reservation;
     }
 }

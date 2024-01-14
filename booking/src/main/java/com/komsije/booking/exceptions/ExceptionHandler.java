@@ -137,6 +137,12 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<ApiError>(message, HttpStatus.I_AM_A_TEAPOT);
     }
 
+    @org.springframework.web.bind.annotation.ExceptionHandler(ReservationAlreadyExistsException.class)
+    public ResponseEntity<ApiError> reportException(ReservationAlreadyExistsException ex, HttpServletRequest request) {
+        ApiError message = new ApiError(HttpStatus.I_AM_A_TEAPOT.value(), ex.getMessage(), request.getRequestURI());
+        return new ResponseEntity<ApiError>(message, HttpStatus.I_AM_A_TEAPOT);
+    }
+
 
 
 

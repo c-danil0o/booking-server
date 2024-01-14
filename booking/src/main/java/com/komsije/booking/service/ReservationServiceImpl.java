@@ -6,6 +6,7 @@ import com.komsije.booking.dto.ReservationViewDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.exceptions.InvalidTimeSlotException;
 import com.komsije.booking.exceptions.PendingReservationException;
+import com.komsije.booking.exceptions.ReservationAlreadyExistsException;
 import com.komsije.booking.mapper.ReservationMapper;
 import com.komsije.booking.model.Accommodation;
 import com.komsije.booking.model.Reservation;
@@ -207,15 +208,16 @@ public class ReservationServiceImpl implements ReservationService {
             LOG.log(Level.INFO, "Scheduled task to set reservation "+ reservation.getId() + " to done on " + endDate);
             taskScheduler.schedule(task1, startDate);
             taskScheduler.schedule(task2,endDate);
-
         }else{
             throw new PendingReservationException("Reservation is not in pending or denied state!");
         }
         LocalDate startDate = reservation.getStartDate();
         LocalDate endDate = reservation.getStartDate().plusDays(reservation.getDays());
-        List<Reservation> reservations = reservationRepository.findReservationsByReservationStatus(ReservationStatus.Pending);
+        List<Reservation> reservations = reservationRepository.findPendingByAccommodationId(reservation.getAccommodation().getId());
         for(Reservation res: reservations){
-            if (startDate.isBefore(reservation.getStartDate().plusDays(reservation.getDays()))&& reservation.getStartDate().isBefore(endDate)){
+            LocalDate resStartDate = res.getStartDate();
+            LocalDate resEndDate = res.getStartDate().plusDays(res.getDays());
+            if (!(resEndDate.isBefore(startDate) || resStartDate.isAfter(endDate))){
                 res.setReservationStatus(ReservationStatus.Denied);
                 reservationRepository.save(res);
             }
@@ -286,11 +288,17 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public ReservationDto saveNewReservation(NewReservationDto reservationDto) throws ElementNotFoundException {
+        if (doesSameExist(reservationDto)){
+            throw new ReservationAlreadyExistsException("You already made reservation for this dates for this accommodation");
+        }
         Reservation reservation = mapper.fromNewDto(reservationDto);
         Accommodation accommodation = accommodationService.findModelById(reservationDto.getAccommodationId());
         reservation.setAccommodation(accommodation);
         reservation.setDateCreated(LocalDate.now());
         reservationRepository.save(reservation);
+        if (accommodation.isAutoApproval()){
+            acceptReservationRequest(reservation.getId());
+        }
         if (reservation.getReservationStatus().equals(ReservationStatus.Approved)){
             accommodationService.reserveTimeslot(reservation.getAccommodation().getId(),reservation.getStartDate(), reservation.getStartDate().plusDays(reservation.getDays()));
             Runnable task1 = () -> setStatusToActive(reservation);
@@ -309,6 +317,12 @@ public class ReservationServiceImpl implements ReservationService {
         }
         return mapper.toDto(reservation);
     }
+
+    private boolean doesSameExist(NewReservationDto reservationDto){
+        List<Reservation> reservations = reservationRepository.findForNewReservation(reservationDto.getStartDate(),reservationDto.getDays(), reservationDto.getAccommodationId(),reservationDto.getGuestId());
+        return !reservations.isEmpty();
+    }
+
 
     @Override
     public ReservationDto update(ReservationDto reservationDto) throws ElementNotFoundException {

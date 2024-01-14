@@ -5,6 +5,7 @@ import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.mapper.AccommodationMapper;
 import com.komsije.booking.model.*;
 import com.komsije.booking.repository.AccommodationRepository;
+import com.komsije.booking.repository.ReservationRepository;
 import com.komsije.booking.service.interfaces.AccommodationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,10 +22,12 @@ public class AccommodationServiceImpl implements AccommodationService {
     @Autowired
     private AccommodationMapper mapper;
     private final AccommodationRepository accommodationRepository;
+    private final ReservationRepository reservationRepository;
 
     @Autowired
-    public AccommodationServiceImpl(AccommodationRepository accommodationRepository) {
+    public AccommodationServiceImpl(AccommodationRepository accommodationRepository, ReservationRepository reservationRepository) {
         this.accommodationRepository = accommodationRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public AccommodationDto findById(Long id) throws ElementNotFoundException {
@@ -46,6 +49,7 @@ public class AccommodationServiceImpl implements AccommodationService {
         Accommodation accommodation = accommodationRepository.findById(accommodationDto.getId()).orElseThrow(()->new ElementNotFoundException("Element with given ID doesn't exist!"));
         mapper.update(accommodation, accommodationDto);
         accommodationRepository.save(accommodation);
+        denyHarmedReservations(accommodation);
         return accommodationDto;
     }
 
@@ -102,6 +106,18 @@ public class AccommodationServiceImpl implements AccommodationService {
         mapper.update(accommodation, availabilityDto);
         accommodationRepository.save(accommodation);
         return mapper.toDto(accommodation);
+    }
+
+    private void denyHarmedReservations(Accommodation accommodation){
+        List<Reservation> reservations = reservationRepository.findPendingByAccommodationId(accommodation.getId());
+        for (Reservation reservation : reservations) {
+            LocalDate startDate = reservation.getStartDate();
+            LocalDate endDate = startDate.plusDays(reservation.getDays());
+            if (!isAvailable(accommodation, startDate, endDate)){
+                reservation.setReservationStatus(ReservationStatus.Denied);
+                reservationRepository.save(reservation);
+            }
+        }
     }
 
     public List<AccommodationDto> getByLocationNumOfGuestsAndDate(String location, Integer numOfGuests, LocalDate startDate, LocalDate endDate) {
@@ -179,6 +195,9 @@ public class AccommodationServiceImpl implements AccommodationService {
         List<TimeSlot> slots = accommodation.getAvailability();
         Set<TimeSlot> slotsToDelete = new HashSet<>();
         Set<TimeSlot> slotsToAdd = new HashSet<>();
+        slots.sort((item1, item2) -> {
+            return Math.toIntExact(item1.getStartDate().toEpochDay() - item2.getStartDate().toEpochDay());
+        });
         for (TimeSlot slot: slots){
             if (slot.isOccupied()){
                 continue;
@@ -188,31 +207,51 @@ public class AccommodationServiceImpl implements AccommodationService {
                 accommodationRepository.save(accommodation);
                 return;
             }
-            else if (startDate.isEqual(slot.getStartDate()) && endDate.isBefore(slot.getEndDate())){
-                TimeSlot slot1 = new TimeSlot(null, startDate, endDate, slot.getPrice(), true);
-                TimeSlot slot2 = new TimeSlot(null, endDate, slot.getEndDate(), slot.getPrice(), false);
-                slotsToAdd.add(slot1);
-                slotsToAdd.add(slot2);
-                slotsToDelete.add(slot);
-                break;
+            else if (startDate.isEqual(slot.getStartDate())){
+                if (endDate.isBefore(slot.getEndDate())){
+                    TimeSlot slot1 = new TimeSlot(null, startDate, endDate, slot.getPrice(), true);
+                    TimeSlot slot2 = new TimeSlot(null, endDate, slot.getEndDate(), slot.getPrice(), false);
+                    slotsToAdd.add(slot1);
+                    slotsToAdd.add(slot2);
+                    slotsToDelete.add(slot);
+                    break;
+                }
+                else {
+                    slot.setOccupied(true);
+                    startDate=slot.getEndDate();
+                    continue;
+                }
+
             }
-            else if (startDate.isAfter(slot.getStartDate()) && endDate.isEqual(slot.getEndDate())){
-                TimeSlot slot1 = new TimeSlot(null, startDate, endDate, slot.getPrice(), true);
-                TimeSlot slot2 = new TimeSlot(null, slot.getStartDate(), startDate, slot.getPrice(), false);
-                slotsToAdd.add(slot1);
-                slotsToAdd.add(slot2);
-                slotsToDelete.add(slot);
-                break;
-            }
-            else if (startDate.isAfter(slot.getStartDate()) && endDate.isBefore(slot.getEndDate())){
-                TimeSlot slot1 = new TimeSlot(null, slot.getStartDate(), startDate, slot.getPrice(), false);
-                TimeSlot slot2 = new TimeSlot(null, endDate, slot.getEndDate(), slot.getPrice(), false);
-                TimeSlot slot3 = new TimeSlot(null, startDate, endDate,slot.getPrice(), true);
-                slotsToAdd.add(slot1);
-                slotsToAdd.add(slot2);
-                slotsToAdd.add(slot3);
-                slotsToDelete.add(slot);
-                break;
+            else if (startDate.isAfter(slot.getStartDate())){
+                if(endDate.isEqual(slot.getEndDate())){
+                    TimeSlot slot1 = new TimeSlot(null, startDate, endDate, slot.getPrice(), true);
+                    TimeSlot slot2 = new TimeSlot(null, slot.getStartDate(), startDate, slot.getPrice(), false);
+                    slotsToAdd.add(slot1);
+                    slotsToAdd.add(slot2);
+                    slotsToDelete.add(slot);
+                    break;
+                }
+                else if(endDate.isBefore(slot.getEndDate())){
+                    TimeSlot slot1 = new TimeSlot(null, slot.getStartDate(), startDate, slot.getPrice(), false);
+                    TimeSlot slot2 = new TimeSlot(null, endDate, slot.getEndDate(), slot.getPrice(), false);
+                    TimeSlot slot3 = new TimeSlot(null, startDate, endDate,slot.getPrice(), true);
+                    slotsToAdd.add(slot1);
+                    slotsToAdd.add(slot2);
+                    slotsToAdd.add(slot3);
+                    slotsToDelete.add(slot);
+                    break;
+                }
+                else if (startDate.isBefore(slot.getEndDate())){
+                    TimeSlot slot1 = new TimeSlot(null, slot.getStartDate(), startDate, slot.getPrice(), false);
+                    TimeSlot slot2 = new TimeSlot(null, startDate, slot.getEndDate(),slot.getPrice(), true);
+                    slotsToAdd.add(slot1);
+                    slotsToAdd.add(slot2);
+                    slotsToDelete.add(slot);
+                    startDate = slot.getEndDate();
+                    continue;
+                }
+
             }
         }
         for (TimeSlot slt: slotsToDelete){
@@ -257,6 +296,9 @@ public class AccommodationServiceImpl implements AccommodationService {
 
     private boolean isAvailable(Accommodation accommodation, LocalDate startDate, LocalDate endDate){
         List<TimeSlot> slots = accommodation.getAvailability();
+        slots.sort((item1, item2) -> {
+            return Math.toIntExact(item1.getStartDate().toEpochDay() - item2.getStartDate().toEpochDay());
+        });
         for (TimeSlot slot : slots) {
             if (slot.isOccupied())
                 continue;

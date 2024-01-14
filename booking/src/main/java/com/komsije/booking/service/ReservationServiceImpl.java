@@ -208,7 +208,6 @@ public class ReservationServiceImpl implements ReservationService {
             LOG.log(Level.INFO, "Scheduled task to set reservation "+ reservation.getId() + " to done on " + endDate);
             taskScheduler.schedule(task1, startDate);
             taskScheduler.schedule(task2,endDate);
-
         }else{
             throw new PendingReservationException("Reservation is not in pending or denied state!");
         }

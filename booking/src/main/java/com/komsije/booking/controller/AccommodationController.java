@@ -3,6 +3,8 @@ package com.komsije.booking.controller;
 import com.komsije.booking.dto.*;
 import com.komsije.booking.model.AccommodationStatus;
 import com.komsije.booking.model.AccommodationType;
+import com.komsije.booking.model.Reservation;
+import com.komsije.booking.repository.ReservationRepository;
 import com.komsije.booking.service.interfaces.AccommodationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

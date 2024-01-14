@@ -8,6 +8,7 @@ import com.komsije.booking.repository.AccommodationRepository;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -82,7 +83,8 @@ public abstract class AccommodationMapper {
         searchedAccommodationDto.setMinGuests(accommodation.getMinGuests());
         searchedAccommodationDto.setPhotos(accommodation.getPhotos());
         searchedAccommodationDto.setCancellationDeadline(accommodation.getCancellationDeadline());
-        searchedAccommodationDto.setAverageGrade(accommodation.getAverageGrade());
+        DecimalFormat df = new DecimalFormat("#.##");
+        searchedAccommodationDto.setAverageGrade(Double.parseDouble(df.format(accommodation.getAverageGrade())));
         return searchedAccommodationDto;
     }
 

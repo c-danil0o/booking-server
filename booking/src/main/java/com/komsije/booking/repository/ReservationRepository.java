@@ -19,4 +19,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     @Query("select r from Reservation r where (r.hostId=:hostId or r.guestId=:hostId) and (r.guestId=:guestId or r.hostId=:guestId) and r.reservationStatus='Done'")
     List<Reservation> findDoneByHostIdAndGuestId(@Param("hostId") Long hostId, @Param("guestId") Long guestId);
+
+    @Query("select r from Reservation r where r.accommodation.id=:accommodationId and r.reservationStatus='Pending'")
+    List<Reservation> findPendingByAccommodationId(@Param("accommodationId") Long accommodationId);
 }

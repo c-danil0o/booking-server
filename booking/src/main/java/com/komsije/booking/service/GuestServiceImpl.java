@@ -10,6 +10,7 @@ import com.komsije.booking.repository.AccountRepository;
 import com.komsije.booking.repository.GuestRepository;
 import com.komsije.booking.service.interfaces.ConfirmationTokenService;
 import com.komsije.booking.service.interfaces.GuestService;
+import com.komsije.booking.service.interfaces.NotificationService;
 import com.komsije.booking.service.interfaces.ReservationService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,14 +40,16 @@ public class GuestServiceImpl implements GuestService {
     private final ConfirmationTokenService confirmationTokenService;
     private final ReservationService reservationService;
     private final TaskScheduler taskScheduler;
+    private final NotificationService notificationService;
 
     @Autowired
-    public GuestServiceImpl(GuestRepository guestRepository, AccountRepository accountRepository, ConfirmationTokenService confirmationTokenService, ReservationService reservationService, TaskScheduler taskScheduler) {
+    public GuestServiceImpl(GuestRepository guestRepository, AccountRepository accountRepository, ConfirmationTokenService confirmationTokenService, ReservationService reservationService, TaskScheduler taskScheduler, NotificationService notificationService) {
         this.guestRepository = guestRepository;
         this.accountRepository = accountRepository;
         this.confirmationTokenService = confirmationTokenService;
         this.reservationService = reservationService;
         this.taskScheduler = taskScheduler;
+        this.notificationService = notificationService;
     }
 
     public GuestDto findById(Long id) throws ElementNotFoundException {
@@ -182,6 +185,11 @@ public class GuestServiceImpl implements GuestService {
         } else {
             throw new PendingReservationException("Reservation is not in pending or approved state!");
         }
+        Guest guest = guestRepository.findById(reservation.getGuestId()).orElse(null);
+        StringBuilder mess = new StringBuilder();
+        mess.append("Guest ").append(guest.getFirstName()).append(" ").append(guest.getLastName()).append(" has cancelled reservation request for your accommodation!");
+        Notification notification = new Notification(null, mess.toString(), LocalDateTime.now(), accountRepository.findById(reservation.getHostId()).orElse(null));
+        notificationService.saveAndSendNotification(notification);
         return true;
     }
     @Override

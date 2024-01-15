@@ -33,6 +33,12 @@ public class NotificationController {
         return new ResponseEntity<>(notificationDto, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/user/{id}")
+    public ResponseEntity<List<NotificationDto>> findByUserId(@PathVariable Long id){
+        List<NotificationDto> notifications = notificationService.findAllUserNotifications(id);
+        return new ResponseEntity<>(notifications, HttpStatus.OK);
+    }
+
     @PostMapping(consumes = "application/json")
     public ResponseEntity<NotificationDto> saveNotification(@RequestBody NotificationDto notificationDTO) {
 

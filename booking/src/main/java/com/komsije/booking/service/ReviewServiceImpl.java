@@ -6,14 +6,18 @@ import com.komsije.booking.exceptions.ReviewAlreadyExistsException;
 import com.komsije.booking.exceptions.ReviewAlreadyReportedException;
 import com.komsije.booking.exceptions.ReviewNotFoundException;
 import com.komsije.booking.mapper.ReviewMapper;
+import com.komsije.booking.model.Notification;
 import com.komsije.booking.model.Review;
 import com.komsije.booking.model.ReviewStatus;
 import com.komsije.booking.repository.ReviewRepository;
 import com.komsije.booking.service.interfaces.AccommodationService;
+import com.komsije.booking.service.interfaces.AccountService;
+import com.komsije.booking.service.interfaces.NotificationService;
 import com.komsije.booking.service.interfaces.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -22,10 +26,14 @@ public class ReviewServiceImpl implements ReviewService {
     private ReviewMapper mapper;
     @Autowired
     private AccommodationService accommodationService;
+    @Autowired
+    private AccountService accountService;
+    private final NotificationService notificationService;
     private final ReviewRepository reviewRepository;
 
     @Autowired
-    public ReviewServiceImpl(ReviewRepository reviewRepository) {
+    public ReviewServiceImpl(NotificationService notificationService, ReviewRepository reviewRepository) {
+        this.notificationService = notificationService;
         this.reviewRepository = reviewRepository;
     }
 
@@ -59,6 +67,18 @@ public class ReviewServiceImpl implements ReviewService {
             }
         }
         reviewRepository.save(mapper.fromDto(reviewDto));
+        if (reviewDto.getHostId()!= null){
+            StringBuilder mess = new StringBuilder();
+            mess.append("Guest ").append(accountService.findModelById(reviewDto.getAuthor().getAccountId()).getEmail()).append(" ").append(" has left a review for you!");
+            Notification notification = new Notification(null, mess.toString(), LocalDateTime.now(),accountService.findModelById(reviewDto.getHostId()));
+            notificationService.saveAndSendNotification(notification);
+        }
+        if (reviewDto.getAccommodationId() != null){
+            StringBuilder mess = new StringBuilder();
+            mess.append("Guest ").append(accountService.findModelById(reviewDto.getAuthor().getAccountId()).getEmail()).append(" has left a review for your accommodation!");
+            Notification notification = new Notification(null, mess.toString(), LocalDateTime.now(),accommodationService.findModelById(reviewDto.getAccommodationId()).getHost());
+            notificationService.saveAndSendNotification(notification);
+        }
         return reviewDto;
     }
 

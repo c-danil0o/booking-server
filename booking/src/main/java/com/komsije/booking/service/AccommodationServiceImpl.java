@@ -386,11 +386,8 @@ public class AccommodationServiceImpl implements AccommodationService {
         //promenjena je calculatePrice funkcija
         double price = calculatePrice(accommodation, priceRequest.getStartDate(), priceRequest.getEndDate(),priceRequest.getGuests());
         priceResponse.setTotalPrice(price);
-
         int days = (int) ChronoUnit.DAYS.between(priceRequest.getStartDate(), priceRequest.getEndDate());
-        DecimalFormat df = new DecimalFormat("#.##");
-        priceResponse.setPricePerNight(Double.parseDouble(df.format(price/days)));
-
+        priceResponse.setPricePerNight(price/days);
         return priceResponse;
     }
 }

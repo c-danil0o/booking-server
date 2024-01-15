@@ -9,25 +9,24 @@ import com.komsije.booking.exceptions.PendingReservationException;
 import com.komsije.booking.exceptions.ReservationAlreadyExistsException;
 import com.komsije.booking.mapper.ReservationMapper;
 import com.komsije.booking.model.Accommodation;
+import com.komsije.booking.model.Notification;
 import com.komsije.booking.model.Reservation;
 import com.komsije.booking.model.ReservationStatus;
 import com.komsije.booking.repository.ReservationRepository;
 import com.komsije.booking.service.interfaces.AccommodationService;
+import com.komsije.booking.service.interfaces.AccountService;
+import com.komsije.booking.service.interfaces.NotificationService;
 import com.komsije.booking.service.interfaces.ReservationService;
 import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.Trigger;
-import org.springframework.scheduling.TriggerContext;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDate;
 
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 import java.util.ArrayList;
@@ -44,12 +43,16 @@ public class ReservationServiceImpl implements ReservationService {
     private TaskScheduler taskScheduler;
     private final ReservationRepository reservationRepository;
     private final AccommodationService accommodationService;
+    private final NotificationService notificationService;
+    private final AccountService accountService;
     private static final Logger LOG = Logger.getAnonymousLogger();
 
     @Autowired
-    public ReservationServiceImpl(ReservationRepository reservationRepository, AccommodationService accommodationService) {
+    public ReservationServiceImpl(ReservationRepository reservationRepository, AccommodationService accommodationService, NotificationService notificationService, AccountService accountService) {
         this.reservationRepository = reservationRepository;
         this.accommodationService = accommodationService;
+        this.notificationService = notificationService;
+        this.accountService = accountService;
     }
 
     public ReservationDto findById(Long id) throws ElementNotFoundException {
@@ -209,6 +212,10 @@ public class ReservationServiceImpl implements ReservationService {
             LOG.log(Level.INFO, "Scheduled task to set reservation "+ reservation.getId() + " to done on " + endDate);
             taskScheduler.schedule(task1, startDate);
             taskScheduler.schedule(task2,endDate);
+            StringBuilder mess = new StringBuilder();
+            mess.append("Host ").append(accountService.findModelById(reservation.getHostId()).getEmail()).append(" has approved your reservation request!");
+            Notification notification = new Notification(null, mess.toString(), LocalDateTime.now(),accountService.findModelById(reservation.getGuestId()));
+            notificationService.saveAndSendNotification(notification);
         }else{
             throw new PendingReservationException("Reservation is not in pending or denied state!");
         }
@@ -268,6 +275,10 @@ public class ReservationServiceImpl implements ReservationService {
             }
             reservation.setReservationStatus(ReservationStatus.Denied);
             reservationRepository.save(reservation);
+            StringBuilder mess = new StringBuilder();
+            mess.append("Host ").append(accountService.findModelById(reservation.getHostId()).getEmail()).append(" has denied your reservation request!");
+            Notification notification = new Notification(null, mess.toString(), LocalDateTime.now(),accountService.findModelById(reservation.getGuestId()));
+            notificationService.saveAndSendNotification(notification);
 
         }else{
             throw new PendingReservationException("Reservation is not in pending or approved state!");
@@ -299,6 +310,10 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setAccommodation(accommodation);
         reservation.setDateCreated(LocalDate.now());
         reservationRepository.save(reservation);
+        StringBuilder mess = new StringBuilder();
+        mess.append("Guest ").append(accountService.findModelById(reservationDto.getGuestId()).getEmail()).append(" has created reservation request for your accommodation!");
+        Notification notification = new Notification(null, mess.toString(), LocalDateTime.now(), accountService.findModelById(reservationDto.getHostId()));
+        notificationService.saveAndSendNotification(notification);
         if (accommodation.isAutoApproval()){
             acceptReservationRequest(reservation.getId());
         }

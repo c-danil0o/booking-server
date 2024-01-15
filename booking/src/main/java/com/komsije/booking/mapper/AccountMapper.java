@@ -4,6 +4,7 @@ import com.komsije.booking.dto.AccommodationDto;
 import com.komsije.booking.dto.AccountDto;
 import com.komsije.booking.model.Accommodation;
 import com.komsije.booking.model.Account;
+import com.komsije.booking.repository.AccountRepository;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValueCheckStrategy;
@@ -12,10 +13,28 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import java.util.List;
 
 @Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE )
-public interface AccountMapper {
-    AccountDto toDto(Account account);
-    Account fromDto(AccountDto accountDto);
-    List<AccountDto> toDto(List<Account> accountList);
-    void update(@MappingTarget Account account, AccountDto accountDto);
+public abstract class AccountMapper {
+    private AccountRepository accountRepository;
+    public abstract  AccountDto toDto(Account account);
+    public Account fromDto(AccountDto accountDto){
+        if ( accountDto == null ) {
+            return null;
+        }
+        if (accountRepository.existsById(accountDto.getId())){
+            return accountRepository.findById(accountDto.getId()).orElse(null);
+        }
+
+        Account account = new Account();
+
+        account.setId( accountDto.getId() );
+        account.setEmail( accountDto.getEmail() );
+        account.setBlocked( accountDto.isBlocked() );
+        account.setActivated( accountDto.isActivated() );
+        account.setRole( accountDto.getRole() );
+
+        return account;
+    }
+    public abstract  List<AccountDto> toDto(List<Account> accountList);
+    public abstract  void update(@MappingTarget Account account, AccountDto accountDto);
 
 }

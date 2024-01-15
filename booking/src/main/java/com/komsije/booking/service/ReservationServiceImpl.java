@@ -17,6 +17,7 @@ import com.komsije.booking.service.interfaces.ReservationService;
 import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.TriggerContext;
@@ -254,6 +255,8 @@ public class ReservationServiceImpl implements ReservationService {
             updateStatus(reservation.getId(), ReservationStatus.Denied);
         }
     }
+
+
 
     @Override
     public boolean denyReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException {

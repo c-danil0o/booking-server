@@ -315,7 +315,7 @@ public class AccommodationServiceImpl implements AccommodationService {
             if(slot.getEndDate().isBefore(startDate))
                 continue;
             else if (slot.getStartDate().isAfter(startDate))
-                if(slot.getEndDate().isAfter(endDate))
+                if(slot.getStartDate().isAfter(endDate))                    //slot.getStartDate
                     continue;
                 else{
                     endDate = slot.getStartDate().minusDays(1);
@@ -345,7 +345,7 @@ public class AccommodationServiceImpl implements AccommodationService {
             if(slot.getEndDate().isBefore(startDate))
                 continue;
             else if (slot.getStartDate().isAfter(startDate))
-                if(slot.getEndDate().isAfter(endDate))
+                if(slot.getEndDate().isAfter(endDate))              //slot.getStartDate *
                     continue;
                 else{
                     int days = (int) ChronoUnit.DAYS.between(slot.getStartDate(), endDate) + 1;
@@ -361,10 +361,10 @@ public class AccommodationServiceImpl implements AccommodationService {
                 return price;
             }
             else{   //equals
-                int days = (int) ChronoUnit.DAYS.between(startDate, slot.getEndDate()) + 1;
+                int days = (int) ChronoUnit.DAYS.between(startDate, slot.getEndDate());
                 price = price + slot.getPrice()*days*guestNumber;
 
-                startDate=slot.getEndDate().plusDays(1);
+                startDate=slot.getEndDate().plusDays(0);
                 if (startDate.isAfter(endDate) || startDate.isEqual(endDate))
                     break;
                 continue;

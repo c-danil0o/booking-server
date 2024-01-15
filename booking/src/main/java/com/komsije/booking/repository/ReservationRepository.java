@@ -25,7 +25,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     @Query("select r from Reservation r where r.accommodation.id=:accommodationId and r.reservationStatus='Pending'")
     List<Reservation> findPendingByAccommodationId(@Param("accommodationId") Long accommodationId);
 
-    @Query("select r from Reservation r where r.startDate=:startDate and r.days=:days and r.accommodation.id=:accommodationId and r.guestId=:guestId")
+    @Query("select r from Reservation r where r.startDate=:startDate and r.days=:days and r.accommodation.id=:accommodationId and r.guestId=:guestId and r.reservationStatus!='Cancelled'")
     List<Reservation> findForNewReservation(@Param("startDate")LocalDate startDate, @Param("days") int days, @Param("accommodationId") Long accommodationId, @Param("guestId") Long guestId);
 
 }

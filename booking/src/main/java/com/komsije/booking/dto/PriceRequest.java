@@ -9,4 +9,5 @@ public class PriceRequest {
     private Long accommodationId;
     private LocalDate startDate;
     private LocalDate endDate;
+    private Integer guests;
 }

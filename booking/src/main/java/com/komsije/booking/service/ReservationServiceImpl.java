@@ -17,6 +17,7 @@ import com.komsije.booking.service.interfaces.ReservationService;
 import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.TriggerContext;
@@ -255,6 +256,8 @@ public class ReservationServiceImpl implements ReservationService {
         }
     }
 
+
+
     @Override
     public boolean denyReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException {
         Reservation reservation = reservationRepository.findById(id).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
@@ -299,17 +302,7 @@ public class ReservationServiceImpl implements ReservationService {
         if (accommodation.isAutoApproval()){
             acceptReservationRequest(reservation.getId());
         }
-        if (reservation.getReservationStatus().equals(ReservationStatus.Approved)){
-            accommodationService.reserveTimeslot(reservation.getAccommodation().getId(),reservation.getStartDate(), reservation.getStartDate().plusDays(reservation.getDays()));
-            Runnable task1 = () -> setStatusToActive(reservation);
-            Runnable task2 = () -> setStatusToDone(reservation);
-            Instant endDate = reservation.getStartDate().plusDays(reservation.getDays()).atStartOfDay().toInstant(ZoneOffset.UTC);
-            Instant startDate = reservation.getStartDate().atStartOfDay().toInstant(ZoneOffset.UTC);
-            LOG.log(Level.INFO, "Scheduled task to set reservation "+ reservation.getId() + " to active on " + startDate);
-            LOG.log(Level.INFO, "Scheduled task to set reservation "+ reservation.getId() + " to done on " + endDate);
-            taskScheduler.schedule(task1, startDate);
-            taskScheduler.schedule(task2,endDate);
-        }else{
+        else{
             Runnable task = () -> checkIfNotApproved(reservation);
             LOG.log(Level.INFO, "Scheduled task to set reservation "+ reservation.getId() + " to DENIED if not approved until " + reservation.getStartDate());
 

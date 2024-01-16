@@ -19,6 +19,9 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     @Query("select r from Reservation r where r.guestId=:id")
     List<Reservation> findByGuestId(@Param("id") Long id);
 
+    @Query("select r from Reservation r where r.accommodation.id=:accommodationId and r.reservationStatus='Done'")
+    List<Reservation> findDoneByAccommodationId(@Param("accommodationId") Long hostId);
+
     @Query("select r from Reservation r where (r.hostId=:hostId or r.guestId=:hostId) and (r.guestId=:guestId or r.hostId=:guestId) and r.reservationStatus='Done'")
     List<Reservation> findDoneByHostIdAndGuestId(@Param("hostId") Long hostId, @Param("guestId") Long guestId);
 
@@ -27,5 +30,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     @Query("select r from Reservation r where r.startDate=:startDate and r.days=:days and r.accommodation.id=:accommodationId and r.guestId=:guestId and r.reservationStatus!='Cancelled'")
     List<Reservation> findForNewReservation(@Param("startDate")LocalDate startDate, @Param("days") int days, @Param("accommodationId") Long accommodationId, @Param("guestId") Long guestId);
+
+    @Query("select r from Reservation r where r.accommodation.id=:accommodationId and r.reservationStatus='Done' and year(r.startDate)=:year")
+    List<Reservation> findDoneByAccommodationAndYear(@Param("accommodationId") Long accommodationId, @Param("year") int year);
 
 }

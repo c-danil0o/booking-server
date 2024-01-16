@@ -6,13 +6,16 @@ import com.komsije.booking.model.AccommodationType;
 import com.komsije.booking.model.Reservation;
 import com.komsije.booking.repository.ReservationRepository;
 import com.komsije.booking.service.interfaces.AccommodationService;
+import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -72,6 +75,20 @@ public class AccommodationController {
     @GetMapping(value = "/amenities")
     public ResponseEntity<List<AccommodationDto>> getByAmenities(@RequestParam List<String> amenities) {
         List<AccommodationDto> accommodations = accommodationService.getByAmenities(amenities);
+        return new ResponseEntity<>(accommodations, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAnyRole('Admin', 'Host')")
+    @GetMapping(value = "/yearAnalytics/{hostId}/{year}")
+    public ResponseEntity<List<AccommodationAnalysis>> getYearAnalytics(@PathVariable("hostId") Long hostId,@PathVariable("year") int year) {
+        List<AccommodationAnalysis> accommodations = accommodationService.getYearAnalytics(hostId, year);
+        return new ResponseEntity<>(accommodations, HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasAnyRole('Admin', 'Host')")
+    @GetMapping(value = "/analytics/{hostId}")
+    public ResponseEntity<List<AccommodationTotalEarnings>> getPeriodAnalytics(@RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate, @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate, @PathVariable("hostId") Long hostId) {
+        List<AccommodationTotalEarnings> accommodations = accommodationService.getPeriodAnalytics(hostId, startDate, endDate);
         return new ResponseEntity<>(accommodations, HttpStatus.OK);
     }
 

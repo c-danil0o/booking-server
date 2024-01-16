@@ -7,7 +7,10 @@ import com.komsije.booking.model.*;
 import com.komsije.booking.repository.AccommodationRepository;
 import com.komsije.booking.repository.ReservationRepository;
 import com.komsije.booking.service.interfaces.AccommodationService;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
@@ -393,4 +396,69 @@ public class AccommodationServiceImpl implements AccommodationService {
 
         return priceResponse;
     }
+
+    @Override
+    public List<AccommodationAnalysis> getYearAnalytics(Long hostId, int year) {
+        List<AccommodationAnalysis> analysisList = new ArrayList<>();
+        List<Accommodation> accommodations = accommodationRepository.findByHostId(hostId);
+        List<Double> zeros = Collections.nCopies(12, 0.0);
+        List<Integer> zerosInt = Collections.nCopies(12, 0);
+        for (Accommodation accommodation: accommodations) {
+            List<Double> prices = new ArrayList<>(zeros);
+            List<Integer> times = new ArrayList<>(zerosInt);
+            List<Reservation> reservations = reservationRepository.findDoneByAccommodationAndYear(accommodation.getId(),year);
+            calculateMoneyPerMonth(reservations, prices, times);
+
+            AccommodationAnalysis accommodationAnalysis = new AccommodationAnalysis();
+            accommodationAnalysis.setName(accommodation.getName() + " , " + accommodation.getAddress().getCity());
+            accommodationAnalysis.setMoneyPerMonth(prices);
+            accommodationAnalysis.setReservationsPerMonth(times);
+            analysisList.add(accommodationAnalysis);
+        }
+
+        return analysisList;
+    }
+    private void calculateMoneyPerMonth(List<Reservation> reservations, List<Double> prices, List<Integer> times){
+        for (Reservation reservation : reservations) {
+            int monthValue = reservation.getStartDate().getMonthValue() - 1;
+            Double currentPrice = prices.get(monthValue);
+            prices.set(monthValue, currentPrice + reservation.getPrice());
+            Integer currentTimes = times.get(monthValue);
+            times.set(monthValue, currentTimes+1);
+        }
+    }
+
+    @Override
+    public List<AccommodationTotalEarnings> getPeriodAnalytics(Long hostId, LocalDate startDate, LocalDate endDate) {
+        List<AccommodationTotalEarnings> analysisList = new ArrayList<>();
+        List<Accommodation> accommodations = accommodationRepository.findByHostId(hostId);
+        for (Accommodation accommodation: accommodations) {
+            List<Reservation> reservations = reservationRepository.findDoneByAccommodationId(accommodation.getId());
+            List<Double> totalEarningsAndReservations = calculateTotalEarningsInPeriod(reservations, startDate, endDate);
+
+            AccommodationTotalEarnings accommodationAnalysis = new AccommodationTotalEarnings();
+            accommodationAnalysis.setName(accommodation.getName() + " , " + accommodation.getAddress().getCity());
+            accommodationAnalysis.setTotalEarnings(totalEarningsAndReservations.get(0));
+            accommodationAnalysis.setTotalReservations((totalEarningsAndReservations.get(1).intValue()));
+            analysisList.add(accommodationAnalysis);
+        }
+
+        return analysisList;
+    }
+
+    private List<Double> calculateTotalEarningsInPeriod(List<Reservation> reservations, LocalDate startDate, LocalDate endDate){
+        List<Double> earningsAndReservations = new ArrayList<>();
+        earningsAndReservations.add(0.0);
+        earningsAndReservations.add(0.0);
+        for (Reservation reservation: reservations) {
+            LocalDate resStartDate = reservation.getStartDate();
+            LocalDate resEndDate = resStartDate.plusDays(reservation.getDays());
+            if (((resStartDate.isAfter(startDate) || resStartDate.isEqual(startDate)) && (resStartDate.isBefore(endDate) || resStartDate.isEqual(endDate))) || ((resEndDate.isAfter(startDate) || resEndDate.isEqual(startDate)) && (resEndDate.isBefore(endDate) || resStartDate.isEqual(endDate)))){
+                earningsAndReservations.set(0,earningsAndReservations.get(0) + reservation.getPrice());
+                earningsAndReservations.set(1, earningsAndReservations.get(1)+1);
+            }
+        }
+        return earningsAndReservations;
+    }
+
 }

@@ -10,4 +10,5 @@ public interface NotificationService extends CrudService<NotificationDto, Long> 
     List<NotificationDto> findAllUserNotifications(Long userId);
 
     void saveAndSendNotification(Notification notification);
+
 }

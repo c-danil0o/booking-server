@@ -3,14 +3,19 @@ package com.komsije.booking.service;
 import com.komsije.booking.dto.NotificationDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.mapper.NotificationMapper;
+import com.komsije.booking.model.Account;
 import com.komsije.booking.model.Notification;
+import com.komsije.booking.model.Settings;
 import com.komsije.booking.repository.NotificationRepository;
+import com.komsije.booking.service.interfaces.AccountService;
 import com.komsije.booking.service.interfaces.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class NotificationServiceImpl implements NotificationService {
@@ -68,4 +73,6 @@ public class NotificationServiceImpl implements NotificationService {
                 mapper.toDto(notification));
 
     }
+
+
 }

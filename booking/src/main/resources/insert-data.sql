@@ -46,6 +46,34 @@ VALUES (0, 6, 6, 'Guest', 'One', '+6789012345'),
        (4, 10, 10, 'Guest', 'Five', '+0123456789');
 
 
+INSERT INTO account_settings(account_id, settings)
+VALUES (1, 'RESERVATION_REQUEST_NOTIFICATION'),
+       (1, 'RESERVATION_CANCEL_NOTIFICATION'),
+       (1, 'HOST_REVIEW_NOTIFICATION'),
+       (1, 'ACCOMMODATION_REVIEW_NOTIFICATION'),
+       (2, 'RESERVATION_REQUEST_NOTIFICATION'),
+       (2, 'RESERVATION_CANCEL_NOTIFICATION'),
+       (2, 'HOST_REVIEW_NOTIFICATION'),
+       (2, 'ACCOMMODATION_REVIEW_NOTIFICATION'),
+       (3, 'RESERVATION_REQUEST_NOTIFICATION'),
+       (3, 'RESERVATION_CANCEL_NOTIFICATION'),
+       (3, 'HOST_REVIEW_NOTIFICATION'),
+       (3, 'ACCOMMODATION_REVIEW_NOTIFICATION'),
+       (4, 'RESERVATION_REQUEST_NOTIFICATION'),
+       (4, 'RESERVATION_CANCEL_NOTIFICATION'),
+       (4, 'HOST_REVIEW_NOTIFICATION'),
+       (4, 'ACCOMMODATION_REVIEW_NOTIFICATION'),
+       (5, 'RESERVATION_REQUEST_NOTIFICATION'),
+       (5, 'RESERVATION_CANCEL_NOTIFICATION'),
+       (5, 'HOST_REVIEW_NOTIFICATION'),
+       (5, 'ACCOMMODATION_REVIEW_NOTIFICATION'),
+       (6, 'RESERVATION_RESPONSE_NOTIFICATION'),
+       (7, 'RESERVATION_RESPONSE_NOTIFICATION'),
+       (8, 'RESERVATION_RESPONSE_NOTIFICATION'),
+       (9, 'RESERVATION_RESPONSE_NOTIFICATION'),
+       (10, 'RESERVATION_RESPONSE_NOTIFICATION');
+
+
 -- Insert data into the accommodation table
 INSERT INTO accommodation (average_grade, cancellation_deadline, is_auto_approval, is_price_per_guest, max_guests,
                            min_guests, address_id, id, accommodation_type, description, name, status, host_id)
@@ -60,19 +88,19 @@ VALUES (4.33, 7, true, true, 4, 1, 1, 1, 'Apartment', 'A cozy apartment', 'Cozy 
 INSERT INTO accommodation_amenities (accommodation_id, amenities)
 VALUES (1, 'WiFi'),
        (1, 'TV'),
-       (1,'Kitchen'),
+       (1, 'Kitchen'),
        (2, 'WiFi'),
        (2, 'Air Conditioning'),
-       (2,'Breakfast'),
+       (2, 'Breakfast'),
        (3, 'Swimming Pool'),
-       (3,'Gym'),
-       (3,'Spa'),
+       (3, 'Gym'),
+       (3, 'Spa'),
        (4, 'WiFi'),
-       (4,'Kitchen'),
-       (4,'Parking'),
+       (4, 'Kitchen'),
+       (4, 'Parking'),
        (5, 'Air Conditioning'),
        (5, 'TV'),
-       (5,'Coffee Maker');
+       (5, 'Coffee Maker');
 
 -- Insert data into the accommodation_availability table
 INSERT INTO time_slot (is_occupied, price, start_date, end_date)
@@ -127,40 +155,33 @@ VALUES (1, 6),
        (5, 10);
 
 
-/*INSERT INTO accommodation_favorite_to (favorites_id,favorite_to_id)
-VALUES (1, 6),
-       (2, 7),
-       (3, 8),
-       (4, 9),
-       (5, 10);*/
-
 -- Insert data into the host_host_reviews table
 INSERT INTO review (host_id, accommodation_id, grade, status, author_id, comment, date)
-VALUES (1, null, 4, 'Approved', 6, 'Great host!','2023-01-05 12:00:00'),
-       (2, null, 5, 'Approved', 7, 'Excellent hospitality','2023-01-05 12:00:00'),
-       (3, null, 4, 'Approved', 8, 'Wonderful stay, highly recommend','2023-01-05 12:00:00'),
-       (3, null, 3, 'Approved', 9, 'Good experience overall','2023-01-05 12:00:00'),
-       (4, null, 5, 'Approved', 10, 'Perfect host, would come again','2023-01-05 12:00:00'),
-       (5, null, 4, 'Approved', 6, 'Enjoyed my stay, great host!','2023-01-05 12:00:00'),
-       (null, 1, 5, 'Approved', 7, 'Beautiful accommodation, highly recommended!','2023-01-05 12:00:00'),
-       (null, 2, 4, 'Pending', 8, 'Comfortable and clean, would come again','2023-01-05 12:00:00'),
-       (null, 3, 3, 'Approved', 9, 'Good location but room was a bit small','2023-01-05 12:00:00'),
-       (null, 3, 5, 'Approved', 10, 'Exceptional service and amenities','2023-01-05 12:00:00'),
-       (null, 4, 3, 'Pending', 1, 'Average experience, could be better','2023-01-05 12:00:00'),
-       (null, 4, 4, 'Approved', 2, 'Lovely place with a friendly host','2023-01-05 12:00:00'),
-       (null, 5, 5, 'Approved', 3, 'Outstanding accommodation, exceeded expectations','2023-01-05 12:00:00'),
-       (null, 5, 4, 'Pending', 4, 'Great value for money, would recommend','2023-01-05 12:00:00'),
-       (2, null, 5, 'Approved', 5, 'Fantastic experience, thank you!','2023-01-05 12:00:00'),
-       (null, 4, 3, 'Approved', 6, 'Not bad, but room was noisy','2023-01-05 12:00:00'),
-       (null, 2, 4, 'Approved', 7, 'Well-maintained property with good facilities','2023-01-05 12:00:00'),
-       (null, 1,5, 'Approved', 8, 'Superb hospitality, felt like home','2023-01-05 12:00:00'),
-       (null, 1, 3, 'Approved', 9, 'Average amenities, but good location','2023-01-05 12:00:00'),
-       (3, null, 5, 'Approved', 10, 'Absolutely amazing, 10/10','2023-01-05 12:00:00'),
-       (4, null, 4, 'Approved', 1, 'Friendly staff and comfortable stay','2023-01-05 12:00:00'),
-       (null, 5, 5, 'Approved', 2, 'Impressive accommodation with a view','2023-01-05 12:00:00'),
-       (null, 5, 4, 'Approved', 3, 'Clean and well-equipped, enjoyed my stay','2023-01-05 12:00:00'),
-       (4, null, 3, 'Approved', 4, 'Satisfactory, but could use some improvements','2023-01-05 12:00:00'),
-       (1, null, 5, 'Approved', 5, 'Incredible experience, highly satisfied','2023-01-05 12:00:00');
+VALUES (1, null, 4, 'Approved', 6, 'Great host!', '2023-01-05 12:00:00'),
+       (2, null, 5, 'Approved', 7, 'Excellent hospitality', '2023-01-05 12:00:00'),
+       (3, null, 4, 'Approved', 8, 'Wonderful stay, highly recommend', '2023-01-05 12:00:00'),
+       (3, null, 3, 'Approved', 9, 'Good experience overall', '2023-01-05 12:00:00'),
+       (4, null, 5, 'Approved', 10, 'Perfect host, would come again', '2023-01-05 12:00:00'),
+       (5, null, 4, 'Approved', 6, 'Enjoyed my stay, great host!', '2023-01-05 12:00:00'),
+       (null, 1, 5, 'Approved', 7, 'Beautiful accommodation, highly recommended!', '2023-01-05 12:00:00'),
+       (null, 2, 4, 'Pending', 8, 'Comfortable and clean, would come again', '2023-01-05 12:00:00'),
+       (null, 3, 3, 'Approved', 9, 'Good location but room was a bit small', '2023-01-05 12:00:00'),
+       (null, 3, 5, 'Approved', 10, 'Exceptional service and amenities', '2023-01-05 12:00:00'),
+       (null, 4, 3, 'Pending', 1, 'Average experience, could be better', '2023-01-05 12:00:00'),
+       (null, 4, 4, 'Approved', 2, 'Lovely place with a friendly host', '2023-01-05 12:00:00'),
+       (null, 5, 5, 'Approved', 3, 'Outstanding accommodation, exceeded expectations', '2023-01-05 12:00:00'),
+       (null, 5, 4, 'Pending', 4, 'Great value for money, would recommend', '2023-01-05 12:00:00'),
+       (2, null, 5, 'Approved', 5, 'Fantastic experience, thank you!', '2023-01-05 12:00:00'),
+       (null, 4, 3, 'Approved', 6, 'Not bad, but room was noisy', '2023-01-05 12:00:00'),
+       (null, 2, 4, 'Approved', 7, 'Well-maintained property with good facilities', '2023-01-05 12:00:00'),
+       (null, 1, 5, 'Approved', 8, 'Superb hospitality, felt like home', '2023-01-05 12:00:00'),
+       (null, 1, 3, 'Approved', 9, 'Average amenities, but good location', '2023-01-05 12:00:00'),
+       (3, null, 5, 'Approved', 10, 'Absolutely amazing, 10/10', '2023-01-05 12:00:00'),
+       (4, null, 4, 'Approved', 1, 'Friendly staff and comfortable stay', '2023-01-05 12:00:00'),
+       (null, 5, 5, 'Approved', 2, 'Impressive accommodation with a view', '2023-01-05 12:00:00'),
+       (null, 5, 4, 'Approved', 3, 'Clean and well-equipped, enjoyed my stay', '2023-01-05 12:00:00'),
+       (4, null, 3, 'Approved', 4, 'Satisfactory, but could use some improvements', '2023-01-05 12:00:00'),
+       (1, null, 5, 'Approved', 5, 'Incredible experience, highly satisfied', '2023-01-05 12:00:00');
 
 
 -- Insert data into the host_properties table
@@ -172,7 +193,8 @@ VALUES (1, 1),
        (5, 5);
 
 -- Insert data into the reservation table
-INSERT INTO reservation (days, price, accommodation_id, guest_id, host_id, start_date, reservation_status, number_of_guests, date_created)
+INSERT INTO reservation (days, price, accommodation_id, guest_id, host_id, start_date, reservation_status,
+                         number_of_guests, date_created)
 VALUES (2, 200.0, 1, 6, 1, '2023-01-05', 'Approved', 2, '2023-01-01'),
        (7, 560.0, 2, 7, 2, '2023-02-06', 'Pending', 1, '2023-01-01'),
        (10, 1500.0, 3, 8, 3, '2023-03-07', 'Active', 3, '2023-01-01'),

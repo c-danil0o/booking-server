@@ -1,6 +1,9 @@
 package com.komsije.booking.controller;
 
 import com.komsije.booking.dto.NotificationDto;
+import com.komsije.booking.model.Account;
+import com.komsije.booking.model.Settings;
+import com.komsije.booking.service.interfaces.AccountService;
 import com.komsije.booking.service.interfaces.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,15 +12,18 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping(value = "api/notifications")
 public class NotificationController {
     private final NotificationService notificationService;
+    private final AccountService accountService;
 
     @Autowired
-    public NotificationController(NotificationService notificationService) {
+    public NotificationController(NotificationService notificationService, AccountService accountService) {
         this.notificationService = notificationService;
+        this.accountService = accountService;
     }
 
     @PreAuthorize("hasRole('Admin')")
@@ -52,6 +58,16 @@ public class NotificationController {
         notificationService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
 
+    }
+    @PostMapping(value = "/settings/{id}")
+    public ResponseEntity<Void> applyNotificationSettings(@PathVariable Long id, @RequestBody List<String> settings){
+        this.accountService.applySettings(id, settings);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    @GetMapping(value = "/settings/get/{id}")
+    public ResponseEntity<Set<Settings>> getNotificationSettings(@PathVariable Long id){
+        Account account = this.accountService.findModelById(id);
+        return new ResponseEntity<>(account.getSettings(), HttpStatus.OK);
     }
 
 

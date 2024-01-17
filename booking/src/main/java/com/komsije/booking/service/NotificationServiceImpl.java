@@ -1,5 +1,8 @@
 package com.komsije.booking.service;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingException;
+import com.google.firebase.messaging.Message;
 import com.komsije.booking.dto.NotificationDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.mapper.NotificationMapper;
@@ -13,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -71,6 +75,21 @@ public class NotificationServiceImpl implements NotificationService {
         notificationRepository.save(notification);
         this.simpMessagingTemplate.convertAndSend("/socket-publisher/" + notification.getReceiver().getId(),
                 mapper.toDto(notification));
+        // android
+        String topic = notification.getReceiver().getId().toString();
+        Message message = Message.builder()
+                .putData("message", notification.getMessage())
+                .putData("date", notification.getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy | HH:mm")))
+                .setTopic(topic)
+                .build();
+
+        String response = null;
+        try {
+            response = FirebaseMessaging.getInstance().send(message);
+        } catch (FirebaseMessagingException e) {
+            System.out.println("Sending message to firebase failed!");
+        }
+
 
     }
 

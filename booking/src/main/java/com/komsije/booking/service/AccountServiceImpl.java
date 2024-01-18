@@ -12,17 +12,11 @@ import com.komsije.booking.repository.AccountRepository;
 import com.komsije.booking.repository.ReportRepository;
 import com.komsije.booking.repository.ReservationRepository;
 import com.komsije.booking.service.interfaces.AccountService;
-import com.komsije.booking.service.interfaces.ReportService;
-import com.komsije.booking.service.interfaces.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class AccountServiceImpl implements AccountService{
@@ -175,6 +169,17 @@ public class AccountServiceImpl implements AccountService{
 //            }
 //        }
 
+    }
+
+    @Override
+    public void applySettings(Long userId, List<String> settings) {
+        Account account = accountRepository.findById(userId).orElseThrow(()->new ElementNotFoundException("Element with given ID doesn't exist!"));
+        Set<Settings> newSettings = new HashSet<>();
+        for (String setting: settings){
+            newSettings.add(Settings.valueOf(setting));
+        }
+        account.setSettings(newSettings);
+        accountRepository.save(account);
     }
 
 

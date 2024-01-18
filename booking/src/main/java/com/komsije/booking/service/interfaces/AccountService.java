@@ -28,4 +28,5 @@ public interface AccountService extends CrudService<AccountDto, Long> {
     public void changePassword(NewPasswordDto newPasswordDto) throws ElementNotFoundException, IncorrectPasswordException;
     public void blockAccount(Long id);
 
+    void applySettings(Long userId, List<String> settings);
 }

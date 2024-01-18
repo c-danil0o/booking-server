@@ -29,6 +29,9 @@ public class Account {
     private boolean isActivated = false;
     @Enumerated(EnumType.STRING)
     private Role role;
+    @ElementCollection
+    @Enumerated(EnumType.STRING)
+    private Set<Settings> settings = new HashSet<>();
     @OneToMany(mappedBy = "receiver", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Notification> notifications = new HashSet<>();
     @OneToMany(mappedBy = "reportedUser", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

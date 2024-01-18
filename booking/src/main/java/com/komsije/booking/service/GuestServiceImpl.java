@@ -10,6 +10,7 @@ import com.komsije.booking.repository.AccountRepository;
 import com.komsije.booking.repository.GuestRepository;
 import com.komsije.booking.service.interfaces.ConfirmationTokenService;
 import com.komsije.booking.service.interfaces.GuestService;
+import com.komsije.booking.service.interfaces.NotificationService;
 import com.komsije.booking.service.interfaces.ReservationService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,14 +40,16 @@ public class GuestServiceImpl implements GuestService {
     private final ConfirmationTokenService confirmationTokenService;
     private final ReservationService reservationService;
     private final TaskScheduler taskScheduler;
+    private final NotificationService notificationService;
 
     @Autowired
-    public GuestServiceImpl(GuestRepository guestRepository, AccountRepository accountRepository, ConfirmationTokenService confirmationTokenService, ReservationService reservationService, TaskScheduler taskScheduler) {
+    public GuestServiceImpl(GuestRepository guestRepository, AccountRepository accountRepository, ConfirmationTokenService confirmationTokenService, ReservationService reservationService, TaskScheduler taskScheduler, NotificationService notificationService) {
         this.guestRepository = guestRepository;
         this.accountRepository = accountRepository;
         this.confirmationTokenService = confirmationTokenService;
         this.reservationService = reservationService;
         this.taskScheduler = taskScheduler;
+        this.notificationService = notificationService;
     }
 
     public GuestDto findById(Long id) throws ElementNotFoundException {
@@ -130,9 +133,9 @@ public class GuestServiceImpl implements GuestService {
         return token;
     }
 
-    private void deleteIfNotActivated(Long accountId){
+    private void deleteIfNotActivated(Long accountId) {
         Account account = accountRepository.findById(accountId).orElse(null);
-        if (!account.isActivated()){
+        if (!account.isActivated()) {
             accountRepository.delete(account);
         }
     }
@@ -166,30 +169,39 @@ public class GuestServiceImpl implements GuestService {
     @Override
     public boolean cancelReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException, CancellationDeadlineExpiredException {
         ReservationDto reservation = reservationService.findById(id);
-        if (reservation.getReservationStatus().equals(ReservationStatus.Approved)){
-            if (reservation.getDateCreated().plusDays(reservationService.getCancellationDeadline(id)).isBefore(LocalDateTime.now())){
+        if (reservation.getReservationStatus().equals(ReservationStatus.Approved)) {
+            if (reservation.getDateCreated().plusDays(reservationService.getCancellationDeadline(id)).isBefore(LocalDateTime.now())) {
                 throw new CancellationDeadlineExpiredException("Cancellation deadline is expired!");
-            }else{
+            } else {
                 reservation.setReservationStatus(ReservationStatus.Cancelled);
                 reservationService.updateStatus(reservation.getId(), ReservationStatus.Cancelled);
                 reservationService.restoreTimeslots(reservation.getId());
                 this.increaseCancelations(reservation.getGuestId());
             }
-        }else
-        if (reservation.getReservationStatus().equals(ReservationStatus.Pending)) {
+        } else if (reservation.getReservationStatus().equals(ReservationStatus.Pending)) {
             reservation.setReservationStatus(ReservationStatus.Cancelled);
             reservationService.updateStatus(reservation.getId(), ReservationStatus.Cancelled);
         } else {
             throw new PendingReservationException("Reservation is not in pending or approved state!");
         }
+        Guest guest = guestRepository.findById(reservation.getGuestId()).orElse(null);
+        Account host = accountRepository.findById(reservation.getHostId()).orElse(null);
+        if (host.getSettings().contains(Settings.RESERVATION_CANCEL_NOTIFICATION)) {
+            StringBuilder mess = new StringBuilder();
+            mess.append("Guest ").append(guest.getFirstName()).append(" ").append(guest.getLastName()).append(" has cancelled reservation request for your accommodation!");
+            Notification notification = new Notification(null, mess.toString(), LocalDateTime.now(), accountRepository.findById(reservation.getHostId()).orElse(null));
+            notificationService.saveAndSendNotification(notification);
+        }
+
         return true;
     }
+
     @Override
-    public void addFavorite(Long guestId, Long accommodationId){
+    public void addFavorite(Long guestId, Long accommodationId) {
         Guest guest = guestRepository.findById(guestId).orElseThrow(() -> new ElementNotFoundException("Element with given ID doesn't exist!"));
         Set<Accommodation> favorites = guest.getFavorites();
-        for (Accommodation acc: favorites){
-            if (acc.getId().equals(accommodationId)){
+        for (Accommodation acc : favorites) {
+            if (acc.getId().equals(accommodationId)) {
                 throw new FavoriteAlreadyExistsException("This accommodation is already in this guests favorites!");
             }
         }
@@ -199,29 +211,31 @@ public class GuestServiceImpl implements GuestService {
         guest.setFavorites(favorites);
         guestRepository.save(guest);
     }
+
     @Override
-    public void removeFavorite(Long guestId, Long accommodationId){
+    public void removeFavorite(Long guestId, Long accommodationId) {
         Guest guest = guestRepository.findById(guestId).orElseThrow(() -> new ElementNotFoundException("Element with given ID doesn't exist!"));
         Accommodation forRemoval = null;
         Set<Accommodation> favorites = guest.getFavorites();
 
-        for (Accommodation acc : favorites){
-            if (acc.getId().equals(accommodationId)){
+        for (Accommodation acc : favorites) {
+            if (acc.getId().equals(accommodationId)) {
                 forRemoval = acc;
             }
         }
-        if (forRemoval == null){
+        if (forRemoval == null) {
             throw new ElementNotFoundException("Favorite accommodation not found!");
         }
         favorites.remove(forRemoval);
         guest.setFavorites(favorites);
         guestRepository.save(guest);
     }
+
     @Override
-    public boolean checkIfInFavorites(Long guestId, Long accommodationId){
+    public boolean checkIfInFavorites(Long guestId, Long accommodationId) {
         Guest guest = guestRepository.findById(guestId).orElseThrow(() -> new ElementNotFoundException("Element with given ID doesn't exist!"));
-        for (Accommodation acc : guest.getFavorites()){
-            if (acc.getId().equals(accommodationId)){
+        for (Accommodation acc : guest.getFavorites()) {
+            if (acc.getId().equals(accommodationId)) {
                 return true;
             }
         }

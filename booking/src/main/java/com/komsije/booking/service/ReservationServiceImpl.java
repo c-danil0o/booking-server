@@ -290,7 +290,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public ReservationDto saveNewReservation(NewReservationDto reservationDto) throws ElementNotFoundException {
+    public ReservationDto saveNewReservation(NewReservationDto reservationDto) {
         if (doesSameExist(reservationDto)){
             throw new ReservationAlreadyExistsException("You already made reservation for this dates for this accommodation");
         }

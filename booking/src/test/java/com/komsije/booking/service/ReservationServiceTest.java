@@ -1,4 +1,4 @@
-package com.komsije.booking.serviceTest;
+package com.komsije.booking.service;
 
 import com.komsije.booking.dto.NewReservationDto;
 import com.komsije.booking.dto.ReservationDto;
@@ -8,9 +8,7 @@ import com.komsije.booking.model.Accommodation;
 import com.komsije.booking.model.Reservation;
 import com.komsije.booking.model.ReservationStatus;
 import com.komsije.booking.repository.ReservationRepository;
-import com.komsije.booking.service.ReservationServiceImpl;
 import com.komsije.booking.service.interfaces.AccommodationService;
-import com.komsije.booking.service.interfaces.ReservationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -51,13 +49,13 @@ public class ReservationServiceTest {
         NewReservationDto badReservationDto = new NewReservationDto(1L, LocalDate.now().plusDays(5), 3, 300, ReservationStatus.Pending, 1L, 6L, 1L, 3);
         List<Reservation> reservationList = new ArrayList<>();
         reservationList.add(new Reservation());
-        when(reservationRepository.findForNewReservation(badReservationDto.getStartDate(), badReservationDto.getDays(), badReservationDto.getAccommodationId(), badReservationDto.getGuestId())).thenReturn(reservationList);
+        when(reservationRepository.getIfExists(badReservationDto.getStartDate(),  badReservationDto.getAccommodationId(), badReservationDto.getGuestId())).thenReturn(reservationList);
 
         ReservationAlreadyExistsException exception = assertThrows(ReservationAlreadyExistsException.class,
                 () -> reservationService.saveNewReservation(badReservationDto));
         assertEquals("You already made reservation for this dates for this accommodation", exception.getMessage());
 
-        verify(reservationRepository).findForNewReservation(badReservationDto.getStartDate(), badReservationDto.getDays(), badReservationDto.getAccommodationId(), badReservationDto.getGuestId());
+        verify(reservationRepository).getIfExists(badReservationDto.getStartDate(),  badReservationDto.getAccommodationId(), badReservationDto.getGuestId());
         verifyNoInteractions(reservationMapper);
         verifyNoInteractions(accommodationService);
         verifyNoMoreInteractions(reservationRepository);
@@ -71,7 +69,7 @@ public class ReservationServiceTest {
         Accommodation accommodation = new Accommodation();
         accommodation.setAutoApproval(false);
         ReservationDto resDto = new ReservationDto();
-        when(reservationRepository.findForNewReservation(reservationDto.getStartDate(), reservationDto.getDays(), reservationDto.getAccommodationId(), reservationDto.getGuestId())).thenReturn(reservationList);
+        when(reservationRepository.getIfExists(reservationDto.getStartDate(), reservationDto.getAccommodationId(), reservationDto.getGuestId())).thenReturn(reservationList);
         when(reservationMapper.fromNewDto(reservationDto)).thenReturn(reservation);
         when(accommodationService.findModelById(reservationDto.getAccommodationId())).thenReturn(accommodation);
         doNothing().when(reservationRepository).save(reservation);

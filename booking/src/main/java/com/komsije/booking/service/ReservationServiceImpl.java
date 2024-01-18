@@ -17,12 +17,7 @@ import com.komsije.booking.service.interfaces.ReservationService;
 import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.Trigger;
-import org.springframework.scheduling.TriggerContext;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -64,10 +59,6 @@ public class ReservationServiceImpl implements ReservationService {
         return mapper.toViewDto(reservationRepository.findAll());
     }
 
-    @Override
-    public void saveModel(Reservation reservation) {
-        this.reservationRepository.save(reservation);
-    }
 
     @Override
     public List<ReservationViewDto> getByHostId(Long id) {
@@ -232,7 +223,8 @@ public class ReservationServiceImpl implements ReservationService {
         if(reservation.getReservationStatus().equals(ReservationStatus.Approved)){
             if (reservation.getStartDate().plusDays(reservation.getDays()).isBefore(LocalDate.now())){
                 LOG.log(Level.INFO, "Setting status to DONE for reservation:"+ reservation.getId());
-                updateStatus(reservation.getId(), ReservationStatus.Done);
+                reservation.setReservationStatus(ReservationStatus.Done);
+                reservationRepository.save(reservation);
                 return;
             }
             LOG.log(Level.INFO, "Setting status to ACTIVE for reservation:"+ reservation.getId());
@@ -246,13 +238,15 @@ public class ReservationServiceImpl implements ReservationService {
     private void setStatusToDone(Reservation reservation){
         if (reservation.getReservationStatus().equals(ReservationStatus.Active)){
             LOG.log(Level.INFO, "Setting status to DONE for reservation:"+ reservation.getId());
-            updateStatus(reservation.getId(), ReservationStatus.Done);
+            reservation.setReservationStatus(ReservationStatus.Done);
+            reservationRepository.save(reservation);
         }
     }
     private void checkIfNotApproved(Reservation reservation){
         if (reservation.getReservationStatus().equals(ReservationStatus.Pending)){
             LOG.log(Level.INFO, "Setting status to DENIED for reservation:"+ reservation.getId());
-            updateStatus(reservation.getId(), ReservationStatus.Denied);
+            reservation.setReservationStatus(ReservationStatus.Denied);
+            reservationRepository.save(reservation);
         }
     }
 
@@ -262,15 +256,11 @@ public class ReservationServiceImpl implements ReservationService {
     public boolean denyReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException {
         Reservation reservation = reservationRepository.findById(id).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
         ReservationStatus status = reservation.getReservationStatus();
-        if(status.equals(ReservationStatus.Pending) || status.equals(ReservationStatus.Approved)){
-            if (status.equals(ReservationStatus.Approved)){
-                accommodationService.restoreTimeslot(reservation);          //returned availability
-            }
+        if(status.equals(ReservationStatus.Pending)){
             reservation.setReservationStatus(ReservationStatus.Denied);
             reservationRepository.save(reservation);
-
         }else{
-            throw new PendingReservationException("Reservation is not in pending or approved state!");
+            throw new PendingReservationException("Reservation is not in pending state!");
         }
         return true;
     }
@@ -312,7 +302,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     private boolean doesSameExist(NewReservationDto reservationDto){
-        List<Reservation> reservations = reservationRepository.findForNewReservation(reservationDto.getStartDate(),reservationDto.getDays(), reservationDto.getAccommodationId(),reservationDto.getGuestId());
+        List<Reservation> reservations = reservationRepository.getIfExists(reservationDto.getStartDate(), reservationDto.getAccommodationId(),reservationDto.getGuestId());
         return !reservations.isEmpty();
     }
 

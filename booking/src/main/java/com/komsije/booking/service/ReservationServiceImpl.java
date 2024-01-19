@@ -232,7 +232,7 @@ public class ReservationServiceImpl implements ReservationService {
             }
             LOG.log(Level.INFO, "Setting status to ACTIVE for reservation:"+ reservation.getId());
             reservation.setReservationStatus(ReservationStatus.Active);
-            reservationRepository.save(reservation);
+            reservation = reservationRepository.save(reservation);
 
         }
     }
@@ -241,14 +241,16 @@ public class ReservationServiceImpl implements ReservationService {
         if (reservation.getReservationStatus().equals(ReservationStatus.Active)){
             LOG.log(Level.INFO, "Setting status to DONE for reservation:"+ reservation.getId());
             reservation.setReservationStatus(ReservationStatus.Done);
-            reservationRepository.save(reservation);
+            reservation = reservationRepository.save(reservation);
         }
     }
     private void checkIfNotApproved(Reservation reservation){
         if (reservation.getReservationStatus().equals(ReservationStatus.Pending)){
             LOG.log(Level.INFO, "Setting status to DENIED for reservation:"+ reservation.getId());
             reservation.setReservationStatus(ReservationStatus.Denied);
-            reservationRepository.save(reservation);
+            LOG.log(Level.INFO, reservation.getReservationStatus().toString());
+
+            reservation = reservationRepository.save(reservation);
         }
     }
 
@@ -309,6 +311,7 @@ public class ReservationServiceImpl implements ReservationService {
             taskScheduler.schedule(task, reservation.getStartDate().atStartOfDay().toInstant(ZoneOffset.UTC));
         }
         reservationRepository.save(reservation);
+        LOG.log(Level.INFO, "I am leaving");
 
         return mapper.toDto(reservation);
     }

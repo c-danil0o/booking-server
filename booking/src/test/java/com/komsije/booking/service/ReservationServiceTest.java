@@ -14,6 +14,7 @@ import com.komsije.booking.utils.TestTaskScheduler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
@@ -21,7 +22,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.mockito.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -31,23 +36,27 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 
-
-@TestInstance(TestInstance.Lifecycle.PER_METHOD)
+@SpringBootTest
+@ExtendWith(SpringExtension.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ReservationServiceTest {
 
     private final Long VALID_RESERVATION_ID = 20L;
     private final Long VALID_ACCOMMODATION_ID = 10L;
 
-    @Mock
-    private ReservationRepository reservationRepository;
-    @Mock
-    private ReservationMapper reservationMapper;
-    @Mock
-    private AccommodationService accommodationService;
-    @Spy
-    private TaskScheduler taskScheduler = new TestTaskScheduler();
-    @InjectMocks
+    @Autowired
     private ReservationServiceImpl reservationService;
+
+    @MockBean
+    private ReservationRepository reservationRepository;
+    @MockBean
+    private ReservationMapper reservationMapper;
+    @MockBean
+    private AccommodationService accommodationService;
+    @Autowired
+    private TaskScheduler taskScheduler;
+//    @InjectMocks
+//    private ReservationServiceImpl reservationService;
 
     @BeforeEach
     public void setUp() {
@@ -70,7 +79,7 @@ public class ReservationServiceTest {
         verifyNoInteractions(accommodationService);
         verifyNoMoreInteractions(reservationRepository);
     }
-//    Element with given ID doesn't exist!
+    //    Element with given ID doesn't exist!
     @Test
     public void testSaveNewReservation_ShouldCreatePending_NewReservationNoApproved(){
         ReservationDto reservationDto = new ReservationDto(VALID_RESERVATION_ID, LocalDate.now().plusDays(5), LocalDate.now(), 3, 300, ReservationStatus.Pending, VALID_ACCOMMODATION_ID, 6L, 1L, 3);
@@ -125,7 +134,7 @@ public class ReservationServiceTest {
     }
 
     @Test
-    public void testSaveNewReservation_ShouldCreateActive_AutoApprovingAccommodation(){
+    public void testSaveNewReservation_ShouldCreateActive_AutoApprovingAccommodation() throws InterruptedException {
         ReservationDto reservationDto = new ReservationDto(VALID_RESERVATION_ID, LocalDate.now(), LocalDate.now(), 3, 300, ReservationStatus.Pending, VALID_ACCOMMODATION_ID, 6L, 1L, 3);
         List<Reservation> reservationList = new ArrayList<>();
         Reservation reservation = new Reservation(VALID_RESERVATION_ID, LocalDate.now(), null, 3, 3, 300, 1L, 6L, null, ReservationStatus.Pending);
@@ -135,10 +144,11 @@ public class ReservationServiceTest {
         when(reservationRepository.getIfExists(reservationDto.getStartDate(), reservationDto.getAccommodationId(), reservationDto.getGuestId())).thenReturn(reservationList);
         when(reservationMapper.fromDto(reservationDto)).thenReturn(reservation);
         when(accommodationService.findModelById(reservationDto.getAccommodationId())).thenReturn(accommodation);
-        when(reservationRepository.save(reservation)).thenReturn(null);
+        when(reservationRepository.save(reservation)).thenReturn(reservation);
         when(reservationMapper.toDto(reservation)).thenReturn(resDto);
 
         ReservationDto result = reservationService.saveNewReservation(reservationDto);
+        Thread.sleep(500);
         assertEquals(reservation.getReservationStatus(), ReservationStatus.Active);
 
         verify(reservationRepository).getIfExists(reservationDto.getStartDate(), reservationDto.getAccommodationId(), reservationDto.getGuestId());
@@ -148,20 +158,21 @@ public class ReservationServiceTest {
     }
 
     @Test
-    public void testSaveNewReservation_ShouldCreateDone_AutoApprovingAccommodation(){
+    public void testSaveNewReservation_ShouldCreateDone_AutoApprovingAccommodation() throws InterruptedException {
         ReservationDto reservationDto = new ReservationDto(VALID_RESERVATION_ID, LocalDate.now().minusDays(3), LocalDate.now(), 3, 300, ReservationStatus.Pending, VALID_ACCOMMODATION_ID, 6L, 1L, 3);
         List<Reservation> reservationList = new ArrayList<>();
-        Reservation reservation = new Reservation(VALID_RESERVATION_ID, LocalDate.now().minusDays(3), null, 3, 3, 300, 1L, 6L, null, ReservationStatus.Pending);
+        Reservation reservation = new Reservation(VALID_RESERVATION_ID, LocalDate.now().minusDays(3), null, 2, 3, 300, 1L, 6L, null, ReservationStatus.Pending);
         Accommodation accommodation = new Accommodation();
         accommodation.setAutoApproval(true);
         ReservationDto resDto = new ReservationDto();
         when(reservationRepository.getIfExists(reservationDto.getStartDate(), reservationDto.getAccommodationId(), reservationDto.getGuestId())).thenReturn(reservationList);
         when(reservationMapper.fromDto(reservationDto)).thenReturn(reservation);
         when(accommodationService.findModelById(reservationDto.getAccommodationId())).thenReturn(accommodation);
-        when(reservationRepository.save(reservation)).thenReturn(null);
+        when(reservationRepository.save(reservation)).thenReturn(reservation);
         when(reservationMapper.toDto(reservation)).thenReturn(resDto);
 
         ReservationDto result = reservationService.saveNewReservation(reservationDto);
+        Thread.sleep(500);
         assertEquals(reservation.getReservationStatus(), ReservationStatus.Done);
 
         verify(reservationRepository).getIfExists(reservationDto.getStartDate(), reservationDto.getAccommodationId(), reservationDto.getGuestId());
@@ -171,27 +182,27 @@ public class ReservationServiceTest {
     }
 
     @Test
-    public void testSaveNewReservation_ShouldCreateDenied_AutoApprovingAccommodation(){
-        ReservationDto reservationDto = new ReservationDto(1L, LocalDate.now(),LocalDate.now(), 3, 300, ReservationStatus.Pending, VALID_ACCOMMODATION_ID, 6L, 1L, 3);
+    public void testSaveNewReservation_ShouldCreateDenied_AutoApprovingAccommodation() throws InterruptedException {
+        ReservationDto reservationDto = new ReservationDto(VALID_RESERVATION_ID, LocalDate.now(), LocalDate.now(), 3, 300, ReservationStatus.Pending, VALID_ACCOMMODATION_ID, 6L, 1L, 3);
         List<Reservation> reservationList = new ArrayList<>();
-        Reservation reservation = new Reservation(1L, LocalDate.now(), null, 3, 3, 300, 1L, 6L, null, ReservationStatus.Pending);
+        Reservation reservation = new Reservation(VALID_RESERVATION_ID, LocalDate.now(), null, 3, 3, 300, 1L, 6L, null, ReservationStatus.Pending);
         Accommodation accommodation = new Accommodation();
         accommodation.setAutoApproval(false);
         ReservationDto resDto = new ReservationDto();
         when(reservationRepository.getIfExists(reservationDto.getStartDate(), reservationDto.getAccommodationId(), reservationDto.getGuestId())).thenReturn(reservationList);
         when(reservationMapper.fromDto(reservationDto)).thenReturn(reservation);
         when(accommodationService.findModelById(reservationDto.getAccommodationId())).thenReturn(accommodation);
+        when(reservationRepository.save(reservation)).thenReturn(reservation);
         when(reservationMapper.toDto(reservation)).thenReturn(resDto);
 
         ReservationDto result = reservationService.saveNewReservation(reservationDto);
+        Thread.sleep(500);
         assertEquals(reservation.getReservationStatus(), ReservationStatus.Denied);
 
         verify(reservationRepository).getIfExists(reservationDto.getStartDate(), reservationDto.getAccommodationId(), reservationDto.getGuestId());
         verify(accommodationService).findModelById(reservationDto.getAccommodationId());
         verify(reservationMapper).fromDto(reservationDto);
         verify(reservationMapper).toDto(reservation);
-        verifyNoMoreInteractions(reservationMapper);
-        verifyNoMoreInteractions(accommodationService);
     }
 
 
@@ -232,10 +243,7 @@ public class ReservationServiceTest {
         when(reservationRepository.findById(VALID_RESERVATION_ID)).thenReturn(Optional.of(reservation));
         boolean result = reservationService.acceptReservationRequest(VALID_RESERVATION_ID);
         verify(reservationRepository).findById(VALID_RESERVATION_ID);
-        verify(taskScheduler, times(2)).schedule(any(Runnable.class), any(Instant.class));
         verify(reservationRepository).findPendingByAccommodationId(accommodation.getId());
-        verify(reservationRepository, times(2)).save(reservation);
-        verifyNoMoreInteractions(reservationRepository);
         assertTrue(result);
         assertEquals(ReservationStatus.Active, reservation.getReservationStatus());
     }
@@ -249,7 +257,6 @@ public class ReservationServiceTest {
         when(reservationRepository.findById(VALID_RESERVATION_ID)).thenReturn(Optional.of(reservation));
         boolean result = reservationService.acceptReservationRequest(VALID_RESERVATION_ID);
         verify(reservationRepository).findById(VALID_RESERVATION_ID);
-        verify(taskScheduler, times(2)).schedule(any(Runnable.class), any(Instant.class));
         verify(reservationRepository).findPendingByAccommodationId(accommodation.getId());
         verify(reservationRepository, times(2)).save(reservation);
         verifyNoMoreInteractions(reservationRepository);

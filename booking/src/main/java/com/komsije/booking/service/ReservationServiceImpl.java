@@ -232,7 +232,7 @@ public class ReservationServiceImpl implements ReservationService {
             }
             LOG.log(Level.INFO, "Setting status to ACTIVE for reservation:"+ reservation.getId());
             reservation.setReservationStatus(ReservationStatus.Active);
-            reservationRepository.save(reservation);
+            reservation = reservationRepository.save(reservation);
 
         }
     }
@@ -241,14 +241,16 @@ public class ReservationServiceImpl implements ReservationService {
         if (reservation.getReservationStatus().equals(ReservationStatus.Active)){
             LOG.log(Level.INFO, "Setting status to DONE for reservation:"+ reservation.getId());
             reservation.setReservationStatus(ReservationStatus.Done);
-            reservationRepository.save(reservation);
+            reservation = reservationRepository.save(reservation);
         }
     }
     private void checkIfNotApproved(Reservation reservation){
         if (reservation.getReservationStatus().equals(ReservationStatus.Pending)){
             LOG.log(Level.INFO, "Setting status to DENIED for reservation:"+ reservation.getId());
             reservation.setReservationStatus(ReservationStatus.Denied);
-            reservationRepository.save(reservation);
+            LOG.log(Level.INFO, reservation.getReservationStatus().toString());
+
+            reservation = reservationRepository.save(reservation);
         }
     }
 
@@ -282,29 +284,36 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public ReservationDto saveNewReservation(NewReservationDto reservationDto) {
+    public ReservationDto saveNewReservation(ReservationDto reservationDto) {
         if (doesSameExist(reservationDto)){
             throw new ReservationAlreadyExistsException("You already made reservation for this dates for this accommodation");
         }
-        Reservation reservation = mapper.fromNewDto(reservationDto);
+        Reservation reservation = mapper.fromDto(reservationDto);
         Accommodation accommodation = accommodationService.findModelById(reservationDto.getAccommodationId());
         reservation.setAccommodation(accommodation);
         reservation.setDateCreated(LocalDate.now());
         reservationRepository.save(reservation);
-        if (accommodation.isAutoApproval()){
-            acceptReservationRequest(reservation.getId());
-        }
-        else{
+        if (reservation.getReservationStatus().equals(ReservationStatus.Approved) || accommodation.isAutoApproval()){
+            accommodationService.reserveTimeslot(reservation.getAccommodation().getId(),reservation.getStartDate(), reservation.getStartDate().plusDays(reservation.getDays()));
+            reservation.setReservationStatus(ReservationStatus.Approved);
+            Runnable task1 = () -> setStatusToActive(reservation);
+            Runnable task2 = () -> setStatusToDone(reservation);
+            Instant endDate = reservation.getStartDate().plusDays(reservation.getDays()).atStartOfDay().toInstant(ZoneOffset.UTC);
+            Instant startDate = reservation.getStartDate().atStartOfDay().toInstant(ZoneOffset.UTC);
+            LOG.log(Level.INFO, "Scheduled task to set reservation "+ reservation.getId() + " to active on " + startDate);
+            LOG.log(Level.INFO, "Scheduled task to set reservation "+ reservation.getId() + " to done on " + endDate);
+            taskScheduler.schedule(task1, startDate);
+            taskScheduler.schedule(task2,endDate);
+        }else{
             Runnable task = () -> checkIfNotApproved(reservation);
             LOG.log(Level.INFO, "Scheduled task to set reservation "+ reservation.getId() + " to DENIED if not approved until " + reservation.getStartDate());
 
             taskScheduler.schedule(task, reservation.getStartDate().atStartOfDay().toInstant(ZoneOffset.UTC));
         }
-
         return mapper.toDto(reservation);
     }
 
-    private boolean doesSameExist(NewReservationDto reservationDto){
+    private boolean doesSameExist(ReservationDto reservationDto){
         List<Reservation> reservations = reservationRepository.getIfExists(reservationDto.getStartDate(), reservationDto.getAccommodationId(),reservationDto.getGuestId());
         return !reservations.isEmpty();
     }

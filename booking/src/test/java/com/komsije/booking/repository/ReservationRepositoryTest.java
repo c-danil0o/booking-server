@@ -53,8 +53,29 @@ public class ReservationRepositoryTest {
         Reservation savedReservation = reservationRepository.save(reservation);
         List<Reservation> reservations = reservationRepository.getIfExists(reservationStartDate.plusDays(12),  savedReservation.getAccommodation().getId(), 6L);
         assertThat(reservation).usingRecursiveComparison().ignoringFields("id").isNotIn(reservations);
-
     }
+    @Test
+    public void shouldNotGetReservationWithStartDateAndOtherAccommodation(){
+        Accommodation accommodation = new Accommodation();
+        accommodation.setId(1L);
+        LocalDate reservationStartDate = LocalDate.now();
+        Reservation reservation = new Reservation(null, reservationStartDate, LocalDate.now(), 3, 3, 300, 1L, 6L, accommodation, ReservationStatus.Cancelled);
+        Reservation savedReservation = reservationRepository.save(reservation);
+        List<Reservation> reservations = reservationRepository.getIfExists(reservationStartDate,  savedReservation.getAccommodation().getId()+1, 6L);
+        assertThat(reservation).usingRecursiveComparison().ignoringFields("id").isNotIn(reservations);
+    }
+    @Test
+    public void shouldNotGetReservationWithStartDateAndAccommodationAndOtherGuest(){
+        Accommodation accommodation = new Accommodation();
+        accommodation.setId(1L);
+        LocalDate reservationStartDate = LocalDate.now();
+        Long guestId = 6L;
+        Reservation reservation = new Reservation(null, reservationStartDate, LocalDate.now(), 3, 3, 300, 1L, guestId, accommodation, ReservationStatus.Cancelled);
+        Reservation savedReservation = reservationRepository.save(reservation);
+        List<Reservation> reservations = reservationRepository.getIfExists(reservationStartDate,  savedReservation.getAccommodation().getId(), guestId+1);
+        assertThat(reservation).usingRecursiveComparison().ignoringFields("id").isNotIn(reservations);
+    }
+
     @Test
     public void shouldReturnPendingReservationForAccommodation(){
         Accommodation accommodation = new Accommodation();

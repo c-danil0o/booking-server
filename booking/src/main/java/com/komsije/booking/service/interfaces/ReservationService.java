@@ -42,7 +42,7 @@ public interface ReservationService extends CrudService<ReservationDto, Long> {
     public boolean acceptReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException;
     public boolean denyReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException;
     public void deleteInBatch(List<Long> ids);
-    ReservationDto saveNewReservation(NewReservationDto reservationDto) throws ElementNotFoundException;
+    ReservationDto saveNewReservation(ReservationDto reservationDto) throws ElementNotFoundException;
     // public boolean cancelReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException;
 
 

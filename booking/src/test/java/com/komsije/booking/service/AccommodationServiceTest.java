@@ -1,9 +1,12 @@
 package com.komsije.booking.service;
 
+import com.komsije.booking.exceptions.ElementNotFoundException;
+import com.komsije.booking.exceptions.ReservationAlreadyExistsException;
 import com.komsije.booking.model.Accommodation;
 import com.komsije.booking.model.TimeSlot;
 import com.komsije.booking.repository.AccommodationRepository;
 import org.apache.commons.lang3.SerializationUtils;
+import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -19,8 +22,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
@@ -33,6 +35,7 @@ public class AccommodationServiceTest {
     private List<TimeSlot> availability;
     private LocalDate referenceDate = LocalDate.now().plusDays(10);
     private final Long VALID_ACCOMMODATION_ID = 10L;
+    private final Long INVALID_ACCOMMODATION_ID = 20L;
 
     public static List<TimeSlot> deepCopyUsingSerialization(List<TimeSlot> timeSlots) {
         return timeSlots.stream().map(SerializationUtils::clone).collect(Collectors.toList());
@@ -219,5 +222,29 @@ public class AccommodationServiceTest {
         for (int i =0; i<availability.size(); i++){
             assertThat(availability.get(i)).usingRecursiveComparison().ignoringFields("id").isEqualTo(copyTimeslots.get(i));
         }
+    }
+
+    @Test
+    public void findModelById_ShouldThrowException_IdDoesNotExist(){
+        when(accommodationRepository.findById(INVALID_ACCOMMODATION_ID)).thenReturn(Optional.empty());
+
+        ElementNotFoundException exception = assertThrows(ElementNotFoundException.class,
+                () -> accommodationService.findModelById(INVALID_ACCOMMODATION_ID));
+        assertEquals("Element with given ID doesn't exist!", exception.getMessage());
+
+        verify(accommodationRepository).findById(INVALID_ACCOMMODATION_ID);
+        verifyNoMoreInteractions(accommodationRepository);
+    }
+
+    @Test
+    public void findModelById_ShouldReturnAccommodation_ValidID(){
+        Accommodation accommodation = new Accommodation();
+        when(accommodationRepository.findById(VALID_ACCOMMODATION_ID)).thenReturn(Optional.of(accommodation));
+
+        Accommodation result = accommodationService.findModelById(VALID_ACCOMMODATION_ID);
+        assertEquals(accommodation, result);
+
+        verify(accommodationRepository).findById(VALID_ACCOMMODATION_ID);
+        verifyNoMoreInteractions(accommodationRepository);
     }
 }

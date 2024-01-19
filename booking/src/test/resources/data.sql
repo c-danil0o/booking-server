@@ -77,7 +77,7 @@ VALUES (1, 'WiFi'),
 -- Insert data into the accommodation_availability table
 INSERT INTO time_slot (is_occupied, price, start_date, end_date)
 VALUES (false, 100.0, '2023-12-01', '2023-12-13'),
-       (false, 110.0, '2024-01-01', '2024-01-17'),
+       (false, 110.0, '2024-02-01', '2024-02-28'),
        (false, 150.0, '2023-12-20', '2023-12-30'),
        (false, 120.0, '2024-01-15', '2024-01-27'),
        (false, 90.0, '2023-12-08', '2023-12-16'),

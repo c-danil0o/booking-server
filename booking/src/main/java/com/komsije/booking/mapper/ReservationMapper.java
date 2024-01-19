@@ -86,7 +86,7 @@ public abstract class ReservationMapper {
         reservation.setStartDate(reservationDto.getStartDate());
         reservation.setPrice(reservationDto.getPrice());
         reservation.setNumberOfGuests(reservationDto.getNumberOfGuests());
-        reservation.setReservationStatus(ReservationStatus.Pending);
+        reservation.setReservationStatus(reservationDto.getReservationStatus());
         return reservation;
     }
 }

@@ -33,18 +33,18 @@ import java.util.logging.Logger;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
-    @Autowired
-    private ReservationMapper mapper;
-    @Autowired
-    private TaskScheduler taskScheduler;
+    private final ReservationMapper mapper;
+    private final TaskScheduler taskScheduler;
     private final ReservationRepository reservationRepository;
     private final AccommodationService accommodationService;
     private static final Logger LOG = Logger.getAnonymousLogger();
 
     @Autowired
-    public ReservationServiceImpl(ReservationRepository reservationRepository, AccommodationService accommodationService) {
+    public ReservationServiceImpl(ReservationRepository reservationRepository, AccommodationService accommodationService, ReservationMapper mapper, TaskScheduler taskScheduler) {
         this.reservationRepository = reservationRepository;
         this.accommodationService = accommodationService;
+        this.mapper = mapper;
+        this.taskScheduler = taskScheduler;
     }
 
     public ReservationDto findById(Long id) throws ElementNotFoundException {
@@ -288,16 +288,25 @@ public class ReservationServiceImpl implements ReservationService {
         Accommodation accommodation = accommodationService.findModelById(reservationDto.getAccommodationId());
         reservation.setAccommodation(accommodation);
         reservation.setDateCreated(LocalDate.now());
-        reservationRepository.save(reservation);
-        if (accommodation.isAutoApproval()){
-            acceptReservationRequest(reservation.getId());
-        }
-        else{
+        if (reservation.getReservationStatus().equals(ReservationStatus.Approved) || accommodation.isAutoApproval()){
+            accommodationService.reserveTimeslot(reservation.getAccommodation().getId(),reservation.getStartDate(), reservation.getStartDate().plusDays(reservation.getDays()));
+            reservation.setReservationStatus(ReservationStatus.Approved);
+            Runnable task1 = () -> setStatusToActive(reservation);
+            Runnable task2 = () -> setStatusToDone(reservation);
+            Instant endDate = reservation.getStartDate().plusDays(reservation.getDays()).atStartOfDay().toInstant(ZoneOffset.UTC);
+            Instant startDate = reservation.getStartDate().atStartOfDay().toInstant(ZoneOffset.UTC);
+            LOG.log(Level.INFO, "Scheduled task to set reservation "+ reservation.getId() + " to active on " + startDate);
+            LOG.log(Level.INFO, "Scheduled task to set reservation "+ reservation.getId() + " to done on " + endDate);
+            taskScheduler.schedule(task1, startDate);
+            taskScheduler.schedule(task2,endDate);
+        }else{
             Runnable task = () -> checkIfNotApproved(reservation);
             LOG.log(Level.INFO, "Scheduled task to set reservation "+ reservation.getId() + " to DENIED if not approved until " + reservation.getStartDate());
 
             taskScheduler.schedule(task, reservation.getStartDate().atStartOfDay().toInstant(ZoneOffset.UTC));
         }
+        reservationRepository.save(reservation);
+
         return mapper.toDto(reservation);
     }
 

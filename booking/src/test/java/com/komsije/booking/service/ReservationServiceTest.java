@@ -12,14 +12,14 @@ import com.komsije.booking.service.interfaces.AccommodationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.springframework.scheduling.TaskScheduler;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -33,7 +33,7 @@ public class ReservationServiceTest {
     private ReservationMapper reservationMapper;
     @Mock
     private AccommodationService accommodationService;
-    @Mock
+    @Spy
     private TaskScheduler taskScheduler;
 
     @InjectMocks
@@ -72,9 +72,48 @@ public class ReservationServiceTest {
         when(reservationRepository.getIfExists(reservationDto.getStartDate(), reservationDto.getAccommodationId(), reservationDto.getGuestId())).thenReturn(reservationList);
         when(reservationMapper.fromNewDto(reservationDto)).thenReturn(reservation);
         when(accommodationService.findModelById(reservationDto.getAccommodationId())).thenReturn(accommodation);
-        doNothing().when(reservationRepository).save(reservation);
+        when(reservationRepository.save(reservation)).thenReturn(null);
         when(reservationMapper.toDto(reservation)).thenReturn(resDto);
+        doNothing().when(accommodationService).reserveTimeslot(reservation.getId(), LocalDate.now(), LocalDate.now().plusDays(2));
 
+        ReservationDto result = reservationService.saveNewReservation(reservationDto);
+        assertEquals(reservation.getReservationStatus(), ReservationStatus.Pending);
+
+        verify(reservationRepository).getIfExists(reservationDto.getStartDate(), reservationDto.getAccommodationId(), reservationDto.getGuestId());
+        verify(accommodationService).findModelById(reservationDto.getAccommodationId());
+        verify(reservationRepository).save(reservation);
+        verify(reservationMapper).fromNewDto(reservationDto);
+        verify(reservationMapper).toDto(reservation);
+        verifyNoMoreInteractions(accommodationService);
+    }
+
+    @Test
+    public void test_auto_approval_reservation(){
+        NewReservationDto reservationDto = new NewReservationDto(1L, LocalDate.now().plusDays(5), 3, 300, ReservationStatus.Pending, 1L, 6L, 1L, 3);
+        List<Reservation> reservationList = new ArrayList<>();
+        Reservation reservation = new Reservation(1L, LocalDate.now().plusDays(5), null, 3, 3, 300, 1L, 6L, null, ReservationStatus.Pending);
+        Accommodation accommodation = new Accommodation();
+        accommodation.setAutoApproval(true);
+        ReservationDto resDto = new ReservationDto();
+        when(reservationRepository.getIfExists(reservationDto.getStartDate(), reservationDto.getAccommodationId(), reservationDto.getGuestId())).thenReturn(reservationList);
+        when(reservationMapper.fromNewDto(reservationDto)).thenReturn(reservation);
+        when(accommodationService.findModelById(reservationDto.getAccommodationId())).thenReturn(accommodation);
+        when(reservationRepository.save(reservation)).thenReturn(null);
+        when(reservationMapper.toDto(reservation)).thenReturn(resDto);
+        doNothing().when(accommodationService).reserveTimeslot(reservation.getId(), LocalDate.now(), LocalDate.now().plusDays(2));
+//        doNothing().when(accommodationService).reserveTimeslot(anyLong(), LocalDate.now(), LocalDate.now().plusDays(2));
+
+
+
+
+        ReservationDto result = reservationService.saveNewReservation(reservationDto);
+        assertEquals(reservation.getReservationStatus(), ReservationStatus.Approved);
+
+        verify(reservationRepository).getIfExists(reservationDto.getStartDate(), reservationDto.getAccommodationId(), reservationDto.getGuestId());
+        verify(accommodationService).findModelById(reservationDto.getAccommodationId());
+        verify(reservationMapper).fromNewDto(reservationDto);
+        verify(reservationMapper).toDto(reservation);
+        verify(reservationRepository).save(reservation);
     }
 
 

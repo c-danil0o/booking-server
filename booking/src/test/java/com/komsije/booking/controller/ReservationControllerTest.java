@@ -2,6 +2,7 @@ package com.komsije.booking.controller;
 
 import com.komsije.booking.dto.LoginDto;
 import com.komsije.booking.dto.NewReservationDto;
+import com.komsije.booking.dto.ReservationDto;
 import com.komsije.booking.dto.TokenDto;
 import com.komsije.booking.model.ReservationStatus;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,16 +46,65 @@ public class ReservationControllerTest {
     }
 
     @Test
-    public void saveNewReservation(){
+    public void saveNewReservation_ShouldSavePending_PendingReservation(){
         LocalDate startDate = LocalDate.of(2024,2,3);
-        NewReservationDto reservationDto = new NewReservationDto(null, LocalDate.now().plusDays(3), 3, 300, ReservationStatus.Pending, 1L, 6L, 1L, 3);
+        NewReservationDto reservationDto = new NewReservationDto(null, LocalDate.now().plusDays(3), 3, 300, ReservationStatus.Pending, 2L, 6L, 1L, 3);
+        ResponseEntity<ReservationDto> responseEntity = restTemplate.exchange("/api/reservations",
+                HttpMethod.POST,
+                new HttpEntity<>(reservationDto, getHttpHeaders()),
+                new ParameterizedTypeReference<ReservationDto>() {
+                });
+        assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
+        ReservationDto reservationDto1 = responseEntity.getBody();
+        
+    }
+
+    @Test
+    public void saveNewReservation_ShouldSaveApproved_ApprovedReservation(){
+        LocalDate startDate = LocalDate.of(2024,2,3);
+        NewReservationDto reservationDto = new NewReservationDto(null, LocalDate.now().plusDays(3), 3, 300, ReservationStatus.Approved, 1L, 6L, 1L, 3);
         ResponseEntity<Void> responseEntity = restTemplate.exchange("/api/reservations",
                 HttpMethod.POST,
                 new HttpEntity<>(reservationDto, getHttpHeaders()),
                 new ParameterizedTypeReference<Void>() {
                 });
         assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
+    }
 
+    @Test
+    public void saveNewReservation_ShouldSaveActive_ApprovedReservation(){
+        LocalDate startDate = LocalDate.of(2024,2,3);
+        NewReservationDto reservationDto = new NewReservationDto(null, LocalDate.now(), 3, 300, ReservationStatus.Approved, 1L, 6L, 1L, 3);
+        ResponseEntity<Void> responseEntity = restTemplate.exchange("/api/reservations",
+                HttpMethod.POST,
+                new HttpEntity<>(reservationDto, getHttpHeaders()),
+                new ParameterizedTypeReference<Void>() {
+                });
+        assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void saveNewReservation_ShouldSaveDone_ApprovedReservation(){
+        LocalDate startDate = LocalDate.of(2024,2,3);
+        NewReservationDto reservationDto = new NewReservationDto(null, LocalDate.now().minusDays(3), 3, 300, ReservationStatus.Approved, 1L, 6L, 1L, 3);
+        ResponseEntity<Void> responseEntity = restTemplate.exchange("/api/reservations",
+                HttpMethod.POST,
+                new HttpEntity<>(reservationDto, getHttpHeaders()),
+                new ParameterizedTypeReference<Void>() {
+                });
+        assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void saveNewReservation_ShouldSaveDenied_ApprovedReservation(){
+        LocalDate startDate = LocalDate.of(2024,2,3);
+        NewReservationDto reservationDto = new NewReservationDto(null, LocalDate.now().minusDays(3), 3, 300, ReservationStatus.Pending, 2L, 6L, 1L, 3);
+        ResponseEntity<Void> responseEntity = restTemplate.exchange("/api/reservations",
+                HttpMethod.POST,
+                new HttpEntity<>(reservationDto, getHttpHeaders()),
+                new ParameterizedTypeReference<Void>() {
+                });
+        assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
     }
 
 }

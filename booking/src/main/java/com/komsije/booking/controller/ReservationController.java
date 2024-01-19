@@ -91,9 +91,9 @@ public class ReservationController {
     }
 
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<Void> saveReservation(@RequestBody NewReservationDto reservationDTO) {
-        reservationService.saveNewReservation(reservationDTO);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    public ResponseEntity<ReservationDto> saveReservation(@RequestBody NewReservationDto reservationDTO) {
+        ReservationDto reservationDto = reservationService.saveNewReservation(reservationDTO);
+        return new ResponseEntity<>(reservationDto,HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/{id}")

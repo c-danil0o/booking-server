@@ -33,18 +33,18 @@ import java.util.logging.Logger;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
-    @Autowired
-    private ReservationMapper mapper;
-    @Autowired
-    private TaskScheduler taskScheduler;
+    private final ReservationMapper mapper;
+    private final TaskScheduler taskScheduler;
     private final ReservationRepository reservationRepository;
     private final AccommodationService accommodationService;
     private static final Logger LOG = Logger.getAnonymousLogger();
 
     @Autowired
-    public ReservationServiceImpl(ReservationRepository reservationRepository, AccommodationService accommodationService) {
+    public ReservationServiceImpl(ReservationRepository reservationRepository, AccommodationService accommodationService, ReservationMapper mapper, TaskScheduler taskScheduler) {
         this.reservationRepository = reservationRepository;
         this.accommodationService = accommodationService;
+        this.mapper = mapper;
+        this.taskScheduler = taskScheduler;
     }
 
     public ReservationDto findById(Long id) throws ElementNotFoundException {
@@ -188,7 +188,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public boolean acceptReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException {
         Reservation reservation = reservationRepository.findById(id).orElseThrow(() ->  new ElementNotFoundException("Element with given ID doesn't exist!"));
-        if(reservation.getReservationStatus().equals(ReservationStatus.Pending) || reservation.getReservationStatus().equals(ReservationStatus.Denied)){
+        if(reservation.getReservationStatus().equals(ReservationStatus.Pending)){
             reservation.setReservationStatus(ReservationStatus.Approved);
             accommodationService.reserveTimeslot(reservation.getAccommodation().getId(),reservation.getStartDate(), reservation.getStartDate().plusDays(reservation.getDays()));
             reservationRepository.save(reservation);
@@ -199,22 +199,25 @@ public class ReservationServiceImpl implements ReservationService {
             LOG.log(Level.INFO, "Scheduled task to set reservation "+ reservation.getId() + " to active on " + startDate);
             LOG.log(Level.INFO, "Scheduled task to set reservation "+ reservation.getId() + " to done on " + endDate);
             taskScheduler.schedule(task1, startDate);
-            taskScheduler.schedule(task2,endDate);
+            taskScheduler.schedule(task2, endDate);
+            denyOverlappingRequests(reservation.getStartDate(), reservation.getStartDate().plusDays(reservation.getDays()), reservation.getAccommodation().getId());
         }else{
-            throw new PendingReservationException("Reservation is not in pending or denied state!");
+            throw new PendingReservationException("Reservation is not in pending state!");
         }
-        LocalDate startDate = reservation.getStartDate();
-        LocalDate endDate = reservation.getStartDate().plusDays(reservation.getDays());
-        List<Reservation> reservations = reservationRepository.findPendingByAccommodationId(reservation.getAccommodation().getId());
+        return true;
+    }
+
+    public void denyOverlappingRequests(LocalDate startDate, LocalDate endDate, Long accommodationId){
+        List<Reservation> reservations = reservationRepository.findPendingByAccommodationId(accommodationId);
         for(Reservation res: reservations){
             LocalDate resStartDate = res.getStartDate();
             LocalDate resEndDate = res.getStartDate().plusDays(res.getDays());
-            if (!(resEndDate.isBefore(startDate) || resStartDate.isAfter(endDate))){
+            if (startDate.isBefore(resEndDate) && resStartDate.isBefore(endDate)){
                 res.setReservationStatus(ReservationStatus.Denied);
                 reservationRepository.save(res);
             }
         }
-        return true;
+
     }
 
     @SneakyThrows
@@ -228,9 +231,8 @@ public class ReservationServiceImpl implements ReservationService {
                 return;
             }
             LOG.log(Level.INFO, "Setting status to ACTIVE for reservation:"+ reservation.getId());
-
-
-            updateStatus(reservation.getId(), ReservationStatus.Active);
+            reservation.setReservationStatus(ReservationStatus.Active);
+            reservationRepository.save(reservation);
 
         }
     }
@@ -298,6 +300,7 @@ public class ReservationServiceImpl implements ReservationService {
 
             taskScheduler.schedule(task, reservation.getStartDate().atStartOfDay().toInstant(ZoneOffset.UTC));
         }
+
         return mapper.toDto(reservation);
     }
 

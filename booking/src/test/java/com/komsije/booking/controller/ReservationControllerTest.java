@@ -12,15 +12,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration")
 @ActiveProfiles("test")
+@Transactional
 public class ReservationControllerTest {
     @Autowired
     private TestRestTemplate restTemplate;
@@ -46,65 +50,84 @@ public class ReservationControllerTest {
     }
 
     @Test
+    @Rollback
     public void saveNewReservation_ShouldSavePending_PendingReservation(){
         LocalDate startDate = LocalDate.of(2024,2,3);
-        NewReservationDto reservationDto = new NewReservationDto(null, LocalDate.now().plusDays(3), 3, 300, ReservationStatus.Pending, 2L, 6L, 1L, 3);
+        ReservationDto reservationDto = new ReservationDto(null, startDate, LocalDate.now(), 3, 300, ReservationStatus.Pending, 2L, 6L, 1L, 3);
         ResponseEntity<ReservationDto> responseEntity = restTemplate.exchange("/api/reservations",
                 HttpMethod.POST,
                 new HttpEntity<>(reservationDto, getHttpHeaders()),
                 new ParameterizedTypeReference<ReservationDto>() {
                 });
         assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
-        ReservationDto reservationDto1 = responseEntity.getBody();
-        
+        ReservationDto returnedReservation = responseEntity.getBody();
+        assertThat(reservationDto).usingRecursiveComparison().ignoringFields("id", "reservationStatus").isEqualTo(returnedReservation);
+        assertEquals(returnedReservation.getReservationStatus(), ReservationStatus.Pending);
     }
 
     @Test
+    @Rollback
     public void saveNewReservation_ShouldSaveApproved_ApprovedReservation(){
-        LocalDate startDate = LocalDate.of(2024,2,3);
-        NewReservationDto reservationDto = new NewReservationDto(null, LocalDate.now().plusDays(3), 3, 300, ReservationStatus.Approved, 1L, 6L, 1L, 3);
-        ResponseEntity<Void> responseEntity = restTemplate.exchange("/api/reservations",
+        LocalDate startDate = LocalDate.of(2024,2,20);
+        ReservationDto reservationDto = new ReservationDto(null, startDate, LocalDate.now(), 3, 300, ReservationStatus.Approved, 1L, 6L, 1L, 3);
+        ResponseEntity<ReservationDto> responseEntity = restTemplate.exchange("/api/reservations",
                 HttpMethod.POST,
                 new HttpEntity<>(reservationDto, getHttpHeaders()),
-                new ParameterizedTypeReference<Void>() {
+                new ParameterizedTypeReference<ReservationDto>() {
                 });
         assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
+        ReservationDto returnedReservation = responseEntity.getBody();
+        assertThat(reservationDto).usingRecursiveComparison().ignoringFields("id", "reservationStatus").isEqualTo(returnedReservation);
+        assertEquals(returnedReservation.getReservationStatus(), ReservationStatus.Approved);
     }
 
     @Test
+    @Rollback
+    public void saveNewReservation_ShouldSaveApproved_PendingReservationAutoApprovalAccommodation(){
+        LocalDate startDate = LocalDate.of(2024,2,3);
+        ReservationDto reservationDto = new ReservationDto(null, startDate, LocalDate.now(), 3, 300, ReservationStatus.Pending, 1L, 6L, 1L, 3);
+        ResponseEntity<ReservationDto> responseEntity = restTemplate.exchange("/api/reservations",
+                HttpMethod.POST,
+                new HttpEntity<>(reservationDto, getHttpHeaders()),
+                new ParameterizedTypeReference<ReservationDto>() {
+                });
+        assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
+        ReservationDto returnedReservation = responseEntity.getBody();
+        assertThat(reservationDto).usingRecursiveComparison().ignoringFields("id", "reservationStatus").isEqualTo(returnedReservation);
+        assertEquals(returnedReservation.getReservationStatus(), ReservationStatus.Approved);
+    }
+
+    @Test
+    @Rollback
     public void saveNewReservation_ShouldSaveActive_ApprovedReservation(){
         LocalDate startDate = LocalDate.of(2024,2,3);
-        NewReservationDto reservationDto = new NewReservationDto(null, LocalDate.now(), 3, 300, ReservationStatus.Approved, 1L, 6L, 1L, 3);
-        ResponseEntity<Void> responseEntity = restTemplate.exchange("/api/reservations",
+        ReservationDto reservationDto = new ReservationDto(null, LocalDate.now(), LocalDate.now(), 3, 300, ReservationStatus.Approved, 1L, 6L, 1L, 3);
+        ResponseEntity<ReservationDto> responseEntity = restTemplate.exchange("/api/reservations",
                 HttpMethod.POST,
                 new HttpEntity<>(reservationDto, getHttpHeaders()),
-                new ParameterizedTypeReference<Void>() {
+                new ParameterizedTypeReference<ReservationDto>() {
                 });
         assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
+        ReservationDto returnedReservation = responseEntity.getBody();
+        assertThat(reservationDto).usingRecursiveComparison().ignoringFields("id", "reservationStatus").isEqualTo(returnedReservation);
+        assertEquals(returnedReservation.getReservationStatus(), ReservationStatus.Active);
     }
 
-    @Test
-    public void saveNewReservation_ShouldSaveDone_ApprovedReservation(){
-        LocalDate startDate = LocalDate.of(2024,2,3);
-        NewReservationDto reservationDto = new NewReservationDto(null, LocalDate.now().minusDays(3), 3, 300, ReservationStatus.Approved, 1L, 6L, 1L, 3);
-        ResponseEntity<Void> responseEntity = restTemplate.exchange("/api/reservations",
-                HttpMethod.POST,
-                new HttpEntity<>(reservationDto, getHttpHeaders()),
-                new ParameterizedTypeReference<Void>() {
-                });
-        assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
-    }
 
     @Test
+    @Rollback
     public void saveNewReservation_ShouldSaveDenied_ApprovedReservation(){
         LocalDate startDate = LocalDate.of(2024,2,3);
-        NewReservationDto reservationDto = new NewReservationDto(null, LocalDate.now().minusDays(3), 3, 300, ReservationStatus.Pending, 2L, 6L, 1L, 3);
-        ResponseEntity<Void> responseEntity = restTemplate.exchange("/api/reservations",
+        ReservationDto reservationDto = new ReservationDto(null, LocalDate.now(), LocalDate.now(), 3, 300, ReservationStatus.Pending, 2L, 6L, 1L, 3);
+        ResponseEntity<ReservationDto> responseEntity = restTemplate.exchange("/api/reservations",
                 HttpMethod.POST,
                 new HttpEntity<>(reservationDto, getHttpHeaders()),
-                new ParameterizedTypeReference<Void>() {
+                new ParameterizedTypeReference<ReservationDto>() {
                 });
         assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
+        ReservationDto returnedReservation = responseEntity.getBody();
+        assertThat(reservationDto).usingRecursiveComparison().ignoringFields("id", "reservationStatus").isEqualTo(returnedReservation);
+        assertEquals(returnedReservation.getReservationStatus(), ReservationStatus.Denied);
     }
 
 }

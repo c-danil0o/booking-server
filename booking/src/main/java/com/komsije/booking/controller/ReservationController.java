@@ -91,7 +91,7 @@ public class ReservationController {
     }
 
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<ReservationDto> saveReservation(@RequestBody NewReservationDto reservationDTO) {
+    public ResponseEntity<ReservationDto> saveReservation(@RequestBody ReservationDto reservationDTO) {
         ReservationDto reservationDto = reservationService.saveNewReservation(reservationDTO);
         return new ResponseEntity<>(reservationDto,HttpStatus.CREATED);
     }

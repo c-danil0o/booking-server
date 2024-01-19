@@ -282,14 +282,15 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public ReservationDto saveNewReservation(NewReservationDto reservationDto) {
+    public ReservationDto saveNewReservation(ReservationDto reservationDto) {
         if (doesSameExist(reservationDto)){
             throw new ReservationAlreadyExistsException("You already made reservation for this dates for this accommodation");
         }
-        Reservation reservation = mapper.fromNewDto(reservationDto);
+        Reservation reservation = mapper.fromDto(reservationDto);
         Accommodation accommodation = accommodationService.findModelById(reservationDto.getAccommodationId());
         reservation.setAccommodation(accommodation);
         reservation.setDateCreated(LocalDate.now());
+        reservationRepository.save(reservation);
         if (reservation.getReservationStatus().equals(ReservationStatus.Approved) || accommodation.isAutoApproval()){
             accommodationService.reserveTimeslot(reservation.getAccommodation().getId(),reservation.getStartDate(), reservation.getStartDate().plusDays(reservation.getDays()));
             reservation.setReservationStatus(ReservationStatus.Approved);
@@ -312,7 +313,7 @@ public class ReservationServiceImpl implements ReservationService {
         return mapper.toDto(reservation);
     }
 
-    private boolean doesSameExist(NewReservationDto reservationDto){
+    private boolean doesSameExist(ReservationDto reservationDto){
         List<Reservation> reservations = reservationRepository.getIfExists(reservationDto.getStartDate(), reservationDto.getAccommodationId(),reservationDto.getGuestId());
         return !reservations.isEmpty();
     }

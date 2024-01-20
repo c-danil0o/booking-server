@@ -295,4 +295,28 @@ public class ReservationServiceTest {
 
 
 
+    @Test
+    public void denyReservationRequest_ShouldThrowPendingResException_ReservationNotPending(){
+        Reservation reservation = new Reservation(null, LocalDate.now(), LocalDate.now(), 10, 3, 300, 1L, 6L, null, ReservationStatus.Approved);
+        when(reservationRepository.findById(VALID_RESERVATION_ID)).thenReturn(Optional.of(reservation));
+        PendingReservationException exception = assertThrows(PendingReservationException.class, () -> reservationService.denyReservationRequest(VALID_RESERVATION_ID));
+        assertEquals("Reservation is not in pending state!", exception.getMessage());
+        verify(reservationRepository).findById(VALID_RESERVATION_ID);
+        verifyNoMoreInteractions(reservationRepository);
+        assertEquals(ReservationStatus.Approved, reservation.getReservationStatus());
+    }
+
+    @Test
+    public void denyReservationRequest_ShouldReturnTrue_ReservationPending(){
+        Reservation reservation = new Reservation(null, LocalDate.now(), LocalDate.now(), 10, 3, 300, 1L, 6L, null, ReservationStatus.Pending);
+        when(reservationRepository.findById(VALID_RESERVATION_ID)).thenReturn(Optional.of(reservation));
+        assertTrue(reservationService.denyReservationRequest(VALID_RESERVATION_ID));
+        verify(reservationRepository).findById(VALID_RESERVATION_ID);
+        verify(reservationRepository).save(reservation);
+        assertEquals(ReservationStatus.Denied, reservation.getReservationStatus());
+        verifyNoMoreInteractions(reservationRepository);
+    }
+
+
+
 }

@@ -5,14 +5,20 @@ import com.komsije.booking.exceptions.ReservationAlreadyExistsException;
 import com.komsije.booking.model.Accommodation;
 import com.komsije.booking.model.TimeSlot;
 import com.komsije.booking.repository.AccommodationRepository;
+import com.komsije.booking.service.interfaces.AccommodationService;
 import org.apache.commons.lang3.SerializationUtils;
 import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -26,11 +32,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
 public class AccommodationServiceTest {
-    @Mock
+    @MockBean
     private AccommodationRepository accommodationRepository;
 
-    @InjectMocks
+    @Autowired
     private AccommodationServiceImpl accommodationService;
     private List<TimeSlot> availability;
     private LocalDate referenceDate = LocalDate.now().plusDays(10);

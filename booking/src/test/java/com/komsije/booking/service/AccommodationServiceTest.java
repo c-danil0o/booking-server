@@ -248,4 +248,6 @@ public class AccommodationServiceTest {
         verify(accommodationRepository).findById(VALID_ACCOMMODATION_ID);
         verifyNoMoreInteractions(accommodationRepository);
     }
+
+
 }

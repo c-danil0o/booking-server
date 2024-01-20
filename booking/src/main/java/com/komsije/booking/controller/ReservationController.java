@@ -118,19 +118,19 @@ public class ReservationController {
     }
     @PreAuthorize("hasAnyRole('Admin', 'Host')")
     @PutMapping(value = "/{id}/approve")
-    public ResponseEntity<Void> approveReservationRequest(@PathVariable("id") Long id) {
+    public ResponseEntity<Object> approveReservationRequest(@PathVariable("id") Long id) {
         reservationService.acceptReservationRequest(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
     @PreAuthorize("hasAnyRole('Admin', 'Host')")
     @PutMapping(value = "/{id}/deny")
-    public ResponseEntity<Void> denyReservationRequest(@PathVariable("id") Long id) {
+    public ResponseEntity<Object> denyReservationRequest(@PathVariable("id") Long id) {
         reservationService.denyReservationRequest(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
     @PreAuthorize("hasAnyRole('Admin', 'Guest')")
     @PutMapping(value = "/{id}/cancel")
-    public ResponseEntity<Void> cancelReservationRequest(@PathVariable("id") Long id) {
+    public ResponseEntity<Object> cancelReservationRequest(@PathVariable("id") Long id) {
         guestService.cancelReservationRequest(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

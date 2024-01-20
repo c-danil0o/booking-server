@@ -71,7 +71,7 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
     @Override
-    public void saveAndSendNotification(Notification notification) {
+    public String saveAndSendNotification(Notification notification) {
         notificationRepository.save(notification);
         this.simpMessagingTemplate.convertAndSend("/socket-publisher/" + notification.getReceiver().getId(),
                 mapper.toDto(notification));
@@ -83,13 +83,12 @@ public class NotificationServiceImpl implements NotificationService {
                 .setTopic(topic)
                 .build();
 
-        String response = null;
         try {
-            response = FirebaseMessaging.getInstance().send(message);
+            return FirebaseMessaging.getInstance().send(message);
         } catch (FirebaseMessagingException e) {
             System.out.println("Sending message to firebase failed!");
+            return null;
         }
-
 
     }
 

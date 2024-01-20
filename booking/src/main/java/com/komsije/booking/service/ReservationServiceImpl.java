@@ -1,6 +1,5 @@
 package com.komsije.booking.service;
 
-import com.komsije.booking.dto.NewReservationDto;
 import com.komsije.booking.dto.ReservationDto;
 import com.komsije.booking.dto.ReservationViewDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
@@ -43,11 +42,13 @@ public class ReservationServiceImpl implements ReservationService {
     private static final Logger LOG = Logger.getAnonymousLogger();
 
     @Autowired
-    public ReservationServiceImpl(ReservationRepository reservationRepository, AccommodationService accommodationService, ReservationMapper mapper, TaskScheduler taskScheduler) {
+    public ReservationServiceImpl(ReservationRepository reservationRepository, AccommodationService accommodationService, ReservationMapper mapper, TaskScheduler taskScheduler, NotificationService notificationService, AccountService accountService) {
         this.reservationRepository = reservationRepository;
         this.accommodationService = accommodationService;
         this.mapper = mapper;
         this.taskScheduler = taskScheduler;
+        this.notificationService = notificationService;
+        this.accountService = accountService;
     }
 
     public ReservationDto findById(Long id) throws ElementNotFoundException {
@@ -204,17 +205,20 @@ public class ReservationServiceImpl implements ReservationService {
             taskScheduler.schedule(task1, startDate);
             taskScheduler.schedule(task2, endDate);
             denyOverlappingRequests(reservation.getStartDate(), reservation.getStartDate().plusDays(reservation.getDays()), reservation.getAccommodation().getId());
-            Account guest = accountService.findModelById(reservation.getGuestId());
-            if (guest.getSettings().contains(Settings.RESERVATION_RESPONSE_NOTIFICATION)){
-                StringBuilder mess = new StringBuilder();
-                mess.append("Host ").append(accountService.findModelById(reservation.getHostId()).getEmail()).append(" has approved your reservation request!");
-                Notification notification = new Notification(null, mess.toString(), LocalDateTime.now(),accountService.findModelById(reservation.getGuestId()));
-                notificationService.saveAndSendNotification(notification);
-            }
+            sendRequestApprovedNotification(reservation);
         }else{
             throw new PendingReservationException("Reservation is not in pending state!");
         }
         return true;
+    }
+    private void sendRequestApprovedNotification(Reservation reservation){
+        Account guest = accountService.findModelById(reservation.getGuestId());
+        if (guest.getSettings().contains(Settings.RESERVATION_RESPONSE_NOTIFICATION)){
+            StringBuilder mess = new StringBuilder();
+            mess.append("Host ").append(accountService.findModelById(reservation.getHostId()).getEmail()).append(" has approved your reservation request!");
+            Notification notification = new Notification(null, mess.toString(), LocalDateTime.now(),guest);
+            notificationService.saveAndSendNotification(notification);
+        }
     }
 
     public void denyOverlappingRequests(LocalDate startDate, LocalDate endDate, Long accommodationId){
@@ -273,17 +277,21 @@ public class ReservationServiceImpl implements ReservationService {
         if(status.equals(ReservationStatus.Pending)){
             reservation.setReservationStatus(ReservationStatus.Denied);
             reservationRepository.save(reservation);
-            Account guest = accountService.findModelById(reservation.getGuestId());
-            if (guest.getSettings().contains(Settings.RESERVATION_RESPONSE_NOTIFICATION)){
-                StringBuilder mess = new StringBuilder();
-                mess.append("Host ").append(accountService.findModelById(reservation.getHostId()).getEmail()).append(" has denied your reservation request!");
-                Notification notification = new Notification(null, mess.toString(), LocalDateTime.now(),accountService.findModelById(reservation.getGuestId()));
-                notificationService.saveAndSendNotification(notification);
-            }
+            sendRequestDeniedNotification(reservation);
         }else{
             throw new PendingReservationException("Reservation is not in pending state!");
         }
         return true;
+    }
+
+    private void sendRequestDeniedNotification(Reservation reservation){
+        Account guest = accountService.findModelById(reservation.getGuestId());
+        if (guest.getSettings().contains(Settings.RESERVATION_RESPONSE_NOTIFICATION)){
+            StringBuilder mess = new StringBuilder();
+            mess.append("Host ").append(accountService.findModelById(reservation.getHostId()).getEmail()).append(" has denied your reservation request!");
+            Notification notification = new Notification(null, mess.toString(), LocalDateTime.now(),guest);
+            notificationService.saveAndSendNotification(notification);
+        }
     }
 
     @Override
@@ -310,23 +318,19 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setAccommodation(accommodation);
         reservation.setDateCreated(LocalDate.now());
         reservationRepository.save(reservation);
-        if (reservation.getReservationStatus().equals(ReservationStatus.Approved) || accommodation.isAutoApproval()){
-            accommodationService.reserveTimeslot(reservation.getAccommodation().getId(),reservation.getStartDate(), reservation.getStartDate().plusDays(reservation.getDays()));
+        sendNewReservationNotification(reservationDto);
+        if (reservation.getReservationStatus().equals(ReservationStatus.Approved) || accommodation.isAutoApproval()) {
+            accommodationService.reserveTimeslot(reservation.getAccommodation().getId(), reservation.getStartDate(), reservation.getStartDate().plusDays(reservation.getDays()));
             reservation.setReservationStatus(ReservationStatus.Approved);
             Runnable task1 = () -> setStatusToActive(reservation);
             Runnable task2 = () -> setStatusToDone(reservation);
             Instant endDate = reservation.getStartDate().plusDays(reservation.getDays()).atStartOfDay().toInstant(ZoneOffset.UTC);
             Instant startDate = reservation.getStartDate().atStartOfDay().toInstant(ZoneOffset.UTC);
-            LOG.log(Level.INFO, "Scheduled task to set reservation "+ reservation.getId() + " to active on " + startDate);
-            LOG.log(Level.INFO, "Scheduled task to set reservation "+ reservation.getId() + " to done on " + endDate);
+            LOG.log(Level.INFO, "Scheduled task to set reservation " + reservation.getId() + " to active on " + startDate);
+            LOG.log(Level.INFO, "Scheduled task to set reservation " + reservation.getId() + " to done on " + endDate);
             taskScheduler.schedule(task1, startDate);
-            taskScheduler.schedule(task2,endDate);
-           Account host = accountService.findModelById(reservationDto.getHostId());
-             if (host.getSettings().contains(Settings.RESERVATION_REQUEST_NOTIFICATION)){
-            StringBuilder mess = new StringBuilder();
-            mess.append("Guest ").append(accountService.findModelById(reservationDto.getGuestId()).getEmail()).append(" has created reservation request for your accommodation!");
-            Notification notification = new Notification(null, mess.toString(), LocalDateTime.now(), accountService.findModelById(reservationDto.getHostId()));
-            notificationService.saveAndSendNotification(notification);
+            taskScheduler.schedule(task2, endDate);
+            sendRequestApprovedNotification(reservation);
         }else{
             Runnable task = () -> checkIfNotApproved(reservation);
             LOG.log(Level.INFO, "Scheduled task to set reservation "+ reservation.getId() + " to DENIED if not approved until " + reservation.getStartDate());
@@ -337,6 +341,16 @@ public class ReservationServiceImpl implements ReservationService {
         LOG.log(Level.INFO, "I am leaving");
 
         return mapper.toDto(reservation);
+    }
+
+    private void sendNewReservationNotification(ReservationDto reservationDto){
+        Account host = accountService.findModelById(reservationDto.getHostId());
+        if (host.getSettings().contains(Settings.RESERVATION_REQUEST_NOTIFICATION)) {
+            StringBuilder mess = new StringBuilder();
+            mess.append("Guest ").append(accountService.findModelById(reservationDto.getGuestId()).getEmail()).append(" has created reservation request for your accommodation!");
+            Notification notification = new Notification(null, mess.toString(), LocalDateTime.now(),host);
+            notificationService.saveAndSendNotification(notification);
+        }
     }
 
     private boolean doesSameExist(ReservationDto reservationDto){

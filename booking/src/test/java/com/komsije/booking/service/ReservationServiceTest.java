@@ -5,11 +5,11 @@ import com.komsije.booking.dto.ReservationDto;
 import com.komsije.booking.exceptions.PendingReservationException;
 import com.komsije.booking.exceptions.ReservationAlreadyExistsException;
 import com.komsije.booking.mapper.ReservationMapper;
-import com.komsije.booking.model.Accommodation;
-import com.komsije.booking.model.Reservation;
-import com.komsije.booking.model.ReservationStatus;
+import com.komsije.booking.model.*;
 import com.komsije.booking.repository.ReservationRepository;
 import com.komsije.booking.service.interfaces.AccommodationService;
+import com.komsije.booking.service.interfaces.AccountService;
+import com.komsije.booking.service.interfaces.NotificationService;
 import com.komsije.booking.utils.TestTaskScheduler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,7 +38,7 @@ import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestInstance(TestInstance.Lifecycle.PER_METHOD)
 public class ReservationServiceTest {
 
     private final Long VALID_RESERVATION_ID = 20L;
@@ -53,6 +53,10 @@ public class ReservationServiceTest {
     private ReservationMapper reservationMapper;
     @MockBean
     private AccommodationService accommodationService;
+    @MockBean
+    private AccountService accountService;
+    @MockBean
+    private NotificationService notificationService;
     @Autowired
     private TaskScheduler taskScheduler;
 //    @InjectMocks
@@ -81,7 +85,13 @@ public class ReservationServiceTest {
     }
     //    Element with given ID doesn't exist!
     @Test
-    public void testSaveNewReservation_ShouldCreatePending_NewReservationNoApproved(){
+    public void testSaveNewReservation_ShouldCreatePendingAndSendNotification_NewReservationNoApproved(){
+        Account host = new Account();
+        host.setSettings(new HashSet<>(Arrays.asList(Settings.RESERVATION_REQUEST_NOTIFICATION)));
+        Account guest = new Account();
+        guest.setEmail("example@12.com");
+
+
         ReservationDto reservationDto = new ReservationDto(VALID_RESERVATION_ID, LocalDate.now().plusDays(5), LocalDate.now(), 3, 300, ReservationStatus.Pending, VALID_ACCOMMODATION_ID, 6L, 1L, 3);
         List<Reservation> reservationList = new ArrayList<>();
         Reservation reservation = new Reservation(VALID_RESERVATION_ID, LocalDate.now().plusDays(5), null, 3, 3, 300, 1L, 6L, null, ReservationStatus.Pending);
@@ -93,7 +103,8 @@ public class ReservationServiceTest {
         when(accommodationService.findModelById(reservationDto.getAccommodationId())).thenReturn(accommodation);
         when(reservationRepository.save(reservation)).thenReturn(null);
         when(reservationMapper.toDto(reservation)).thenReturn(resDto);
-//        doNothing().when(accommodationService).reserveTimeslot(null, reservation.getStartDate(), reservation.getStartDate().plusDays(reservation.getDays()));
+        when(accountService.findModelById(1L)).thenReturn(host);
+        when(accountService.findModelById(6L)).thenReturn(guest);
 
         ReservationDto result = reservationService.saveNewReservation(reservationDto);
         assertEquals(reservation.getReservationStatus(), ReservationStatus.Pending);
@@ -103,12 +114,55 @@ public class ReservationServiceTest {
         verify(reservationRepository, times(2)).save(reservation);
         verify(reservationMapper).fromDto(reservationDto);
         verify(reservationMapper).toDto(reservation);
-//        verify(accommodationService).reserveTimeslot(null, reservation.getStartDate(), reservation.getStartDate().plusDays(reservation.getDays()));
+        verify(accountService).findModelById(1L);
+        verify(notificationService).saveAndSendNotification(any(Notification.class));
         verifyNoMoreInteractions(accommodationService);
     }
 
     @Test
-    public void testSaveNewReservation_ShouldCreateApproved_AutoApprovingAccommodation(){
+    public void testSaveNewReservation_ShouldCreatePendingAndNotNotification_NewReservationNoApproved(){
+        Account host = new Account();
+        host.setSettings(new HashSet<>(Arrays.asList(Settings.RESERVATION_RESPONSE_NOTIFICATION)));
+        Account guest = new Account();
+        guest.setEmail("example@12.com");
+
+
+        ReservationDto reservationDto = new ReservationDto(VALID_RESERVATION_ID, LocalDate.now().plusDays(5), LocalDate.now(), 3, 300, ReservationStatus.Pending, VALID_ACCOMMODATION_ID, 6L, 1L, 3);
+        List<Reservation> reservationList = new ArrayList<>();
+        Reservation reservation = new Reservation(VALID_RESERVATION_ID, LocalDate.now().plusDays(5), null, 3, 3, 300, 1L, 6L, null, ReservationStatus.Pending);
+        Accommodation accommodation = new Accommodation();
+        accommodation.setAutoApproval(false);
+        ReservationDto resDto = new ReservationDto();
+        when(reservationRepository.getIfExists(reservationDto.getStartDate(), reservationDto.getAccommodationId(), reservationDto.getGuestId())).thenReturn(reservationList);
+        when(reservationMapper.fromDto(reservationDto)).thenReturn(reservation);
+        when(accommodationService.findModelById(reservationDto.getAccommodationId())).thenReturn(accommodation);
+        when(reservationRepository.save(reservation)).thenReturn(null);
+        when(reservationMapper.toDto(reservation)).thenReturn(resDto);
+        when(accountService.findModelById(1L)).thenReturn(host);
+        when(accountService.findModelById(6L)).thenReturn(guest);
+
+        ReservationDto result = reservationService.saveNewReservation(reservationDto);
+        assertEquals(reservation.getReservationStatus(), ReservationStatus.Pending);
+
+        verify(reservationRepository).getIfExists(reservationDto.getStartDate(), reservationDto.getAccommodationId(), reservationDto.getGuestId());
+        verify(accommodationService).findModelById(reservationDto.getAccommodationId());
+        verify(reservationRepository, times(2)).save(reservation);
+        verify(reservationMapper).fromDto(reservationDto);
+        verify(reservationMapper).toDto(reservation);
+        verify(accountService).findModelById(1L);
+        verifyNoMoreInteractions(accountService);
+        verifyNoInteractions(notificationService);
+        verifyNoMoreInteractions(accommodationService);
+    }
+
+    @Test
+    public void testSaveNewReservation_ShouldCreateApprovedAndSendNotification_AutoApprovingAccommodation(){
+        Account guest = new Account();
+        guest.setSettings(new HashSet<>(Arrays.asList(Settings.RESERVATION_RESPONSE_NOTIFICATION)));
+        Account host = new Account();
+        host.setEmail("example@12.com");
+
+
         ReservationDto reservationDto = new ReservationDto(VALID_RESERVATION_ID, LocalDate.now().plusDays(5), LocalDate.now(), 3, 300, ReservationStatus.Pending, VALID_ACCOMMODATION_ID, 6L, 1L, 3);
         List<Reservation> reservationList = new ArrayList<>();
         Reservation reservation = new Reservation(VALID_RESERVATION_ID, LocalDate.now().plusDays(5), null, 3, 3, 300, 1L, 6L, null, ReservationStatus.Pending);
@@ -120,6 +174,8 @@ public class ReservationServiceTest {
         when(accommodationService.findModelById(reservationDto.getAccommodationId())).thenReturn(accommodation);
         when(reservationRepository.save(reservation)).thenReturn(null);
         when(reservationMapper.toDto(reservation)).thenReturn(resDto);
+        when(accountService.findModelById(6L)).thenReturn(guest);
+        when(accountService.findModelById(1L)).thenReturn(host);
 //        doNothing().when(accommodationService).reserveTimeslot(null, reservation.getStartDate(), reservation.getStartDate().plusDays(reservation.getDays()));
 
         ReservationDto result = reservationService.saveNewReservation(reservationDto);
@@ -130,11 +186,56 @@ public class ReservationServiceTest {
         verify(reservationMapper).fromDto(reservationDto);
         verify(reservationMapper).toDto(reservation);
         verify(reservationRepository, times(2)).save(reservation);
+        verify(notificationService).saveAndSendNotification(any(Notification.class));
+        verifyNoMoreInteractions(notificationService);
+
 //        verify(accommodationService).reserveTimeslot(null, reservation.getStartDate(), reservation.getStartDate().plusDays(reservation.getDays()));
     }
 
     @Test
-    public void testSaveNewReservation_ShouldCreateActive_AutoApprovingAccommodation() throws InterruptedException {
+    public void testSaveNewReservation_ShouldCreateApprovedAndNotNotification_AutoApprovingAccommodation(){
+        Account guest = new Account();
+        guest.setSettings(new HashSet<>());
+        Account host = new Account();
+        host.setEmail("example@12.com");
+
+
+        ReservationDto reservationDto = new ReservationDto(VALID_RESERVATION_ID, LocalDate.now().plusDays(5), LocalDate.now(), 3, 300, ReservationStatus.Pending, VALID_ACCOMMODATION_ID, 6L, 1L, 3);
+        List<Reservation> reservationList = new ArrayList<>();
+        Reservation reservation = new Reservation(VALID_RESERVATION_ID, LocalDate.now().plusDays(5), null, 3, 3, 300, 1L, 6L, null, ReservationStatus.Pending);
+        Accommodation accommodation = new Accommodation();
+        accommodation.setAutoApproval(true);
+        ReservationDto resDto = new ReservationDto();
+        when(reservationRepository.getIfExists(reservationDto.getStartDate(), reservationDto.getAccommodationId(), reservationDto.getGuestId())).thenReturn(reservationList);
+        when(reservationMapper.fromDto(reservationDto)).thenReturn(reservation);
+        when(accommodationService.findModelById(reservationDto.getAccommodationId())).thenReturn(accommodation);
+        when(reservationRepository.save(reservation)).thenReturn(null);
+        when(reservationMapper.toDto(reservation)).thenReturn(resDto);
+        when(accountService.findModelById(6L)).thenReturn(guest);
+        when(accountService.findModelById(1L)).thenReturn(host);
+//        doNothing().when(accommodationService).reserveTimeslot(null, reservation.getStartDate(), reservation.getStartDate().plusDays(reservation.getDays()));
+
+        ReservationDto result = reservationService.saveNewReservation(reservationDto);
+        assertEquals(reservation.getReservationStatus(), ReservationStatus.Approved);
+
+        verify(reservationRepository).getIfExists(reservationDto.getStartDate(), reservationDto.getAccommodationId(), reservationDto.getGuestId());
+        verify(accommodationService).findModelById(reservationDto.getAccommodationId());
+        verify(reservationMapper).fromDto(reservationDto);
+        verify(reservationMapper).toDto(reservation);
+        verify(reservationRepository, times(2)).save(reservation);
+        verifyNoInteractions(notificationService);
+
+//        verify(accommodationService).reserveTimeslot(null, reservation.getStartDate(), reservation.getStartDate().plusDays(reservation.getDays()));
+    }
+
+    @Test
+    public void testSaveNewReservation_ShouldCreateActiveAndSendNotification_AutoApprovingAccommodation() throws InterruptedException {
+        Account guest = new Account();
+        guest.setSettings(new HashSet<>(Arrays.asList(Settings.RESERVATION_RESPONSE_NOTIFICATION)));
+        Account host = new Account();
+        host.setEmail("example@12.com");
+
+
         ReservationDto reservationDto = new ReservationDto(VALID_RESERVATION_ID, LocalDate.now(), LocalDate.now(), 3, 300, ReservationStatus.Pending, VALID_ACCOMMODATION_ID, 6L, 1L, 3);
         List<Reservation> reservationList = new ArrayList<>();
         Reservation reservation = new Reservation(VALID_RESERVATION_ID, LocalDate.now(), null, 3, 3, 300, 1L, 6L, null, ReservationStatus.Pending);
@@ -146,6 +247,8 @@ public class ReservationServiceTest {
         when(accommodationService.findModelById(reservationDto.getAccommodationId())).thenReturn(accommodation);
         when(reservationRepository.save(reservation)).thenReturn(reservation);
         when(reservationMapper.toDto(reservation)).thenReturn(resDto);
+        when(accountService.findModelById(6L)).thenReturn(guest);
+        when(accountService.findModelById(1L)).thenReturn(host);
 
         ReservationDto result = reservationService.saveNewReservation(reservationDto);
         Thread.sleep(500);
@@ -155,10 +258,17 @@ public class ReservationServiceTest {
         verify(accommodationService).findModelById(reservationDto.getAccommodationId());
         verify(reservationMapper).fromDto(reservationDto);
         verify(reservationMapper).toDto(reservation);
+        verify(notificationService).saveAndSendNotification(any(Notification.class));
+        verifyNoMoreInteractions(notificationService);
     }
 
     @Test
-    public void testSaveNewReservation_ShouldCreateDone_AutoApprovingAccommodation() throws InterruptedException {
+    public void testSaveNewReservation_ShouldCreateDoneAndSendNotification_AutoApprovingAccommodation() throws InterruptedException {
+        Account guest = new Account();
+        guest.setSettings(new HashSet<>(Arrays.asList(Settings.RESERVATION_RESPONSE_NOTIFICATION)));
+        Account host = new Account();
+        host.setEmail("example@12.com");
+
         ReservationDto reservationDto = new ReservationDto(VALID_RESERVATION_ID, LocalDate.now().minusDays(3), LocalDate.now(), 3, 300, ReservationStatus.Pending, VALID_ACCOMMODATION_ID, 6L, 1L, 3);
         List<Reservation> reservationList = new ArrayList<>();
         Reservation reservation = new Reservation(VALID_RESERVATION_ID, LocalDate.now().minusDays(3), null, 2, 3, 300, 1L, 6L, null, ReservationStatus.Pending);
@@ -170,6 +280,8 @@ public class ReservationServiceTest {
         when(accommodationService.findModelById(reservationDto.getAccommodationId())).thenReturn(accommodation);
         when(reservationRepository.save(reservation)).thenReturn(reservation);
         when(reservationMapper.toDto(reservation)).thenReturn(resDto);
+        when(accountService.findModelById(6L)).thenReturn(guest);
+        when(accountService.findModelById(1L)).thenReturn(host);
 
         ReservationDto result = reservationService.saveNewReservation(reservationDto);
         Thread.sleep(500);
@@ -179,10 +291,17 @@ public class ReservationServiceTest {
         verify(accommodationService).findModelById(reservationDto.getAccommodationId());
         verify(reservationMapper).fromDto(reservationDto);
         verify(reservationMapper).toDto(reservation);
+        verify(notificationService).saveAndSendNotification(any(Notification.class));
+        verifyNoMoreInteractions(notificationService);
     }
 
     @Test
-    public void testSaveNewReservation_ShouldCreateDenied_AutoApprovingAccommodation() throws InterruptedException {
+    public void testSaveNewReservation_ShouldCreateDeniedAndSendHostNotification_AutoApprovingAccommodation() throws InterruptedException {
+        Account host = new Account();
+        host.setSettings(new HashSet<>(Arrays.asList(Settings.RESERVATION_REQUEST_NOTIFICATION)));
+        Account guest = new Account();
+        guest.setEmail("example@12.com");
+
         ReservationDto reservationDto = new ReservationDto(VALID_RESERVATION_ID, LocalDate.now(), LocalDate.now(), 3, 300, ReservationStatus.Pending, VALID_ACCOMMODATION_ID, 6L, 1L, 3);
         List<Reservation> reservationList = new ArrayList<>();
         Reservation reservation = new Reservation(VALID_RESERVATION_ID, LocalDate.now(), null, 3, 3, 300, 1L, 6L, null, ReservationStatus.Pending);
@@ -194,6 +313,8 @@ public class ReservationServiceTest {
         when(accommodationService.findModelById(reservationDto.getAccommodationId())).thenReturn(accommodation);
         when(reservationRepository.save(reservation)).thenReturn(reservation);
         when(reservationMapper.toDto(reservation)).thenReturn(resDto);
+        when(accountService.findModelById(6L)).thenReturn(guest);
+        when(accountService.findModelById(1L)).thenReturn(host);
 
         ReservationDto result = reservationService.saveNewReservation(reservationDto);
         Thread.sleep(500);
@@ -203,65 +324,111 @@ public class ReservationServiceTest {
         verify(accommodationService).findModelById(reservationDto.getAccommodationId());
         verify(reservationMapper).fromDto(reservationDto);
         verify(reservationMapper).toDto(reservation);
+        verify(notificationService).saveAndSendNotification(any(Notification.class));
+        verifyNoMoreInteractions(notificationService);
     }
 
 
 
     @Test
     public void testAcceptReservationRequest_ShouldThrowException_ReservationNotPending() {
+
         Reservation reservation = new Reservation(VALID_RESERVATION_ID, LocalDate.now().plusDays(5), null, 3, 3, 300, 1L, 6L, null, ReservationStatus.Approved);
         when(reservationRepository.findById(VALID_RESERVATION_ID)).thenReturn(Optional.of(reservation));
+
         PendingReservationException exception = assertThrows(PendingReservationException.class, () -> reservationService.acceptReservationRequest(VALID_RESERVATION_ID));
-        verify(reservationRepository).findById(VALID_RESERVATION_ID);
         assertEquals("Reservation is not in pending state!", exception.getMessage());
+
+        verify(reservationRepository).findById(VALID_RESERVATION_ID);
         verifyNoMoreInteractions(reservationRepository);
     }
 
     @Test
-    public void testAcceptReservationRequest_ShouldSetStatusToApprovedAndReturnTrue_StartDateInTwoDays() {
+    public void testAcceptReservationRequest_ShouldSetStatusToApprovedSendGuestNotificationAndReturnTrue_StartDateInTwoDays() throws InterruptedException {
+        Account guest = new Account();
+        guest.setSettings(new HashSet<>(Arrays.asList(Settings.RESERVATION_RESPONSE_NOTIFICATION)));
+        Account host = new Account();
+        host.setEmail("example@12.com");
+
+
         Accommodation accommodation = new Accommodation();
         LocalDate startDate = LocalDate.now().plusDays(2);
         LocalDate endDate = startDate.plusDays(3);
         accommodation.setId(VALID_ACCOMMODATION_ID);
         Reservation reservation = new Reservation(VALID_RESERVATION_ID, startDate, LocalDate.now(), 3, 3, 300, 1L, 6L, accommodation, ReservationStatus.Pending);
         when(reservationRepository.findById(VALID_RESERVATION_ID)).thenReturn(Optional.of(reservation));
+        when(accountService.findModelById(6L)).thenReturn(guest);
+        when(accountService.findModelById(1L)).thenReturn(host);
         boolean result = reservationService.acceptReservationRequest(VALID_RESERVATION_ID);
-        verify(reservationRepository).findById(VALID_RESERVATION_ID);
-        verify(reservationRepository).save(reservation);
-        verify(reservationRepository).findPendingByAccommodationId(accommodation.getId());
-        verifyNoMoreInteractions(reservationRepository);
+
         assertTrue(result);
         assertEquals(ReservationStatus.Approved, reservation.getReservationStatus());
+
+        verify(reservationRepository).findById(VALID_RESERVATION_ID);
+        verify(reservationRepository,atLeast(1)).save(reservation);
+        verify(reservationRepository).findPendingByAccommodationId(accommodation.getId());
+        verifyNoMoreInteractions(reservationRepository);
+        verify(notificationService).saveAndSendNotification(any(Notification.class));
+        verifyNoMoreInteractions(notificationService);
+
+
     }
 
     @Test
-    public void testAcceptReservationRequest_ShouldSetStatusToActiveAndReturnTrue_StartDateNow() {
+    public void testAcceptReservationRequest_ShouldSetStatusToActiveSendGuestNotificationAndReturnTrue_StartDateNow() throws InterruptedException {
+        Account guest = new Account();
+        guest.setSettings(new HashSet<>(Arrays.asList(Settings.RESERVATION_RESPONSE_NOTIFICATION)));
+        Account host = new Account();
+        host.setEmail("example@12.com");
+
         Accommodation accommodation = new Accommodation();
         LocalDate startDate = LocalDate.now();
         accommodation.setId(VALID_ACCOMMODATION_ID);
         Reservation reservation = new Reservation(VALID_RESERVATION_ID, startDate, LocalDate.now(), 3, 3, 300, 1L, 6L, accommodation, ReservationStatus.Pending);
         when(reservationRepository.findById(VALID_RESERVATION_ID)).thenReturn(Optional.of(reservation));
+        when(accountService.findModelById(6L)).thenReturn(guest);
+        when(accountService.findModelById(1L)).thenReturn(host);
         boolean result = reservationService.acceptReservationRequest(VALID_RESERVATION_ID);
+
+        assertTrue(result);
+        Thread.sleep(500);
+        assertEquals(ReservationStatus.Active, reservation.getReservationStatus());
+
+        verify(reservationRepository,atLeast(1)).save(reservation);
         verify(reservationRepository).findById(VALID_RESERVATION_ID);
         verify(reservationRepository).findPendingByAccommodationId(accommodation.getId());
-        assertTrue(result);
-        assertEquals(ReservationStatus.Active, reservation.getReservationStatus());
+        verify(notificationService).saveAndSendNotification(any(Notification.class));
+        verifyNoMoreInteractions(notificationService);
+
     }
 
     @Test
-    public void testAcceptReservationRequest_ShouldSetStatusToDoneAndReturnTrue_EndDatePast() {
+    public void testAcceptReservationRequest_ShouldSetStatusToDoneSendNotificationAndReturnTrue_EndDatePast() throws InterruptedException {
+        Account guest = new Account();
+        guest.setSettings(new HashSet<>(Arrays.asList(Settings.RESERVATION_RESPONSE_NOTIFICATION)));
+        Account host = new Account();
+        host.setEmail("example@12.com");
+
         Accommodation accommodation = new Accommodation();
         LocalDate startDate = LocalDate.now().minusDays(10);
         accommodation.setId(VALID_ACCOMMODATION_ID);
         Reservation reservation = new Reservation(VALID_RESERVATION_ID, startDate, LocalDate.now(), 3, 3, 300, 1L, 6L, accommodation, ReservationStatus.Pending);
         when(reservationRepository.findById(VALID_RESERVATION_ID)).thenReturn(Optional.of(reservation));
+        when(accountService.findModelById(6L)).thenReturn(guest);
+        when(accountService.findModelById(1L)).thenReturn(host);
         boolean result = reservationService.acceptReservationRequest(VALID_RESERVATION_ID);
+
+        assertTrue(result);
+        Thread.sleep(500);
+
+        assertEquals(ReservationStatus.Done, reservation.getReservationStatus());
+
+        verify(reservationRepository, atLeast(1)).save(reservation);
         verify(reservationRepository).findById(VALID_RESERVATION_ID);
         verify(reservationRepository).findPendingByAccommodationId(accommodation.getId());
-        verify(reservationRepository, times(2)).save(reservation);
-        verifyNoMoreInteractions(reservationRepository);
-        assertTrue(result);
-        assertEquals(ReservationStatus.Done, reservation.getReservationStatus());
+        verify(notificationService).saveAndSendNotification(any(Notification.class));
+        verifyNoMoreInteractions(notificationService);
+
     }
 
     @ParameterizedTest
@@ -299,24 +466,35 @@ public class ReservationServiceTest {
     public void denyReservationRequest_ShouldThrowPendingResException_ReservationNotPending(){
         Reservation reservation = new Reservation(null, LocalDate.now(), LocalDate.now(), 10, 3, 300, 1L, 6L, null, ReservationStatus.Approved);
         when(reservationRepository.findById(VALID_RESERVATION_ID)).thenReturn(Optional.of(reservation));
+
         PendingReservationException exception = assertThrows(PendingReservationException.class, () -> reservationService.denyReservationRequest(VALID_RESERVATION_ID));
         assertEquals("Reservation is not in pending state!", exception.getMessage());
+        assertEquals(ReservationStatus.Approved, reservation.getReservationStatus());
+
         verify(reservationRepository).findById(VALID_RESERVATION_ID);
         verifyNoMoreInteractions(reservationRepository);
-        assertEquals(ReservationStatus.Approved, reservation.getReservationStatus());
+
     }
 
     @Test
     public void denyReservationRequest_ShouldReturnTrue_ReservationPending(){
+        Account guest = new Account();
+        guest.setSettings(new HashSet<>(Arrays.asList(Settings.RESERVATION_RESPONSE_NOTIFICATION)));
+        Account host = new Account();
+        host.setEmail("example@12.com");
+
         Reservation reservation = new Reservation(null, LocalDate.now(), LocalDate.now(), 10, 3, 300, 1L, 6L, null, ReservationStatus.Pending);
         when(reservationRepository.findById(VALID_RESERVATION_ID)).thenReturn(Optional.of(reservation));
+        when(accountService.findModelById(6L)).thenReturn(guest);
+        when(accountService.findModelById(1L)).thenReturn(host);
+
         assertTrue(reservationService.denyReservationRequest(VALID_RESERVATION_ID));
-        verify(reservationRepository).findById(VALID_RESERVATION_ID);
-        verify(reservationRepository).save(reservation);
         assertEquals(ReservationStatus.Denied, reservation.getReservationStatus());
+
+        verify(reservationRepository).save(reservation);
+        verify(reservationRepository).findById(VALID_RESERVATION_ID);
         verifyNoMoreInteractions(reservationRepository);
+        verify(notificationService).saveAndSendNotification(any(Notification.class));
+        verifyNoMoreInteractions(notificationService);
     }
-
-
-
 }

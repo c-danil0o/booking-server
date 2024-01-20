@@ -2,16 +2,14 @@ package com.komsije.booking.mapper;
 
 import com.komsije.booking.dto.GuestDto;
 import com.komsije.booking.dto.RegistrationDto;
-import com.komsije.booking.model.Address;
-import com.komsije.booking.model.Guest;
-import com.komsije.booking.model.Host;
-import com.komsije.booking.model.Role;
+import com.komsije.booking.model.*;
 import com.komsije.booking.repository.GuestRepository;
 import com.komsije.booking.repository.HostRepository;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
+import java.util.HashSet;
 import java.util.List;
 
 @Mapper(componentModel = "spring", uses = {AddressMapper.class, AccommodationMapper.class}, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE )
@@ -41,6 +39,7 @@ public abstract class GuestMapper {
     public Guest fromRegistrationDto(RegistrationDto registrationDto){
         Guest guest = new Guest();
         guest.setEmail(registrationDto.getEmail());
+        guest.setSettings(new HashSet<>(List.of(Settings.RESERVATION_RESPONSE_NOTIFICATION)));
         guest.setPassword(registrationDto.getPassword());
         guest.setPhone(registrationDto.getPhone());
         guest.setAddress(new Address(null, registrationDto.getAddress().getStreet(), registrationDto.getAddress().getCity(), registrationDto.getAddress().getNumber(),registrationDto.getAddress().getCountry(), null, null));

@@ -42,6 +42,7 @@ public class WebSecurityConfiguration {
                 .requestMatchers("/upload/**").permitAll()
                 .requestMatchers("/files/**").permitAll()
                 .requestMatchers("/error/**").permitAll()
+                .requestMatchers("/socket/**").permitAll()
                 .requestMatchers("/api/reports").permitAll()
                 .requestMatchers(HttpMethod.GET, "/", "/webjars/**", "/*.html", "favicon.ico",
                         "/**.html", "/**.css", "/**.js", "/**.png", "/**.jpg", "/**.jpeg", "/images/**").anonymous()

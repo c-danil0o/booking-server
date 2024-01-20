@@ -18,6 +18,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -169,8 +170,8 @@ public class GuestServiceImpl implements GuestService {
     @Override
     public boolean cancelReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException, CancellationDeadlineExpiredException {
         ReservationDto reservation = reservationService.findById(id);
-        if (reservation.getReservationStatus().equals(ReservationStatus.Approved)) {
-            if (reservation.getDateCreated().plusDays(reservationService.getCancellationDeadline(id)).isBefore(LocalDateTime.now())) {
+        if (reservation.getReservationStatus().equals(ReservationStatus.Approved)){
+            if (reservation.getDateCreated().plusDays(reservationService.getCancellationDeadline(id)).isBefore(LocalDate.now())){
                 throw new CancellationDeadlineExpiredException("Cancellation deadline is expired!");
             } else {
                 reservation.setReservationStatus(ReservationStatus.Cancelled);

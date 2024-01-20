@@ -17,7 +17,6 @@ import java.util.List;
 
 public interface ReservationService extends CrudService<ReservationDto, Long> {
     public List<ReservationViewDto> getAll();
-    public void saveModel(Reservation reservation);
     public List<ReservationViewDto> getByHostId(Long id);
     public List<ReservationViewDto> getByGuestId(Long id);
     public List<ReservationViewDto> getRequestsByHostId(Long id);
@@ -43,7 +42,7 @@ public interface ReservationService extends CrudService<ReservationDto, Long> {
     public boolean acceptReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException;
     public boolean denyReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException;
     public void deleteInBatch(List<Long> ids);
-    ReservationDto saveNewReservation(NewReservationDto reservationDto) throws ElementNotFoundException;
+    ReservationDto saveNewReservation(ReservationDto reservationDto) throws ElementNotFoundException;
     // public boolean cancelReservationRequest(Long id) throws ElementNotFoundException, PendingReservationException;
 
 

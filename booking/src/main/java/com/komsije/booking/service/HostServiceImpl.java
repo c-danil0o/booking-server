@@ -59,8 +59,8 @@ public class HostServiceImpl implements HostService {
     }
 
     public HostDto save(HostDto hostDto) {
-        hostRepository.save(mapper.fromDto(hostDto));
-        return hostDto;
+        Host host = hostRepository.save(mapper.fromDto(hostDto));
+        return mapper.toDto(host);
     }
 
     @Override

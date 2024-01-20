@@ -7,11 +7,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
 public class ReservationDto {
     private Long id;
-    private LocalDateTime startDate;
-    private LocalDateTime dateCreated;
+    private LocalDate startDate;
+    private LocalDate dateCreated;
     private int days;
     private double price;
     private ReservationStatus reservationStatus;

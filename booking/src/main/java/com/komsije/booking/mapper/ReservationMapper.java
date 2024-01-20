@@ -28,14 +28,15 @@ public abstract class ReservationMapper {
     public ReservationDto toDto(Reservation reservation){
         ReservationDto reservationDto = new ReservationDto();
         reservationDto.setId(reservation.getId());
-        reservationDto.setStartDate(reservation.getStartDate().atStartOfDay());
+        reservationDto.setStartDate(reservation.getStartDate());
         reservationDto.setDays(reservation.getDays());
         reservationDto.setReservationStatus(reservation.getReservationStatus());
         reservationDto.setAccommodationId(reservation.getAccommodation().getId());
         reservationDto.setGuestId(reservation.getGuestId());
         reservationDto.setHostId(reservation.getHostId());
-        reservationDto.setDateCreated(reservation.getDateCreated().atStartOfDay());
-
+        reservationDto.setDateCreated(reservation.getDateCreated());
+        reservationDto.setPrice(reservation.getPrice());
+        reservationDto.setNumberOfGuests(reservation.getNumberOfGuests());
         return reservationDto;
     }
     public abstract Reservation fromDto(ReservationDto reservationDto);
@@ -86,7 +87,6 @@ public abstract class ReservationMapper {
         reservation.setStartDate(reservationDto.getStartDate());
         reservation.setPrice(reservationDto.getPrice());
         reservation.setNumberOfGuests(reservationDto.getNumberOfGuests());
-        reservation.setReservationStatus(ReservationStatus.Pending);
         return reservation;
     }
 }

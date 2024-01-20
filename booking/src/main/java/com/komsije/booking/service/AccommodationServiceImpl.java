@@ -207,8 +207,7 @@ public class AccommodationServiceImpl implements AccommodationService {
             }
             else if (startDate.isEqual(slot.getStartDate()) && endDate.isEqual(slot.getEndDate())){
                 slot.setOccupied(true);
-                accommodationRepository.save(accommodation);
-                return;
+                break;
             }
             else if (startDate.isEqual(slot.getStartDate())){
                 if (endDate.isBefore(slot.getEndDate())){

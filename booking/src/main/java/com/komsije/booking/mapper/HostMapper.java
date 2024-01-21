@@ -22,7 +22,7 @@ public abstract class HostMapper {
     private HostRepository hostRepository;
     public abstract HostDto toDto(Host host);
     public Host fromDto(HostDto hostDto){
-        if (!hostRepository.existsById(hostDto.getId())){
+        if (hostDto.getId() != null && !hostRepository.existsById(hostDto.getId())){
 
 
         Host host = new Host();

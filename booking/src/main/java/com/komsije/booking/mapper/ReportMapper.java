@@ -4,6 +4,7 @@ import com.komsije.booking.dto.ReportDto;
 import com.komsije.booking.dto.ReportViewDto;
 import com.komsije.booking.model.Report;
 import com.komsije.booking.repository.AccountRepository;
+import com.komsije.booking.repository.ReportRepository;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValueCheckStrategy;
@@ -16,7 +17,9 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = {UserDtoMapper.class}, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE )
 public abstract class ReportMapper {
     @Autowired
-    AccountRepository accountRepository;
+    private AccountRepository accountRepository;
+    @Autowired
+    private ReportRepository repository;
 
     public ReportDto toDto(Report report){
         ReportDto reportDto = new ReportDto();
@@ -28,12 +31,17 @@ public abstract class ReportMapper {
         return reportDto;
     }
     public Report fromDto(ReportDto reportDto){
-        Report report = new Report();
-        report.setReason(reportDto.getReason());
-        report.setDate(reportDto.getDate());
-        report.setAuthor(accountRepository.getReferenceById(reportDto.getAuthorId()));
-        report.setReportedUser(accountRepository.getReferenceById(reportDto.getReportedUserId()));
-        return report;
+        if (reportDto.getId() != null && !repository.existsById(reportDto.getId())){
+            Report report = new Report();
+            report.setReason(reportDto.getReason());
+            report.setDate(reportDto.getDate());
+            report.setAuthor(accountRepository.getReferenceById(reportDto.getAuthorId()));
+            report.setReportedUser(accountRepository.getReferenceById(reportDto.getReportedUserId()));
+            return report;
+        }else{
+            return repository.findById(reportDto.getId()).orElse(null);
+        }
+
     }
     public List<ReportDto> toDto(List<Report> reportList){
         List<ReportDto> reports = new ArrayList<>();

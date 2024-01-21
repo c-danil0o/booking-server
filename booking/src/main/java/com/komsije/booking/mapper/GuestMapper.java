@@ -8,16 +8,18 @@ import com.komsije.booking.repository.HostRepository;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashSet;
 import java.util.List;
 
 @Mapper(componentModel = "spring", uses = {AddressMapper.class, AccommodationMapper.class}, nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE )
 public abstract class GuestMapper {
+    @Autowired
     private GuestRepository guestRepository;
     public abstract GuestDto toDto(Guest guest);
     public Guest fromDto(GuestDto guestDto){
-        if (!guestRepository.existsById(guestDto.getId())){
+        if (guestDto.getId()!= null && !guestRepository.existsById(guestDto.getId())){
             Guest guest = new Guest();
             guest.setRole(Role.Guest);
             guest.setEmail(guestDto.getEmail());

@@ -1,6 +1,5 @@
 package com.komsije.booking.service;
 
-import com.komsije.booking.dto.NewReservationDto;
 import com.komsije.booking.dto.ReservationDto;
 import com.komsije.booking.exceptions.PendingReservationException;
 import com.komsije.booking.exceptions.ReservationAlreadyExistsException;
@@ -10,25 +9,19 @@ import com.komsije.booking.repository.ReservationRepository;
 import com.komsije.booking.service.interfaces.AccommodationService;
 import com.komsije.booking.service.interfaces.AccountService;
 import com.komsije.booking.service.interfaces.NotificationService;
-import com.komsije.booking.utils.TestTaskScheduler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
-import org.mockito.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.*;
 

@@ -3,16 +3,22 @@ package com.komsije.booking.exceptions;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.io.IOException;
 
 @ControllerAdvice
+@Order(2)
 public class ExceptionHandler extends ResponseEntityExceptionHandler {
 
     @AllArgsConstructor
@@ -24,6 +30,15 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
         private String requestedUri;
 
     }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<String> argumentTypeMismatch(MethodArgumentTypeMismatchException exception) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.TEXT_PLAIN);
+        return new ResponseEntity<>("Field " + exception.getName() + " is not valid!", headers, HttpStatus.BAD_REQUEST);
+    }
+
     @org.springframework.web.bind.annotation.ExceptionHandler(ElementNotFoundException.class)
     public ResponseEntity<ApiError> resourceNotFoundException(ElementNotFoundException ex, HttpServletRequest request) {
         ApiError message = new ApiError(HttpStatus.NOT_FOUND.value(), ex.getMessage(), request.getRequestURI());

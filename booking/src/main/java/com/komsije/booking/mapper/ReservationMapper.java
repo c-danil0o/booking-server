@@ -1,18 +1,14 @@
 package com.komsije.booking.mapper;
 
-import com.komsije.booking.dto.AccommodationDto;
-import com.komsije.booking.dto.NewReservationDto;
 import com.komsije.booking.dto.ReservationDto;
 import com.komsije.booking.dto.ReservationViewDto;
 import com.komsije.booking.model.Accommodation;
 import com.komsije.booking.model.Reservation;
-import com.komsije.booking.model.ReservationStatus;
 import com.komsije.booking.repository.GuestRepository;
-import com.komsije.booking.service.interfaces.AccountService;
-import com.komsije.booking.service.interfaces.GuestService;
+import com.komsije.booking.repository.HostRepository;
+import com.komsije.booking.repository.ReservationRepository;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -22,9 +18,11 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses={GuestMapper.class} , nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public abstract class ReservationMapper {
     @Autowired
-    private AccountService accountService;
+    private HostRepository hostRepository;
     @Autowired
     private GuestRepository guestRepository;
+    @Autowired
+    private ReservationRepository reservationRepository;
     public ReservationDto toDto(Reservation reservation){
         ReservationDto reservationDto = new ReservationDto();
         reservationDto.setId(reservation.getId());
@@ -39,7 +37,31 @@ public abstract class ReservationMapper {
         reservationDto.setNumberOfGuests(reservation.getNumberOfGuests());
         return reservationDto;
     }
-    public abstract Reservation fromDto(ReservationDto reservationDto);
+    public Reservation fromDto(ReservationDto reservationDto) {
+        if ( reservationDto == null ) {
+            return null;
+        }
+        if (reservationDto.getId()!=null){
+            if (reservationRepository.existsById(reservationDto.getId())){
+                return reservationRepository.findById(reservationDto.getId()).orElse(null);
+            }
+        }
+        Reservation reservation = new Reservation();
+
+        reservation.setId(reservationDto.getId());
+        reservation.setStartDate(reservationDto.getStartDate());
+        reservation.setDateCreated(reservationDto.getDateCreated());
+        reservation.setDays(reservationDto.getDays());
+        reservation.setNumberOfGuests(reservationDto.getNumberOfGuests());
+        reservation.setPrice(reservationDto.getPrice());
+        reservation.setHostId(reservationDto.getHostId());
+        reservation.setGuestId(reservationDto.getGuestId());
+        reservation.setReservationStatus(reservationDto.getReservationStatus());
+
+        return reservation;
+
+
+    }
     public List<ReservationDto> toDto(List<Reservation> reservationList){
         List<ReservationDto> reservationDtos = new ArrayList<>();
         for (Reservation reservation:
@@ -58,8 +80,8 @@ public abstract class ReservationMapper {
         reservationDto.setPrice(reservation.getPrice());
         Accommodation accommodation = reservation.getAccommodation();
         reservationDto.setAccommodationName(accommodation.getName()+" , "+ accommodation.getAddress().getCity());
-        reservationDto.setGuestEmail(accountService.getEmail(reservation.getGuestId()));
-        reservationDto.setHostEmail(accountService.getEmail(reservation.getHostId()));
+        reservationDto.setGuestEmail(guestRepository.getReferenceById(reservation.getGuestId()).getEmail());
+        reservationDto.setHostEmail(hostRepository.getReferenceById(reservation.getHostId()).getEmail());
         reservationDto.setAccommodationId(accommodation.getId());
         reservationDto.setHostId(reservation.getHostId());
         reservationDto.setGuestId(reservation.getGuestId());
@@ -75,18 +97,5 @@ public abstract class ReservationMapper {
             reservationDtos.add(toViewDto(reservation));
         }
         return reservationDtos;
-    }
-
-    public Reservation fromNewDto(NewReservationDto reservationDto){
-        Reservation reservation = new Reservation();
-        reservation.setId(reservationDto.getId());
-        reservation.setReservationStatus(reservationDto.getReservationStatus());
-        reservation.setHostId(reservationDto.getHostId());
-        reservation.setGuestId(reservationDto.getGuestId());
-        reservation.setDays(reservationDto.getDays());
-        reservation.setStartDate(reservationDto.getStartDate());
-        reservation.setPrice(reservationDto.getPrice());
-        reservation.setNumberOfGuests(reservationDto.getNumberOfGuests());
-        return reservation;
     }
 }

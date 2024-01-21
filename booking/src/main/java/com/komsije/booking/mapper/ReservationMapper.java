@@ -41,25 +41,26 @@ public abstract class ReservationMapper {
         if ( reservationDto == null ) {
             return null;
         }
-        if (reservationDto.getId() != null && reservationRepository.existsById(reservationDto.getId())){
-            return reservationRepository.findById(reservationDto.getId()).orElse(null);
-        }else {
-
-
-            Reservation reservation = new Reservation();
-
-            reservation.setId(reservationDto.getId());
-            reservation.setStartDate(reservationDto.getStartDate());
-            reservation.setDateCreated(reservationDto.getDateCreated());
-            reservation.setDays(reservationDto.getDays());
-            reservation.setNumberOfGuests(reservationDto.getNumberOfGuests());
-            reservation.setPrice(reservationDto.getPrice());
-            reservation.setHostId(reservationDto.getHostId());
-            reservation.setGuestId(reservationDto.getGuestId());
-            reservation.setReservationStatus(reservationDto.getReservationStatus());
-
-            return reservation;
+        if (reservationDto.getId()!=null){
+            if (reservationRepository.existsById(reservationDto.getId())){
+                return reservationRepository.findById(reservationDto.getId()).orElse(null);
+            }
         }
+        Reservation reservation = new Reservation();
+
+        reservation.setId(reservationDto.getId());
+        reservation.setStartDate(reservationDto.getStartDate());
+        reservation.setDateCreated(reservationDto.getDateCreated());
+        reservation.setDays(reservationDto.getDays());
+        reservation.setNumberOfGuests(reservationDto.getNumberOfGuests());
+        reservation.setPrice(reservationDto.getPrice());
+        reservation.setHostId(reservationDto.getHostId());
+        reservation.setGuestId(reservationDto.getGuestId());
+        reservation.setReservationStatus(reservationDto.getReservationStatus());
+
+        return reservation;
+
+
     }
     public List<ReservationDto> toDto(List<Reservation> reservationList){
         List<ReservationDto> reservationDtos = new ArrayList<>();

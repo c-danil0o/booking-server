@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.annotation.Nullable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -18,7 +19,6 @@ public class ReservationDto {
     private Long id;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate startDate;
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate dateCreated;
     @Min(value = 1, message = "Number of days must be greater or equal to 1")
     private int days;

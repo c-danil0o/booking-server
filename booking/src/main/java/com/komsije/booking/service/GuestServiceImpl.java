@@ -70,8 +70,8 @@ public class GuestServiceImpl implements GuestService {
     public GuestDto update(GuestDto guestDto) throws ElementNotFoundException {
         Guest guest = guestRepository.findById(guestDto.getId()).orElseThrow(() -> new ElementNotFoundException("Element with given ID doesn't exist!"));
         mapper.update(guest, guestDto);
-        guestRepository.save(guest);
-        return guestDto;
+        Guest savedGuest = guestRepository.save(guest);
+        return mapper.toDto(savedGuest);
     }
 
     public void deleteGuestReservations(Long id) {

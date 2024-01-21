@@ -67,8 +67,8 @@ public class HostServiceImpl implements HostService {
     public HostDto update(HostDto hostDto) throws ElementNotFoundException {
         Host host = hostRepository.findById(hostDto.getId()).orElseThrow(() -> new ElementNotFoundException("Element with given ID doesn't exist!"));
         mapper.update(host, hostDto);
-        hostRepository.save(host);
-        return hostDto;
+        Host savedHost = hostRepository.save(host);
+        return mapper.toDto(savedHost);
     }
 
     public void deleteHostReservations(Long id) {

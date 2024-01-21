@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 
 @Data
 public class ReviewDto {
-    @IdentityConstraint
     private Long id;
     @Min(value = 1, message = "Grade must be greater or equal to 1")
     @Max(value = 5, message = "Grade must be less than or equal to 5")
@@ -26,9 +25,7 @@ public class ReviewDto {
     private UserDto author;
     @NotNull
     private ReviewStatus status;
-    @IdentityConstraint
     private Long hostId;
-    @IdentityConstraint
     private Long accommodationId;
     @NotNull
     private LocalDateTime date;

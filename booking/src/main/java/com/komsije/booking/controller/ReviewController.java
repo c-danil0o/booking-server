@@ -10,6 +10,7 @@ import com.komsije.booking.service.AccountServiceImpl;
 import com.komsije.booking.service.ReviewServiceImpl;
 import com.komsije.booking.service.interfaces.AccountService;
 import com.komsije.booking.service.interfaces.ReviewService;
+import com.komsije.booking.validators.IdentityConstraint;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -44,7 +45,7 @@ public class ReviewController {
 
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<ReviewDto> getReview(@PathVariable Long id) {
+    public ResponseEntity<ReviewDto> getReview(@IdentityConstraint @PathVariable Long id) {
         ReviewDto reviewDto = reviewService.findById(id);
         return new ResponseEntity<>(reviewDto, HttpStatus.OK);
     }

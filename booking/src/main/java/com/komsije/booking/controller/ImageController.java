@@ -2,6 +2,7 @@ package com.komsije.booking.controller;
 
 import com.komsije.booking.dto.ImageDto;
 import com.komsije.booking.service.interfaces.ImageService;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,7 @@ public class ImageController {
             headers = "Accept=image/jpeg, image/jpg, image/png, image/gif",
             produces = "image/jpg",
             method = RequestMethod.GET)
-    public ResponseEntity<byte[]> getArticleImage(@PathVariable String id) throws IOException {
+    public ResponseEntity<byte[]> getArticleImage(@NotNull  @PathVariable String id) throws IOException {
         byte[] image = imageService.findByFilename(id);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.IMAGE_JPEG);

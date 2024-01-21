@@ -7,6 +7,9 @@ import com.komsije.booking.model.Role;
 import com.komsije.booking.security.JwtTokenUtil;
 import com.komsije.booking.service.RegistrationServiceImpl;
 import com.komsije.booking.service.interfaces.AccountService;
+import com.komsije.booking.validators.IdentityConstraint;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -59,7 +62,7 @@ public class AccountController {
     //@PreAuthorize("hasRole('Admin')")
 
     @GetMapping(value = "/accounts/{id}")
-    public ResponseEntity<AccountDto> getAccount(@PathVariable Long id) {
+    public ResponseEntity<AccountDto> getAccount(@IdentityConstraint  @PathVariable Long id) {
         AccountDto account = accountService.findById(id);
         return new ResponseEntity<>(account, HttpStatus.OK);
     }
@@ -72,7 +75,7 @@ public class AccountController {
     }
 
     @PostMapping(value = "/accounts/email")
-    public ResponseEntity<AccountDto> getAccountByEmail(@RequestBody EmailDto emailDto) {
+    public ResponseEntity<AccountDto> getAccountByEmail(@Valid  @RequestBody EmailDto emailDto) {
 
         AccountDto account = accountService.getByEmail(emailDto.getEmail());
         return new ResponseEntity<>(account, HttpStatus.OK);
@@ -94,20 +97,20 @@ public class AccountController {
 
     @PreAuthorize("hasRole('Admin')")
     @PatchMapping(value = "/accounts/{id}/block")
-    public ResponseEntity<Void> blockAccount(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> blockAccount(@IdentityConstraint @PathVariable("id") Long id) {
         this.accountService.blockAccount(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/accounts/{id}")
-    public ResponseEntity<Void> deleteAccount(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteAccount(@IdentityConstraint @PathVariable Long id) {
 
         accountService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping(value = "/login", consumes = "application/json")
-    public ResponseEntity<TokenDto> login(@RequestBody LoginDto loginDto) {
+    public ResponseEntity<TokenDto> login(@Valid @RequestBody LoginDto loginDto) {
         if (!this.accountService.getByEmail(loginDto.getEmail()).isActivated()){
             throw new AccountNotActivatedException("Account is not activated!");
         }
@@ -140,7 +143,6 @@ public class AccountController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         //if (!(auth instanceof AnonymousAuthenticationToken)){
-        //if (!(auth instanceof AnonymousAuthenticationToken)){
         if (true) {
             SecurityContextHolder.clearContext();
 
@@ -151,15 +153,14 @@ public class AccountController {
 
     }
 
-    //    @PreAuthorize("hasRole('Admin')")
     @PutMapping(value = "/accounts/update", consumes = "application/json")
-    public ResponseEntity<AccountDto> updateAccount(@RequestBody AccountDto accountDto) {
+    public ResponseEntity<AccountDto> updateAccount(@Valid @RequestBody AccountDto accountDto) {
         AccountDto account = accountService.update(accountDto);
         return new ResponseEntity<>(account, HttpStatus.OK);
     }
 
     @PostMapping(value = "/register", consumes = "application/json")
-    public ResponseEntity<TokenDto> register1(@RequestHeader(HttpHeaders.USER_AGENT) String agent, @RequestBody RegistrationDto registrationDto) {
+    public ResponseEntity<TokenDto> register1(@RequestHeader(HttpHeaders.USER_AGENT) String agent, @Valid @RequestBody RegistrationDto registrationDto) {
 
         if (agent.equals("Mobile-Android")) {
             return new ResponseEntity<>(registrationService.registerAndroid(registrationDto), HttpStatus.OK);
@@ -171,12 +172,12 @@ public class AccountController {
     }
 
     @GetMapping(path = "/register/confirm")
-    public ResponseEntity<String> confirm(@RequestParam("token") String token) {
+    public ResponseEntity<String> confirm(@NotNull  @RequestParam("token") String token) {
         return new ResponseEntity<>(registrationService.confirmToken(token), HttpStatus.OK);
     }
 
     @PostMapping(value = "/passwordChange", consumes = "application/json")
-    public ResponseEntity<Void> changePassword(@RequestBody NewPasswordDto newPasswordDto) {
+    public ResponseEntity<Void> changePassword(@Valid @RequestBody NewPasswordDto newPasswordDto) {
         accountService.changePassword(newPasswordDto);
         return new ResponseEntity<>(HttpStatus.OK);
 

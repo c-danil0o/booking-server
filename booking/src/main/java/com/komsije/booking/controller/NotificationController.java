@@ -5,6 +5,7 @@ import com.komsije.booking.model.Account;
 import com.komsije.booking.model.Settings;
 import com.komsije.booking.service.interfaces.AccountService;
 import com.komsije.booking.service.interfaces.NotificationService;
+import com.komsije.booking.validators.IdentityConstraint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,13 +37,13 @@ public class NotificationController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<NotificationDto> getNotification(@PathVariable Long id) {
+    public ResponseEntity<NotificationDto> getNotification(@IdentityConstraint  @PathVariable Long id) {
         NotificationDto notificationDto = notificationService.findById(id);
         return new ResponseEntity<>(notificationDto, HttpStatus.OK);
     }
 
     @GetMapping(value = "/user/{id}")
-    public ResponseEntity<List<NotificationDto>> findByUserId(@PathVariable Long id){
+    public ResponseEntity<List<NotificationDto>> findByUserId(@IdentityConstraint @PathVariable Long id){
         List<NotificationDto> notifications = notificationService.findAllUserNotifications(id);
         return new ResponseEntity<>(notifications, HttpStatus.OK);
     }

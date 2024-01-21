@@ -1,9 +1,7 @@
 package com.komsije.booking.controller;
 
-import com.komsije.booking.dto.NewReservationDto;
 import com.komsije.booking.dto.ReservationDto;
 import com.komsije.booking.dto.ReservationViewDto;
-import com.komsije.booking.model.Reservation;
 import com.komsije.booking.model.ReservationStatus;
 import com.komsije.booking.service.interfaces.AccommodationService;
 import com.komsije.booking.service.interfaces.GuestService;

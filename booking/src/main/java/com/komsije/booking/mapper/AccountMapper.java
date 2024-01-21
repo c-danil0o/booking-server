@@ -9,11 +9,13 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 @Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE )
 public abstract class AccountMapper {
+    @Autowired
     private AccountRepository accountRepository;
     public abstract  AccountDto toDto(Account account);
     public Account fromDto(AccountDto accountDto){

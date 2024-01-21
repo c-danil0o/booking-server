@@ -156,7 +156,7 @@ VALUES (1, 6),
 
 
 -- Insert data into the host_host_reviews table
-INSERT INTO review (host_id, accommodation_id, grade, status, author_id, comment, date)
+/*INSERT INTO review (host_id, accommodation_id, grade, status, author_id, comment, date)
 VALUES (1, null, 4, 'Approved', 6, 'Great host!', '2023-01-05 12:00:00'),
        (2, null, 5, 'Approved', 7, 'Excellent hospitality', '2023-01-05 12:00:00'),
        (3, null, 4, 'Approved', 8, 'Wonderful stay, highly recommend', '2023-01-05 12:00:00'),
@@ -167,11 +167,6 @@ VALUES (1, null, 4, 'Approved', 6, 'Great host!', '2023-01-05 12:00:00'),
        (null, 2, 4, 'Pending', 8, 'Comfortable and clean, would come again', '2023-01-05 12:00:00'),
        (null, 3, 3, 'Approved', 9, 'Good location but room was a bit small', '2023-01-05 12:00:00'),
        (null, 3, 5, 'Approved', 10, 'Exceptional service and amenities', '2023-01-05 12:00:00'),
-       (null, 4, 3, 'Pending', 1, 'Average experience, could be better', '2023-01-05 12:00:00'),
-       (null, 4, 4, 'Approved', 2, 'Lovely place with a friendly host', '2023-01-05 12:00:00'),
-       (null, 5, 5, 'Approved', 3, 'Outstanding accommodation, exceeded expectations', '2023-01-05 12:00:00'),
-       (null, 5, 4, 'Pending', 4, 'Great value for money, would recommend', '2023-01-05 12:00:00'),
-       (2, null, 5, 'Approved', 5, 'Fantastic experience, thank you!', '2023-01-05 12:00:00'),
        (null, 4, 3, 'Approved', 6, 'Not bad, but room was noisy', '2023-01-05 12:00:00'),
        (null, 2, 4, 'Approved', 7, 'Well-maintained property with good facilities', '2023-01-05 12:00:00'),
        (null, 1, 5, 'Approved', 8, 'Superb hospitality, felt like home', '2023-01-05 12:00:00'),
@@ -181,7 +176,7 @@ VALUES (1, null, 4, 'Approved', 6, 'Great host!', '2023-01-05 12:00:00'),
        (null, 5, 5, 'Approved', 2, 'Impressive accommodation with a view', '2023-01-05 12:00:00'),
        (null, 5, 4, 'Approved', 3, 'Clean and well-equipped, enjoyed my stay', '2023-01-05 12:00:00'),
        (4, null, 3, 'Approved', 4, 'Satisfactory, but could use some improvements', '2023-01-05 12:00:00'),
-       (1, null, 5, 'Approved', 5, 'Incredible experience, highly satisfied', '2023-01-05 12:00:00');
+       (1, null, 5, 'Approved', 5, 'Incredible experience, highly satisfied', '2023-01-05 12:00:00');*/
 
 
 -- Insert data into the host_properties table
@@ -195,21 +190,21 @@ VALUES (1, 1),
 -- Insert data into the reservation table
 INSERT INTO reservation (days, price, accommodation_id, guest_id, host_id, start_date, reservation_status,
                          number_of_guests, date_created)
-VALUES (2, 200.0, 1, 6, 1, '2023-01-05', 'Approved', 2, '2023-01-01'),
-       (7, 560.0, 2, 7, 2, '2023-02-06', 'Pending', 1, '2023-01-01'),
-       (10, 1500.0, 3, 8, 3, '2023-03-07', 'Active', 3, '2023-01-01'),
-       (14, 1680.0, 4, 9, 4, '2023-04-08', 'Pending', 4, '2023-01-01'),
-       (5, 450.0, 5, 10, 5, '2023-05-01', 'Approved', 3, '2023-01-01');
+VALUES (2, 200.0, 1, 6, 1, '2023-01-05', 'Done', 2, '2023-01-01'),
+       (7, 560.0, 2, 7, 2, '2023-02-06', 'Denied', 1, '2023-01-01'),
+       (10, 1500.0, 3, 8, 3, '2023-03-07', 'Done', 3, '2023-01-01'),
+       (14, 1680.0, 4, 9, 4, '2023-04-08', 'Done', 4, '2023-01-01'),
+       (5, 450.0, 5, 10, 5, '2023-05-01', 'Denied', 3, '2023-01-01');
 
--- Insert data into the report table
+/*-- Insert data into the report table
 INSERT INTO report (author_id, date, reported_user_id, reason)
 VALUES (6, '2023-01-01 12:00:00', 2, 'Inappropriate behavior'),
        (7, '2023-01-02 12:00:00', 4, 'Violating community guidelines'),
        (2, '2023-01-03 12:00:00', 6, 'Suspicious activity'),
        (1, '2023-01-04 12:00:00', 8, 'Harassment'),
-       (2, '2023-01-05 12:00:00', 9, 'Fraudulent behavior');
+       (2, '2023-01-05 12:00:00', 9, 'Fraudulent behavior');*/
 
--- Insert data into the notification table
+/*-- Insert data into the notification table
 INSERT INTO notification (date, receiver_id, message)
 VALUES ('2023-01-01 12:00:00', 2, 'New report received'),
        ('2023-01-02 12:00:00', 4, 'Community guidelines update'),
@@ -219,4 +214,4 @@ VALUES ('2023-01-01 12:00:00', 2, 'New report received'),
        ('2023-01-07 12:00:00', 3, 'Important security update'),
        ('2023-01-08 12:00:00', 5, 'Feedback requested for your recent experience'),
        ('2023-01-09 12:00:00', 7, 'Upcoming event: Host meetup'),
-       ('2023-01-10 12:00:00', 9, 'Your account status has been updated');
+       ('2023-01-10 12:00:00', 9, 'Your account status has been updated');*/

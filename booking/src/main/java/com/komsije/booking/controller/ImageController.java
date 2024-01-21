@@ -2,11 +2,13 @@ package com.komsije.booking.controller;
 
 import com.komsije.booking.dto.ImageDto;
 import com.komsije.booking.service.interfaces.ImageService;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@Validated
+
 public class ImageController {
     private final ImageService imageService;
 
@@ -27,7 +31,7 @@ public class ImageController {
             headers = "Accept=image/jpeg, image/jpg, image/png, image/gif",
             produces = "image/jpg",
             method = RequestMethod.GET)
-    public ResponseEntity<byte[]> getArticleImage(@PathVariable String id) throws IOException {
+    public ResponseEntity<byte[]> getArticleImage(@NotNull  @PathVariable String id) throws IOException {
         byte[] image = imageService.findByFilename(id);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.IMAGE_JPEG);

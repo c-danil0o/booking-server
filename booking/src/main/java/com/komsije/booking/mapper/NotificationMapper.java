@@ -44,7 +44,7 @@ public abstract class NotificationMapper {
         if ( notificationDto == null ) {
             return null;
         }
-        if (notificationRepository.existsById(notificationDto.getId())){
+        if (notificationDto.getId() != null && notificationRepository.existsById(notificationDto.getId())){
             return notificationRepository.findById(notificationDto.getId()).orElse(null);
         }
 

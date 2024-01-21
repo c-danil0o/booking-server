@@ -6,16 +6,21 @@ import com.komsije.booking.dto.ReportViewDto;
 import com.komsije.booking.model.Report;
 import com.komsije.booking.service.interfaces.AccountService;
 import com.komsije.booking.service.interfaces.ReportService;
+import com.komsije.booking.validators.IdentityConstraint;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping(value = "api/reports")
+@Validated
+
 public class ReportController {
     private final AccountService accountService;
     private final ReportService reportService;
@@ -34,7 +39,7 @@ public class ReportController {
     }
 
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<ReportDto> saveReport(@RequestBody ReportDto reportDto){
+    public ResponseEntity<ReportDto> saveReport(@Valid @RequestBody ReportDto reportDto){
         ReportDto reportDTO = null;
         reportDTO = reportService.save(reportDto);
         return new ResponseEntity<>(reportDTO, HttpStatus.CREATED);
@@ -42,7 +47,7 @@ public class ReportController {
 
     @PreAuthorize("hasRole('Admin')")
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> deleteReport(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteReport(@IdentityConstraint @PathVariable Long id) {
         reportService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

@@ -1,7 +1,6 @@
 package com.komsije.booking.controller;
 
 import com.komsije.booking.dto.LoginDto;
-import com.komsije.booking.dto.NewReservationDto;
 import com.komsije.booking.dto.ReservationDto;
 import com.komsije.booking.dto.TokenDto;
 import com.komsije.booking.model.Accommodation;
@@ -18,8 +17,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.LinkedHashMap;

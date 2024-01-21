@@ -1,18 +1,14 @@
 package com.komsije.booking.service.interfaces;
 
-import com.komsije.booking.dto.NewReservationDto;
 import com.komsije.booking.dto.ReservationDto;
 import com.komsije.booking.dto.ReservationViewDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.exceptions.InvalidTimeSlotException;
 import com.komsije.booking.exceptions.PendingReservationException;
-import com.komsije.booking.model.Reservation;
 import com.komsije.booking.model.ReservationStatus;
 import com.komsije.booking.service.interfaces.crud.CrudService;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 public interface ReservationService extends CrudService<ReservationDto, Long> {

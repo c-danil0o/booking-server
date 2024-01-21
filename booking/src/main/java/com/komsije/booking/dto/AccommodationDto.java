@@ -1,6 +1,7 @@
 package com.komsije.booking.dto;
 
 import com.komsije.booking.model.*;
+import com.komsije.booking.validators.AccommodationTypeConstraint;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,7 @@ public class AccommodationDto {
     private String name;
     private String description;
     private AddressDto address;
+    @AccommodationTypeConstraint
     private AccommodationType accommodationType;
     private Set<String> amenities = new HashSet<>();
     private int maxGuests;

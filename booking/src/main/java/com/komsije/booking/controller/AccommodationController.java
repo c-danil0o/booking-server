@@ -6,7 +6,12 @@ import com.komsije.booking.model.AccommodationType;
 import com.komsije.booking.model.Reservation;
 import com.komsije.booking.repository.ReservationRepository;
 import com.komsije.booking.service.interfaces.AccommodationService;
+import com.komsije.booking.validators.AccommodationTypeConstraint;
+import com.komsije.booking.validators.IdentityConstraint;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.websocket.server.PathParam;
+import org.checkerframework.common.value.qual.IntVal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -37,20 +42,20 @@ public class AccommodationController {
     }
 
     @GetMapping(value = "/type")
-    public ResponseEntity<List<AccommodationDto>> getByAccommodationType(@RequestParam String type) {
+    public ResponseEntity<List<AccommodationDto>> getByAccommodationType(@AccommodationTypeConstraint @RequestParam String type) {
         List<AccommodationDto> accommodations = accommodationService.getByAccommodationType(AccommodationType.valueOf(type));
         return new ResponseEntity<>(accommodations, HttpStatus.OK);
     }
 
     @GetMapping(value = "/get/{id}")
-    public ResponseEntity<AccommodationDto> getAccommodation(@PathVariable Long id) {
+    public ResponseEntity<AccommodationDto> getAccommodation(@IdentityConstraint @PathVariable Long id) {
         AccommodationDto accommodation = accommodationService.findById(id);
 
         return new ResponseEntity<>(accommodation, HttpStatus.OK);
     }
 
     @GetMapping(value = "/host/{hostId}")
-    public ResponseEntity<List<HostPropertyDto>> getByHostId(@PathVariable Long hostId) {
+    public ResponseEntity<List<HostPropertyDto>> getByHostId(@IdentityConstraint @PathVariable Long hostId) {
         List<HostPropertyDto> accommodations = accommodationService.findByHostId(hostId);
         return new ResponseEntity<>(accommodations, HttpStatus.OK);
     }
@@ -69,20 +74,20 @@ public class AccommodationController {
     }
 
     @GetMapping(value = "/search")
-    public ResponseEntity<List<AccommodationDto>> getByLocationGuestNumberAndDate(@RequestParam(required = false) String location, @RequestParam(required = false) Integer guests, @RequestParam(required = false) LocalDate startDate, @RequestParam(required = false) LocalDate endDate) {
+    public ResponseEntity<List<AccommodationDto>> getByLocationGuestNumberAndDate(@NotEmpty @RequestParam(required = false) String location, @RequestParam(required = false) Integer guests, @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam(required = false) LocalDate startDate, @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @RequestParam(required = false) LocalDate endDate) {
         List<AccommodationDto> accommodations = accommodationService.getByLocationNumOfGuestsAndDate(location, guests, startDate, endDate);
         return new ResponseEntity<>(accommodations, HttpStatus.OK);
     }
 
     @GetMapping(value = "/amenities")
-    public ResponseEntity<List<AccommodationDto>> getByAmenities(@RequestParam List<String> amenities) {
+    public ResponseEntity<List<AccommodationDto>> getByAmenities(@NotNull @RequestParam List<String> amenities) {
         List<AccommodationDto> accommodations = accommodationService.getByAmenities(amenities);
         return new ResponseEntity<>(accommodations, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyRole('Admin', 'Host')")
     @GetMapping(value = "/yearAnalytics/{hostId}/{year}")
-    public ResponseEntity<List<AccommodationAnalysis>> getYearAnalytics(@PathVariable("hostId") Long hostId,@PathVariable("year") int year) {
+    public ResponseEntity<List<AccommodationAnalysis>> getYearAnalytics(@IdentityConstraint @PathVariable("hostId") Long hostId,@NotNull @PathVariable("year") int year) {
         List<AccommodationAnalysis> accommodations = accommodationService.getYearAnalytics(hostId, year);
         return new ResponseEntity<>(accommodations, HttpStatus.OK);
     }
@@ -103,7 +108,7 @@ public class AccommodationController {
 
     @PreAuthorize("hasAnyRole('Host', 'Admin')")
     @PatchMapping(value = "/{id}/approve")
-    public ResponseEntity<AccommodationDto> approveAccommodation(@PathVariable("id") Long id) {
+    public ResponseEntity<AccommodationDto> approveAccommodation(@IdentityConstraint @PathVariable("id") Long id) {
         AccommodationDto accommodationDto = accommodationService.findById(id);
         accommodationDto.setStatus(AccommodationStatus.Active);
         accommodationDto = accommodationService.update(accommodationDto);
@@ -112,7 +117,7 @@ public class AccommodationController {
 
     @PreAuthorize("hasAnyRole('Host', 'Admin')")
     @PatchMapping(value = "/{id}/deny")
-    public ResponseEntity<AccommodationDto> denyAccommodation(@PathVariable("id") Long id) {
+    public ResponseEntity<AccommodationDto> denyAccommodation(@IdentityConstraint @PathVariable("id") Long id) {
         AccommodationDto accommodationDto = accommodationService.findById(id);
         accommodationDto.setStatus(AccommodationStatus.Inactive);
         accommodationDto = accommodationService.update(accommodationDto);
@@ -121,7 +126,7 @@ public class AccommodationController {
 
     @PreAuthorize("hasAnyRole('Host', 'Admin')")
     @PatchMapping(value = "/{id}/changeApproval")
-    public ResponseEntity<AccommodationDto> changeApproval(@PathVariable("id") Long id, @RequestParam boolean auto) {
+    public ResponseEntity<AccommodationDto> changeApproval(@IdentityConstraint @PathVariable("id") Long id, @NotNull @RequestParam boolean auto) {
         AccommodationDto accommodationDto = accommodationService.findById(id);
         accommodationDto.setAutoApproval(auto);
         accommodationDto = accommodationService.update(accommodationDto);
@@ -137,14 +142,14 @@ public class AccommodationController {
 
     @PreAuthorize("hasRole('Host')")
     @PutMapping(value = "/add-availability/{id}")
-    public ResponseEntity<AccommodationDto> updateAvailability(@PathVariable("id") Long id, @RequestBody AvailabilityDto availabilityDto) {
+    public ResponseEntity<AccommodationDto> updateAvailability(@IdentityConstraint @PathVariable("id") Long id, @RequestBody AvailabilityDto availabilityDto) {
         AccommodationDto accommodationDto = accommodationService.updateAvailability(id, availabilityDto);
         return new ResponseEntity<>(accommodationDto, HttpStatus.OK);
     }
 
     @PreAuthorize("hasAnyRole('Host','Admin')")
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> deleteAccommodation(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteAccommodation(@IdentityConstraint @PathVariable Long id) {
         accommodationService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }

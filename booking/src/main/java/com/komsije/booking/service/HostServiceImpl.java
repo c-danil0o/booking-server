@@ -1,18 +1,21 @@
 package com.komsije.booking.service;
 
+import com.komsije.booking.dto.AccommodationDto;
 import com.komsije.booking.dto.HostDto;
+import com.komsije.booking.dto.HostPropertyDto;
 import com.komsije.booking.dto.RegistrationDto;
-import com.komsije.booking.dto.ReservationViewDto;
 import com.komsije.booking.exceptions.ElementNotFoundException;
 import com.komsije.booking.exceptions.EmailAlreadyExistsException;
 import com.komsije.booking.exceptions.HasActiveReservationsException;
 import com.komsije.booking.mapper.AddressMapper;
 import com.komsije.booking.mapper.HostMapper;
+import com.komsije.booking.model.Accommodation;
 import com.komsije.booking.model.Account;
 import com.komsije.booking.model.ConfirmationToken;
 import com.komsije.booking.model.Host;
 import com.komsije.booking.repository.AccountRepository;
 import com.komsije.booking.repository.HostRepository;
+import com.komsije.booking.service.interfaces.AccommodationService;
 import com.komsije.booking.service.interfaces.ConfirmationTokenService;
 import com.komsije.booking.service.interfaces.HostService;
 import com.komsije.booking.service.interfaces.ReservationService;
@@ -39,15 +42,17 @@ public class HostServiceImpl implements HostService {
     private final ConfirmationTokenService confirmationTokenService;
     private final ReservationService reservationService;
     private final TaskScheduler taskScheduler;
+    private final AccommodationService accommodationService;
 
 
     @Autowired
-    public HostServiceImpl(HostRepository hostRepository, AccountRepository accountRepository, ConfirmationTokenService confirmationTokenService, ReservationService reservationService, TaskScheduler taskScheduler) {
+    public HostServiceImpl(HostRepository hostRepository, AccountRepository accountRepository, ConfirmationTokenService confirmationTokenService, ReservationService reservationService, TaskScheduler taskScheduler, AccommodationService accommodationService) {
         this.hostRepository = hostRepository;
         this.accountRepository = accountRepository;
         this.confirmationTokenService = confirmationTokenService;
         this.reservationService = reservationService;
         this.taskScheduler = taskScheduler;
+        this.accommodationService = accommodationService;
     }
 
     public HostDto findById(Long id) throws ElementNotFoundException {
@@ -71,17 +76,19 @@ public class HostServiceImpl implements HostService {
         return mapper.toDto(savedHost);
     }
 
-    public void deleteHostReservations(Long id) {
-        if (hostRepository.existsById(id)) {
-            reservationService.deleteInBatch(this.reservationService.getByHostId(id).stream().map(ReservationViewDto::getId).toList());
+    private void deleteHostAccommodations(Long hostId){
+        List<HostPropertyDto> accommodations = this.accommodationService.findByHostId(hostId);
+        for (int i =0; i< accommodations.size(); i++){
+            this.accommodationService.delete(accommodations.get(i).getId());
         }
     }
+
+
 
     public void delete(Long id) throws ElementNotFoundException {
         if (hostRepository.existsById(id)) {
             if (!reservationService.hasHostActiveReservations(id)) {
-
-                deleteHostReservations(id);
+                deleteHostAccommodations(id);
                 hostRepository.deleteById(id);
             } else {
                 throw new HasActiveReservationsException("Account has active reservations and can't be deleted!");

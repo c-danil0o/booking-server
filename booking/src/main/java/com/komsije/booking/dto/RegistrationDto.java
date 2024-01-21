@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Data
 public class RegistrationDto {
-    @Email(regexp = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")
+    @Email
     private String email;
     @NotEmpty
     private String password;

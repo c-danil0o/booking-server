@@ -3,6 +3,7 @@ package com.komsije.booking.validators;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.hibernate.TypeMismatchException;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,6 +26,7 @@ import java.util.Set;
 globalna komponenta za obradu gresaka
  */
 @RestControllerAdvice
+@Order(1)
 public class ValidationErrorsHandler {
 
     @ExceptionHandler({MethodArgumentNotValidException.class})

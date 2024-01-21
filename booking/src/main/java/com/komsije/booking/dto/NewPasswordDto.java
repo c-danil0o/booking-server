@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class NewPasswordDto {
-    @Email(regexp = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")
+    @Email
     private String email;
     @NotEmpty
     private String oldPassword;

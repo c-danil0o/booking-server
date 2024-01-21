@@ -3,6 +3,7 @@ package com.komsije.booking.exceptions;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.io.IOException;
 
 @ControllerAdvice
+@Order(2)
 public class ExceptionHandler extends ResponseEntityExceptionHandler {
 
     @AllArgsConstructor
@@ -28,6 +30,7 @@ public class ExceptionHandler extends ResponseEntityExceptionHandler {
         private String requestedUri;
 
     }
+
     @org.springframework.web.bind.annotation.ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ResponseEntity<String> argumentTypeMismatch(MethodArgumentTypeMismatchException exception) {

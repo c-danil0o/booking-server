@@ -11,6 +11,7 @@ import com.komsije.booking.model.*;
 import com.komsije.booking.repository.AccountRepository;
 import com.komsije.booking.repository.ReportRepository;
 import com.komsije.booking.repository.ReservationRepository;
+import com.komsije.booking.service.interfaces.AccommodationService;
 import com.komsije.booking.service.interfaces.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,15 +24,18 @@ public class AccountServiceImpl implements AccountService{
     private final AccountRepository accountRepository;
     private final ReportRepository reportRepository;
     private final ReservationRepository reservationRepository;
+    private final AccommodationService accommodationService;
+
     @Autowired
     private AccountMapper mapper;
 
 
     @Autowired
-    public AccountServiceImpl(AccountRepository accountRepository, ReportRepository reportRepository, ReservationRepository reservationRepository) {
+    public AccountServiceImpl(AccountRepository accountRepository, ReportRepository reportRepository, ReservationRepository reservationRepository, AccommodationService accommodationService) {
         this.accountRepository = accountRepository;
         this.reportRepository = reportRepository;
         this.reservationRepository = reservationRepository;
+        this.accommodationService = accommodationService;
     }
 
     public AccountDto findById(Long id) throws ElementNotFoundException {
@@ -157,6 +161,7 @@ public class AccountServiceImpl implements AccountService{
             if (status.equals(ReservationStatus.Pending) || status.equals(ReservationStatus.Approved)){
                 r.setReservationStatus(ReservationStatus.Denied);
                 reservationRepository.save(r);
+                accommodationService.restoreTimeslot(r);
             }
         }
         //NE PISE U SPEC ALI IMA SMISLA - BRISANJE HOST REZERVACIJA

@@ -17,6 +17,5 @@ public class ReportDto {
     private Long authorId;
     @IdentityConstraint
     private Long reportedUserId;
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime date;
 }

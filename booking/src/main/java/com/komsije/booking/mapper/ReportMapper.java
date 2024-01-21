@@ -31,15 +31,15 @@ public abstract class ReportMapper {
         return reportDto;
     }
     public Report fromDto(ReportDto reportDto){
-        if (reportDto.getId() != null && !repository.existsById(reportDto.getId())){
+        if (reportDto.getId() != null && repository.existsById(reportDto.getId())){
+            return repository.findById(reportDto.getId()).orElse(null);
+        }else{
             Report report = new Report();
             report.setReason(reportDto.getReason());
             report.setDate(reportDto.getDate());
             report.setAuthor(accountRepository.getReferenceById(reportDto.getAuthorId()));
             report.setReportedUser(accountRepository.getReferenceById(reportDto.getReportedUserId()));
             return report;
-        }else{
-            return repository.findById(reportDto.getId()).orElse(null);
         }
 
     }

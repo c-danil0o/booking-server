@@ -24,9 +24,13 @@ public class ReviewDto {
     private String comment;
     @NotNull
     private UserDto author;
+    @NotNull
     private ReviewStatus status;
+    @IdentityConstraint
     private Long hostId;
+    @IdentityConstraint
     private Long accommodationId;
+    @NotNull
     private LocalDateTime date;
 
 }

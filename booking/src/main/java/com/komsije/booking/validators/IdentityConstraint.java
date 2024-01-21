@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy= IdentityConstraintValidator.class)
 public @interface IdentityConstraint {
-    String message() default "id must be greater than 0";
+    String message() default "Invalid value for ID";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

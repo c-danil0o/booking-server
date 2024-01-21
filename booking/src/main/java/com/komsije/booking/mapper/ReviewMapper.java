@@ -40,7 +40,7 @@ public abstract class ReviewMapper {
         return reviewDto;
     }
     public Review fromDto(ReviewDto reviewDto){
-        if (reviewRepository.existsById(reviewDto.getId())){
+        if (reviewDto.getId() != null && reviewRepository.existsById(reviewDto.getId())){
             return reviewRepository.findById(reviewDto.getId()).orElse(null);
         }else {
 

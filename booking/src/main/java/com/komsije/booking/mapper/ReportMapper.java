@@ -31,7 +31,7 @@ public abstract class ReportMapper {
         return reportDto;
     }
     public Report fromDto(ReportDto reportDto){
-        if (!repository.existsById(reportDto.getId())){
+        if (reportDto.getId() != null && !repository.existsById(reportDto.getId())){
             Report report = new Report();
             report.setReason(reportDto.getReason());
             report.setDate(reportDto.getDate());

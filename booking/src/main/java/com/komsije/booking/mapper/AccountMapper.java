@@ -22,7 +22,7 @@ public abstract class AccountMapper {
         if ( accountDto == null ) {
             return null;
         }
-        if (accountRepository.existsById(accountDto.getId())){
+        if (accountDto.getId() != null && accountRepository.existsById(accountDto.getId())){
             return accountRepository.findById(accountDto.getId()).orElse(null);
         }
 

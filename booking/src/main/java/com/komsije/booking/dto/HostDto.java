@@ -3,6 +3,7 @@ package com.komsije.booking.dto;
 import com.komsije.booking.model.Address;
 import com.komsije.booking.model.Host;
 import com.komsije.booking.validators.IdentityConstraint;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -12,7 +13,7 @@ import java.util.Set;
 @Data
 public class HostDto {
     private Long id;
-    @NotNull
+    @Email
     private String email;
     private boolean isBlocked;
     @NotNull

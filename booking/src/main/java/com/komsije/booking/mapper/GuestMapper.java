@@ -19,7 +19,7 @@ public abstract class GuestMapper {
     private GuestRepository guestRepository;
     public abstract GuestDto toDto(Guest guest);
     public Guest fromDto(GuestDto guestDto){
-        if (!guestRepository.existsById(guestDto.getId())){
+        if (guestDto.getId()!= null && !guestRepository.existsById(guestDto.getId())){
             Guest guest = new Guest();
             guest.setRole(Role.Guest);
             guest.setEmail(guestDto.getEmail());

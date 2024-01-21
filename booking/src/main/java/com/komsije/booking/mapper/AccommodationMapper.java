@@ -30,7 +30,7 @@ public abstract class AccommodationMapper {
         if ( accommodationDto == null ) {
             return null;
         }
-        if (accommodationRepository.existsById(accommodationDto.getId())){
+        if (accommodationDto.getId()!= null && accommodationRepository.existsById(accommodationDto.getId())){
             return accommodationRepository.findById(accommodationDto.getId()).orElse(null);
         }
 

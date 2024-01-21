@@ -41,7 +41,7 @@ public abstract class ReservationMapper {
         if ( reservationDto == null ) {
             return null;
         }
-        if (reservationRepository.existsById(reservationDto.getId())){
+        if (reservationDto.getId() != null && reservationRepository.existsById(reservationDto.getId())){
             return reservationRepository.findById(reservationDto.getId()).orElse(null);
         }else {
 

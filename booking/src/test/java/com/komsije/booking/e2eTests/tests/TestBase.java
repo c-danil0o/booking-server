@@ -2,6 +2,7 @@ package com.komsije.booking.e2eTests.tests;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
@@ -12,7 +13,12 @@ public class TestBase {
 
     @BeforeAll
     public static void initializeWebDriver() {
-        System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
+        if (System.getProperty("os.name").equals("Linux")){
+            System.setProperty("webdriver.chrome.driver", "chromedriver");
+        }else{
+            System.setProperty("webdriver.chrome.driver", "chromedriver.exe");
+        }
+
         driver = new ChromeDriver();
 
         driver.manage().window().maximize();
@@ -23,5 +29,10 @@ public class TestBase {
     @AfterAll
     public static void quitDriver() {
         driver.quit();
+    }
+
+    @Test
+    public void test(){
+        System.out.println("run");
     }
 }

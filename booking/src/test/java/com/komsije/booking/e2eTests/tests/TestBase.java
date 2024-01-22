@@ -1,4 +1,4 @@
-package com.komsije.booking.e2eTests.SearchAndFilterAccommodations;
+package com.komsije.booking.e2eTests.tests;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;

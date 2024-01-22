@@ -9,26 +9,25 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 
-public class GuestProfilePage {
+public class UserLandingPage {
     private WebDriver driver;
-    public GuestProfilePage(WebDriver driver){
+    public UserLandingPage(WebDriver driver){
         this.driver = driver;
         PageFactory.initElements(this.driver, this);
     }
-
-    @FindBy(css = ".reviews-text")
+    @FindBy(xpath = "//div[@class='main-text']/span[1]")
     private WebElement loadedText;
-    @FindBy(css="button[label='Reservations']")
-    private WebElement reservationsButton;
 
-    public boolean isPageLoaded(){
+    @FindBy(xpath = "//button[contains(@class, 'profile-button')]")
+    private WebElement profileButton;
+
+    public boolean isPageLoaded() {
         return (new WebDriverWait(driver, Duration.ofSeconds(10)))
-                .until(ExpectedConditions.textToBePresentInElement(loadedText, "Favorite accommodations:"));
+                .until(ExpectedConditions.textToBePresentInElement(loadedText, "Make your holiday"));
     }
 
-    public void clickOnReservationsButton(){
+    public void clickOnProfileButton(){
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.visibilityOf(reservationsButton)).click();
+        wait.until(ExpectedConditions.visibilityOf(profileButton)).click();
     }
-
 }

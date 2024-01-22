@@ -9,9 +9,9 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 
-public class GuestProfilePage {
+public class HostProfilePage {
     private WebDriver driver;
-    public GuestProfilePage(WebDriver driver){
+    public HostProfilePage(WebDriver driver){
         this.driver = driver;
         PageFactory.initElements(this.driver, this);
     }
@@ -23,12 +23,11 @@ public class GuestProfilePage {
 
     public boolean isPageLoaded(){
         return (new WebDriverWait(driver, Duration.ofSeconds(10)))
-                .until(ExpectedConditions.textToBePresentInElement(loadedText, "Favorite accommodations:"));
+                .until(ExpectedConditions.textToBePresentInElement(loadedText, "Reviews:"));
     }
 
     public void clickOnReservationsButton(){
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         wait.until(ExpectedConditions.visibilityOf(reservationsButton)).click();
     }
-
 }
